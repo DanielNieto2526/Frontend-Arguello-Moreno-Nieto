@@ -1,0 +1,66 @@
+:root {
+  /* Paleta de colores según UI Kit */
+  --Vino-tinto: #3C0919;
+  --Vino-oscuro: #590016;
+  --Rojo-aux: #7D1128;
+  --Naranja: #FF8C42;
+  --Naranja-boton: #F68E5F;
+  --Naranja-boton-hover: #e57c4c;
+  --Blanco: #FFFFFF;
+  --Gris-fondo: #F7F4F3;
+  --Fondo-blob: #F8ECE9;
+  --Rosa-badge: #FCE8ED;
+  --Borde-input: #7D1128;
+  --Borde-suave: #E2D9D7;
+  --Texto-muted: #6B5B5E;
+
+  /* Tipografía */
+  --font-family: 'Merriweather', Georgia, serif;
+
+  /* Escala tipográfica Dev Mode */
+  --font-gigante: 56px;
+  --font-h1: 32px;
+  --font-h2: 28px;
+  --font-h3: 24px;
+  --font-h4: 18px;
+  --font-body: 16px;
+  --font-caption: 12px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--Blanco);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}

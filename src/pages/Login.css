@@ -1,0 +1,237 @@
+/* Contenedor principal de la pantalla de Login */
+.login-screen {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--Blanco);
+  overflow: hidden;
+  padding: 40px 24px;
+}
+
+/* Forma orgánica suave en la esquina superior derecha */
+.login-bg-blob {
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 32vw;
+  height: 58vh;
+  min-width: 280px;
+  min-height: 340px;
+  background-color: var(--Fondo-blob);
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Contenedor de contenido en dos columnas */
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 70px;
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* Columna izquierda con la fotografía */
+.login-hero-wrapper {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-hero-image {
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(60, 9, 25, 0.08);
+}
+
+/* Columna derecha con títulos y formulario */
+.login-content {
+  flex: 1;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezados */
+.login-header {
+  margin-bottom: 32px;
+}
+
+.login-title {
+  font-family: var(--font-family);
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--Vino-tinto);
+  margin-bottom: 6px;
+}
+
+.login-title-highlight {
+  color: var(--Naranja);
+}
+
+.login-subtitle {
+  font-family: var(--font-family);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  line-height: 1.3;
+}
+
+/* Formulario */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 22px;
+}
+
+.login-label {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  margin-bottom: 8px;
+}
+
+.login-input {
+  width: 100%;
+  max-width: 320px;
+  height: 44px;
+  padding: 0 14px;
+  font-family: var(--font-family);
+  font-size: 16px;
+  color: var(--Vino-tinto);
+  background-color: var(--Blanco);
+  border: 1.8px solid var(--Vino-tinto);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-input:focus {
+  border-color: var(--Naranja);
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.2);
+}
+
+/* Alerta de error o éxito */
+.login-feedback {
+  font-family: var(--font-family);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  max-width: 320px;
+}
+
+.login-feedback.error {
+  background-color: #fde8e8;
+  color: var(--Rojo-aux);
+  border: 1px solid #f8b4b4;
+}
+
+.login-feedback.success {
+  background-color: #def7ec;
+  color: #03543f;
+  border: 1px solid #bcf0da;
+}
+
+/* Botón iniciar sesión */
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 6px;
+}
+
+.login-submit-btn {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 400;
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 6px rgba(246, 142, 95, 0.3);
+}
+
+.login-submit-btn:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+.login-submit-btn:active {
+  transform: translateY(1px);
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Enlaces inferiores */
+.login-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 22px;
+}
+
+.login-link {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--Rojo-aux);
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, text-decoration 0.2s;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+/* Adaptación responsive */
+@media (max-width: 900px) {
+  .login-container {
+    flex-direction: column;
+    gap: 36px;
+    text-align: center;
+  }
+
+  .login-content {
+    align-items: center;
+  }
+
+  .login-actions {
+    align-items: center;
+  }
+
+  .login-links {
+    align-items: center;
+  }
+
+  .login-bg-blob {
+    width: 60vw;
+    height: 35vh;
+  }
+}
