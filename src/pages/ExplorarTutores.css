@@ -1,0 +1,402 @@
+.explorar-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Contenido centrado */
+.explorar-main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 32px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Pill superior decorativo */
+.explorar-badge-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background-color: var(--Rosa-badge);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 400;
+  margin-bottom: 16px;
+}
+
+.explorar-badge-icon {
+  font-size: 14px;
+}
+
+/* Título principal */
+.explorar-title {
+  font-family: var(--font-family);
+  font-size: 42px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  text-align: center;
+  margin-bottom: 28px;
+  line-height: 1.2;
+}
+
+/* Barra de filtros */
+.explorar-filters-bar {
+  width: 100%;
+  max-width: 1100px;
+  background-color: #D3DCDA;
+  border-radius: 18px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+  box-sizing: border-box;
+}
+
+/* Contenedores de inputs tipo píldora */
+.filter-search-box {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  background-color: var(--Blanco);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  gap: 10px;
+}
+
+.filter-search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--Vino-tinto);
+  background: transparent;
+}
+
+.filter-search-input::placeholder {
+  color: #7A7274;
+}
+
+.filter-icon {
+  color: #590016;
+  display: flex;
+  align-items: center;
+}
+
+.filter-clear-btn {
+  background: none;
+  border: none;
+  color: #8C8285;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Selectores Sede y Modalidad */
+.filter-select-box {
+  flex: 1.2;
+  display: flex;
+  align-items: center;
+  background-color: var(--Blanco);
+  border-radius: 9999px;
+  padding: 8px 16px;
+  position: relative;
+}
+
+.filter-select {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--Vino-tinto);
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 20px;
+}
+
+.filter-select-arrow {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  color: #590016;
+}
+
+/* Botón Realizar Consulta */
+.filter-submit-btn {
+  flex: 1.3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--Blanco);
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: #590016;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-submit-btn:hover {
+  background-color: #F8F5F5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Grid de tarjetas de tutores */
+.tutores-grid {
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+/* Tarjeta individual de tutor */
+.tutor-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px 18px;
+  box-shadow: 0 2px 8px rgba(60, 9, 25, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tutor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(60, 9, 25, 0.08);
+}
+
+/* Franja superior decorativa roja */
+.tutor-card-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: #7D1128;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+/* Cabecera de la tarjeta con avatar y nombre */
+.tutor-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  margin-top: 4px;
+}
+
+.tutor-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #590016;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tutor-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tutor-name {
+  font-family: var(--font-family);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.tutor-subtitle {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 2px;
+}
+
+/* Descripción del tutor */
+.tutor-card-body {
+  flex-grow: 1;
+  margin-bottom: 18px;
+}
+
+.tutor-description {
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--Vino-tinto);
+}
+
+/* Precio */
+.tutor-price-tag {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+/* Pie de la tarjeta: Badges + Botón Agendar */
+.tutor-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tutor-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tutor-subject-badge {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background-color: var(--Rosa-badge);
+  color: var(--Rojo-aux);
+  font-family: var(--font-family);
+  font-size: 11px;
+}
+
+.tutor-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background-color: #F8ECE8;
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 11px;
+}
+
+.tutor-star-icon {
+  color: #E29547;
+  font-size: 11px;
+}
+
+/* Botón Agendar */
+.tutor-agendar-btn {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.tutor-agendar-btn:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+/* Paginación */
+.explorar-pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.pagination-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #EADCDD;
+  background: var(--Blanco);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background-color: var(--Gris-fondo);
+}
+
+.pagination-btn.active {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  border-color: var(--Naranja-boton);
+  font-weight: 700;
+}
+
+/* Forma curva suave inferior */
+.explorar-bottom-curve {
+  position: absolute;
+  bottom: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65vw;
+  height: 280px;
+  background-color: var(--Fondo-blob);
+  border-radius: 50% 50% 0 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .tutores-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .explorar-filters-bar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 680px) {
+  .tutores-grid {
+    grid-template-columns: 1fr;
+  }
+  .explorar-main {
+    padding: 24px 16px;
+  }
+  .explorar-title {
+    font-size: 30px;
+  }
+}
