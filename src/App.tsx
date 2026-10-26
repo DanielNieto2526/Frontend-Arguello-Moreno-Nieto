@@ -6,7 +6,7 @@ import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
 
-const TITULO_SITIO = 'Aprende con ConectaTutor';
+const TITULO_SITIO = 'Aprende con ConectaTutor ';
 const SUBTITULO_SITIO = 'De estudiantes para estudiantes';
 
 /**

@@ -1,5 +1,6 @@
 /* Contenedor principal de la pantalla de Login */
 .login-screen {
+
   position: relative;
   min-height: 100vh;
   width: 100%;
@@ -11,22 +12,18 @@
   padding: 40px 24px;
 }
 
-/* Forma orgánica suave en la esquina superior derecha */
-.login-bg-blob {
+/* Forma en la esquina superior derecha */
+.forma {
   position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 32vw;
-  height: 58vh;
-  min-width: 280px;
-  min-height: 340px;
-  background-color: var(--Fondo-blob);
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  top: -8px;
+  right: -10px;
+  width: min(395px, 42vw);
+  height: auto;
   z-index: 0;
   pointer-events: none;
 }
 
-/* Contenedor de contenido en dos columnas */
+/* Contenedor de en dos columnas */
 .login-container {
   position: relative;
   z-index: 1;
@@ -53,6 +50,7 @@
   object-fit: cover;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(60, 9, 25, 0.08);
+  align-self: left;
 }
 
 /* Columna derecha con títulos y formulario */
@@ -203,6 +201,8 @@
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.2s, text-decoration 0.2s;
+  background: transparent;
+  text-align: left;
 }
 
 .login-link:hover {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import './Login.css';
 import loginHeroImg from '../assets/login.png';
+import formaLoginImg from '../assets/formaLogin.svg';
 import { autenticarUsuario } from '../utils/auth';
 import type { Usuario } from '../types/usuario';
 
@@ -81,7 +82,7 @@ export function Login({
   return (
     <div className="login-screen">
       {/* Fondo orgánico decorativo superior derecho */}
-      <div className="login-bg-blob" aria-hidden="true" />
+      <img className="forma" src={formaLoginImg} alt="" aria-hidden="true" />
 
       <main className="login-container">
         {/* Columna Izquierda: Imagen de estudiantes */}
@@ -136,7 +137,7 @@ export function Login({
 
             <div className="login-actions">
               <button type="submit" className="login-submit-btn">
-                iniciar sesion
+                Iniciar Sesion
               </button>
 
               <nav className="login-links" aria-label="Enlaces de registro">
