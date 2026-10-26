@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Login } from './pages/Login';
+import { RegisterStudent } from './pages/RegistroEstudiante';
 import { ExplorarTutores } from './pages/ExplorarTutores';
 import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
@@ -109,7 +110,7 @@ export function App() {
           <Route path="/login" element={<LoginWrapper />} />
           <Route
             path="/registro/estudiante"
-            element={<PlaceholderView titulo="Registro de Estudiante" rolEsperado="Público / Estudiante" />}
+            element={<RegisterStudent />}
           />
           <Route
             path="/registro/tutor"
