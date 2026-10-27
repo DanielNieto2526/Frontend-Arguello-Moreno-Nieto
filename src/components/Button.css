@@ -1,0 +1,99 @@
+/* Estilos base del componente universal Button */
+.app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-family);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.app-button:active {
+  transform: translateY(1px);
+}
+
+.app-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Tamaños */
+.app-button--sm {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.app-button--md {
+  font-size: 14px;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.app-button--lg {
+  font-size: 15px;
+  padding: 10px 32px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+/* Variante: Primary (Naranja institucional Figma) */
+.app-button--primary {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+}
+
+.app-button--primary:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+/* Variante: Cancel (Vino / malva apagado Figma para cancelaciones) */
+.app-button--cancel {
+  background-color: #9B5666;
+  color: #FFFFFF;
+  font-weight: 400;
+}
+
+.app-button--cancel:hover {
+  background-color: #874656;
+}
+
+/* Variante: Outline / Secundario */
+.app-button--outline {
+  background-color: var(--Gris-fondo);
+  color: var(--Vino-tinto);
+  border: 1px solid #EADCDD;
+}
+
+.app-button--outline:hover {
+  background-color: #EFE8E8;
+}
+
+/* Variante: Pill (Para consultas y filtros tipo cápsula) */
+.app-button--pill {
+  background-color: var(--Blanco);
+  color: #590016;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.app-button--pill:hover {
+  background-color: #F8F5F5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Ancho completo */
+.app-button--full {
+  width: 100%;
+}

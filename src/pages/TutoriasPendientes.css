@@ -1,0 +1,349 @@
+/* Contenedor general de la página de Tutorías Agendadas */
+.pendientes-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Área principal centrada */
+.pendientes-main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 32px 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Título de la página */
+.pendientes-title {
+  font-family: var(--font-family);
+  font-size: 40px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  text-align: center;
+  margin-bottom: 50px;
+  line-height: 1.2;
+}
+
+/* Grid de tarjetas de tutorías */
+.tutorias-grid {
+  width: 100%;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+/* Tarjeta individual de tutoría */
+.tutoria-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 26px 22px 20px;
+  box-shadow: 0 2px 10px rgba(60, 9, 25, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tutoria-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(60, 9, 25, 0.08);
+}
+
+/* Franja superior vino tinto decorativa */
+.tutoria-card-top-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background-color: #7D1128;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+/* Cabecera de la tarjeta: Avatar e información del tutor */
+.tutoria-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  margin-top: 4px;
+}
+
+.tutoria-avatar-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #590016;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tutoria-tutor-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tutoria-tutor-name {
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  line-height: 1.2;
+}
+
+.tutoria-tutor-subtitle {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 4px;
+}
+
+/* Caja de detalle de la cita (Fecha, hora, lugar y tag) */
+.tutoria-details-box {
+  background-color: #FAF0F2;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tutoria-details-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tutoria-datetime-text {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.tutoria-countdown-badge {
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 400;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background-color: #F8DDE3;
+  color: #7D1128;
+  white-space: nowrap;
+}
+
+.tutoria-location-text {
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: #6B5B5E;
+}
+
+/* Pie de la tarjeta: Badges y Botones de acción */
+.tutoria-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+}
+
+/* Badge de materia */
+.tutoria-materia-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: var(--Rosa-badge);
+  color: var(--Rojo-aux);
+  font-family: var(--font-family);
+  font-size: 11px;
+}
+
+/* Grupo de botones a la derecha */
+.tutoria-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Botón Calificar (Naranja institucional) */
+.btn-calificar {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 22px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+}
+
+.btn-calificar:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+/* Botón Cancelar (Vino suave / malva apagado según Figma) */
+.btn-cancelar {
+  background-color: #9B5666;
+  color: #FFFFFF;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancelar:hover {
+  background-color: #874656;
+}
+
+/* Botón Link (Naranja compacto para Google Meets) */
+.btn-link {
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+/* Forma SVG decorativa inferior */
+.pendientes-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(720px, 92vw);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+/* Modal de confirmación de cancelación */
+.cancel-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(60, 9, 25, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.cancel-modal-card {
+  background-color: var(--Blanco);
+  border-radius: 14px;
+  padding: 28px 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 30px rgba(60, 9, 25, 0.2);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 16px;
+}
+
+.cancel-modal-title {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.cancel-modal-text {
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: #6B5B5E;
+  line-height: 1.4;
+}
+
+.cancel-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.cancel-modal-btn-confirm {
+  background-color: #9B5666;
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--font-family);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-modal-btn-back {
+  background-color: var(--Gris-fondo);
+  color: var(--Vino-tinto);
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1px solid #EADCDD;
+  font-family: var(--font-family);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Adaptación responsive */
+@media (max-width: 1060px) {
+  .tutorias-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .tutorias-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pendientes-main {
+    padding: 30px 18px 120px;
+  }
+
+  .pendientes-title {
+    font-size: 30px;
+    margin-bottom: 30px;
+  }
+}

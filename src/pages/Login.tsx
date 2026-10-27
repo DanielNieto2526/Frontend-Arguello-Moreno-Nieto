@@ -5,6 +5,7 @@ import loginHeroImg from '../assets/login.png';
 import formaLoginImg from '../assets/formaLogin.svg';
 import { autenticarUsuario } from '../utils/auth';
 import type { Usuario } from '../types/usuario';
+import { Button } from '../components/Button';
 
 export interface LoginProps {
   titulo?: string;
@@ -136,9 +137,9 @@ export function Login({
             {mensajeExito && <div className="login-feedback success" role="status">{mensajeExito}</div>}
 
             <div className="login-actions">
-              <button type="submit" className="login-submit-btn">
+              <Button type="submit" variant="primary" size="lg">
                 Iniciar Sesion
-              </button>
+              </Button>
 
               <nav className="login-links" aria-label="Enlaces de registro">
                 <button

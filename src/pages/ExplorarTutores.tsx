@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ExplorarTutores.css';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
 import { TUTORES_INICIALES } from '../data/tutoresIniciales';
 import type { Tutor } from '../types/tutor';
 import { obtenerSesion } from '../utils/auth';
@@ -119,8 +120,8 @@ export function ExplorarTutores() {
           </div>
 
           {/* Botón Realizar Consulta */}
-          <button
-            type="button"
+          <Button
+            variant="pill"
             className="filter-submit-btn"
             onClick={() => setPagina(1)}
           >
@@ -129,7 +130,7 @@ export function ExplorarTutores() {
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
-          </button>
+          </Button>
         </section>
 
         {/* Listado de Tarjetas de Tutores */}
@@ -175,13 +176,13 @@ export function ExplorarTutores() {
                   </span>
                 </div>
 
-                <button
-                  type="button"
-                  className="tutor-agendar-btn"
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={() => handleAgendar(tutor.id)}
                 >
                   Agendar
-                </button>
+                </Button>
               </footer>
             </article>
           ))}

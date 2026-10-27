@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { ExplorarTutores } from './pages/ExplorarTutores';
+import { TutoriasPendientes } from './pages/TutoriasPendientes';
 import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
@@ -120,7 +121,7 @@ export function App() {
           <Route path="/app/explorar" element={<ExplorarTutores />} />
           <Route
             path="/app/tutorias"
-            element={<PlaceholderView titulo="Mis Tutorías" rolEsperado="estudiante" />}
+            element={<TutoriasPendientes />}
           />
 
           {/* Rutas de Tutor */}
