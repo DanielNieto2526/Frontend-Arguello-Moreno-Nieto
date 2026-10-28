@@ -38,22 +38,26 @@ export function Header({ usuario, onLogout }: HeaderProps) {
 
   const esTutor = usuario?.rol === 'tutor' || location.pathname.startsWith('/tutor');
 
-  // Datos mostrados según Figma
+  // Datos de usuario mostrados
   const nombreMostrar = esTutor
     ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Daniel Nieto')
-    : usuario
+    : usuario?.nombres
     ? `${usuario.nombres} ${usuario.apellidos}`
-    : 'Juan Filip Coral';
+    : 'Daniela Moreno';
 
   const badgeMostrar = esTutor
     ? 'Tutor - Matematicas Aplicadas y Ciencias de la Computacion'
     : usuario
     ? `${usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}${
-        usuario.carrera ? ` - ${usuario.carrera}` : ''
+        usuario.carrera ? ` - ${usuario.carrera}` : ' - Ingeniería de Sistemas'
       }`
-    : 'Estudiante - Ing. de Sistemas energeticos';
+    : 'Estudiante - Ingeniería de Sistemas';
 
-  const iniciales = esTutor ? 'DN' : usuario ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}` : 'JC';
+  const iniciales = esTutor
+    ? 'DN'
+    : usuario
+    ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}`.toUpperCase()
+    : 'DM';
 
   const esTutoriasActivo = location.pathname.startsWith('/tutor/tutorias') || location.pathname === '/tutor';
   const esPerfilActivo = location.pathname.startsWith('/tutor/perfil');
@@ -144,15 +148,7 @@ export function Header({ usuario, onLogout }: HeaderProps) {
             aria-expanded={menuAbierto}
             aria-label="Menú de perfil"
           >
-            {usuario?.avatarUrl ? (
-              <img
-                src={usuario.avatarUrl}
-                alt={nombreMostrar}
-                className="header-avatar"
-              />
-            ) : (
-              <span>{iniciales}</span>
-            )}
+            <span>{iniciales}</span>
           </button>
 
           {/* Menú desplegable */}

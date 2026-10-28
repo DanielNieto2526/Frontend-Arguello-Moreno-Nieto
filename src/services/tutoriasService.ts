@@ -4,7 +4,7 @@ import { solicitar } from './api';
 import { obtenerSesion } from '../utils/auth';
 
 const RUTA = '/tutorias';
-const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v2';
+const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v3';
 
 function cargarTutoriasPersistidas(): TutoriaAgendada[] {
   try {
@@ -55,7 +55,7 @@ export async function obtenerTutorias(): Promise<TutoriaAgendada[]> {
   try {
     return await solicitar<TutoriaAgendada[]>(RUTA);
   } catch {
-    await new Promise((resolver) => setTimeout(resolver, 400));
+    await new Promise((resolver) => setTimeout(resolver, 300));
     return [...tutoriasEnMemoria];
   }
 }
@@ -207,7 +207,7 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
       body: JSON.stringify(datos),
     });
   } catch {
-    await new Promise((resolver) => setTimeout(resolver, 500));
+    await new Promise((resolver) => setTimeout(resolver, 400));
 
     const sesionEstudiante = obtenerSesion();
 
@@ -229,11 +229,14 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
       esVirtual: datos.modalidad === 'Virtual',
       linkReunion:
         datos.modalidad === 'Virtual' ? 'https://meet.google.com/foj-amx-bqp?pli=1&authuser=1' : undefined,
-      estudianteId: sesionEstudiante?.id || 'est-jf',
-      estudianteNombres: sesionEstudiante?.nombres || 'Estudiante',
-      estudianteApellidos: sesionEstudiante?.apellidos || 'Rosarista',
-      estudianteCorreo: sesionEstudiante?.correo || 'estudiante@urosario.edu.co',
-      estudianteCarrera: sesionEstudiante?.carrera || 'Pregrado URosario',
+      estudianteId: sesionEstudiante?.id || '1',
+      estudianteNombres: sesionEstudiante?.nombres || 'Daniela',
+      estudianteApellidos: sesionEstudiante?.apellidos || 'Moreno',
+      estudianteIniciales: `${(sesionEstudiante?.nombres || 'D').charAt(0)}${(sesionEstudiante?.apellidos || 'M').charAt(0)}`,
+      estudianteCorreo: sesionEstudiante?.correo || 'dmoreno@urosario.edu.co',
+      estudianteCarrera: sesionEstudiante?.carrera ? `${sesionEstudiante.semestre || 6}º semestre ${sesionEstudiante.carrera}` : '6º semestre ISE',
+      estudianteTelefono: sesionEstudiante?.telefono || '320 4051954',
+      estudianteSemestreCompleto: sesionEstudiante?.carrera || 'sexto semestre Ingenieria de Sistemas',
       detalles: datos.detalles,
       nombresArchivos: datos.nombresArchivos,
     };

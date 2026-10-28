@@ -35,8 +35,6 @@ export function VistaTutor() {
         descripcion:
           'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
         diasDisponibles: ['LU', 'MA', 'MI'],
-        avatarUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       };
     }
     return sesion;
@@ -116,7 +114,7 @@ export function VistaTutor() {
           </div>
         )}
 
-        {/* Grid con las 3 tarjetas de tutorías */}
+        {/* Grid con las tarjetas de tutorías */}
         {!cargando && !errorDeCarga && (
           <section className="tutor-cards-grid" aria-label="Lista de tutorías agendadas">
             {tutorias.map((tutoria) => {
@@ -126,31 +124,23 @@ export function VistaTutor() {
                   ? `${tutoria.estudianteNombres.charAt(0)}${
                       tutoria.estudianteApellidos ? tutoria.estudianteApellidos.charAt(0) : ''
                     }`
-                  : 'ES');
+                  : 'DM');
 
               return (
                 <article key={tutoria.id} className="tutor-card">
                   <div className="tutor-card-top-bar" />
 
                   <div className="tutor-card-content">
-                    {/* Header de Estudiante */}
+                    {/* Header de Estudiante con Avatar de Iniciales */}
                     <div className="tutor-card-student">
-                      {tutoria.estudianteAvatar ? (
-                        <img
-                          src={tutoria.estudianteAvatar}
-                          alt={tutoria.estudianteNombres || 'Estudiante'}
-                          className="tutor-student-avatar-img"
-                        />
-                      ) : (
-                        <div className="tutor-student-avatar-initials">{iniciales}</div>
-                      )}
+                      <div className="tutor-student-avatar-initials">{iniciales}</div>
 
                       <div className="tutor-student-text">
                         <span className="tutor-student-name">
                           {tutoria.estudianteNombres} {tutoria.estudianteApellidos}
                         </span>
                         <span className="tutor-student-subtitle">
-                          {tutoria.estudianteCarrera || '2º semestre ISE'}
+                          {tutoria.estudianteCarrera || '6º semestre ISE'}
                         </span>
                       </div>
                     </div>

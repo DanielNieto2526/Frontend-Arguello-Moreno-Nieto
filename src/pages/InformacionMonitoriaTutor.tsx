@@ -32,8 +32,6 @@ export function InformacionMonitoriaTutor() {
         descripcion:
           'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
         diasDisponibles: ['LU', 'MA', 'MI'],
-        avatarUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       };
     }
     return sesion;
@@ -67,7 +65,7 @@ export function InformacionMonitoriaTutor() {
     const nombreArchivo =
       tutoria?.nombresArchivos && tutoria.nombresArchivos.length > 0
         ? tutoria.nombresArchivos[0]
-        : 'taller_asociado_tema.pdf';
+        : 'taller_integrales_calculo2.pdf';
     alert(`Descargando archivo adjunto: ${nombreArchivo}`);
   };
 
@@ -82,9 +80,16 @@ export function InformacionMonitoriaTutor() {
     );
   }
 
-  const estudianteNombreCompleto = tutoria
-    ? `${tutoria.estudianteNombres} ${tutoria.estudianteApellidos}`
-    : 'Juan Filip';
+  const estudianteNombreCompleto =
+    tutoria?.estudianteNombres && tutoria?.estudianteApellidos
+      ? `${tutoria.estudianteNombres} ${tutoria.estudianteApellidos}`
+      : 'Daniela Moreno';
+
+  const estudianteIniciales =
+    tutoria?.estudianteIniciales ||
+    (tutoria?.estudianteNombres && tutoria?.estudianteApellidos
+      ? `${tutoria.estudianteNombres.charAt(0)}${tutoria.estudianteApellidos.charAt(0)}`
+      : 'DM');
 
   const textoDudas =
     tutoria?.detalles ||
@@ -134,17 +139,9 @@ export function InformacionMonitoriaTutor() {
                 </h2>
               </div>
 
-              {tutoria?.estudianteAvatar ? (
-                <img
-                  src={tutoria.estudianteAvatar}
-                  alt={estudianteNombreCompleto}
-                  className="info-monitoria-avatar"
-                />
-              ) : (
-                <div className="info-monitoria-avatar-initials">
-                  {tutoria?.estudianteIniciales || 'JF'}
-                </div>
-              )}
+              <div className="info-monitoria-avatar-initials">
+                {estudianteIniciales}
+              </div>
             </div>
 
             <div className="info-contact-field">
@@ -158,7 +155,7 @@ export function InformacionMonitoriaTutor() {
               <div className="info-contact-field">
                 <label className="info-contact-label">Correo Institucional</label>
                 <div className="info-contact-value-box">
-                  {tutoria?.estudianteCorreo || 'juan.filip@urosario.edu.co'}
+                  {tutoria?.estudianteCorreo || 'dmoreno@urosario.edu.co'}
                 </div>
               </div>
 
@@ -166,7 +163,7 @@ export function InformacionMonitoriaTutor() {
                 <label className="info-contact-label">Semestre</label>
                 <div className="info-contact-value-box">
                   {tutoria?.estudianteSemestreCompleto ||
-                    'segundo semestre Ingenieria de Sistemas Energeticos'}
+                    'sexto semestre Ingenieria de Sistemas'}
                 </div>
               </div>
             </div>
@@ -197,4 +194,3 @@ export function InformacionMonitoriaTutor() {
 }
 
 export default InformacionMonitoriaTutor;
-

@@ -29,8 +29,6 @@ export function EditarTutor() {
         descripcion:
           'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
         diasDisponibles: ['LU', 'MA', 'MI'],
-        avatarUrl:
-          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       };
     }
     return sesion;
