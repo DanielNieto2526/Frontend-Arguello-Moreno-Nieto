@@ -83,7 +83,12 @@ export function Login({
   return (
     <div className="login-screen">
       {/* Fondo orgánico decorativo superior derecho */}
-      <img className="forma" src={formaLoginImg} alt="" aria-hidden="true" />
+      <img
+        src={formaLoginImg}
+        alt=""
+        className="login-bg-blob"
+        aria-hidden="true"
+      />
 
       <main className="login-container">
         {/* Columna Izquierda: Imagen de estudiantes */}

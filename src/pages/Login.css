@@ -13,11 +13,12 @@
 }
 
 /* Forma en la esquina superior derecha */
+.login-bg-blob,
 .forma {
   position: absolute;
-  top: -8px;
-  right: -10px;
-  width: min(395px, 42vw);
+  top: 0;
+  right: 0;
+  width: min(395px, 32vw);
   height: auto;
   z-index: 0;
   pointer-events: none;

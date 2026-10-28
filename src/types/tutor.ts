@@ -1,3 +1,16 @@
+export interface FranjaHoraria {
+  id: string;
+  texto: string; // ej: "9:00 - 10:30 AM"
+  disponible: boolean;
+}
+
+export interface DiaDisponible {
+  diaSemana: string; // ej: "VIE", "MIE"
+  numero: number; // ej: 5
+  disponible: boolean;
+  franjas: FranjaHoraria[];
+}
+
 export interface Tutor {
   id: string;
   nombres: string;
@@ -11,4 +24,5 @@ export interface Tutor {
   precioFormato: string; // "$20.000 x hora"
   materiaPrincipal: string; // "calculo II"
   estrellas: number; // 4.9
+  diasDisponibles?: DiaDisponible[];
 }

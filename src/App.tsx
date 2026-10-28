@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { Login } from './pages/Login';
 import { ExplorarTutores } from './pages/ExplorarTutores';
 import { TutoriasPendientes } from './pages/TutoriasPendientes';
+import { AgendarTutoria } from './pages/AgendarTutoria';
 import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
@@ -119,6 +120,8 @@ export function App() {
 
           {/* Rutas de Estudiante */}
           <Route path="/app/explorar" element={<ExplorarTutores />} />
+          <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
+          <Route path="/app/agendar" element={<AgendarTutoria />} />
           <Route
             path="/app/tutorias"
             element={<TutoriasPendientes />}

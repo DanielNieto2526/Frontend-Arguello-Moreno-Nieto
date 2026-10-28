@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ExplorarTutores.css';
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
-import { TUTORES_INICIALES } from '../data/tutoresIniciales';
+import { Cargando } from '../components/Cargando';
+import { obtenerTutores } from '../services/tutoresService';
+import { obtenerMensajeDeError } from '../services/api';
 import type { Tutor } from '../types/tutor';
 import { obtenerSesion } from '../utils/auth';
 
@@ -11,14 +13,44 @@ export function ExplorarTutores() {
   const navigate = useNavigate();
   const [usuario] = useState(() => obtenerSesion());
 
+  // Estados de datos asíncronos (Sesión 3)
+  const [tutores, setTutores] = useState<Tutor[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [errorDeCarga, setErrorDeCarga] = useState<string | null>(null);
+  const [intentoDeCarga, setIntentoDeCarga] = useState(0);
+
+  // Estados de filtros y paginación
   const [busqueda, setBusqueda] = useState('');
   const [sede, setSede] = useState('Todas');
   const [modalidad, setModalidad] = useState('Todas');
   const [pagina, setPagina] = useState(1);
 
-  // Filtrado de tutores
+  // Consumo asíncrono del servicio con useEffect y bandera de limpieza
+  useEffect(() => {
+    let cancelado = false;
+
+    obtenerTutores()
+      .then((datos) => {
+        if (!cancelado) {
+          setTutores(datos);
+          setCargando(false);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelado) {
+          setErrorDeCarga(obtenerMensajeDeError(error));
+          setCargando(false);
+        }
+      });
+
+    return () => {
+      cancelado = true;
+    };
+  }, [intentoDeCarga]);
+
+  // Valores derivados: filtrado en memoria sin duplicar estado
   const tutoresFiltrados = useMemo(() => {
-    return TUTORES_INICIALES.filter((tutor) => {
+    return tutores.filter((tutor) => {
       const cumpleMateria =
         busqueda.trim() === '' ||
         tutor.materiaPrincipal.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -34,7 +66,7 @@ export function ExplorarTutores() {
 
       return cumpleMateria && cumpleSede && cumpleModalidad;
     });
-  }, [busqueda, sede, modalidad]);
+  }, [tutores, busqueda, sede, modalidad]);
 
   const handleAgendar = (tutorId: string) => {
     navigate(`/app/agendar/${tutorId}`);
@@ -133,95 +165,126 @@ export function ExplorarTutores() {
           </Button>
         </section>
 
-        {/* Listado de Tarjetas de Tutores */}
-        <section className="tutores-grid" aria-label="Tutores disponibles">
-          {tutoresFiltrados.map((tutor: Tutor) => (
-            <article key={tutor.id} className="tutor-card">
-              {/* Barra superior vino tinto */}
-              <div className="tutor-card-top-bar" aria-hidden="true" />
+        {/* Estado Cargando */}
+        {cargando && <Cargando texto="Cargando tutores disponibles..." />}
 
-              {/* Cabecera con avatar e información */}
-              <header className="tutor-card-header">
-                <div className="tutor-avatar-circle" aria-hidden="true">
-                  {tutor.iniciales}
-                </div>
-                <div className="tutor-header-info">
-                  <h2
-                    className="tutor-name"
-                    onClick={() => handleVerPerfil(tutor.id)}
-                    tabIndex={0}
-                    role="button"
-                    onKeyDown={(e) => e.key === 'Enter' && handleVerPerfil(tutor.id)}
-                  >
-                    {tutor.nombres} {tutor.apellidos}
-                  </h2>
-                  <span className="tutor-subtitle">{tutor.semestreTexto}</span>
-                </div>
-              </header>
+        {/* Estado: Error con botón de reintento */}
+        {!cargando && errorDeCarga && (
+          <div style={{ textAlign: 'center', padding: '30px', color: 'var(--Rojo-aux)' }} role="alert">
+            <p style={{ marginBottom: '16px' }}>{errorDeCarga}</p>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => {
+                setCargando(true);
+                setErrorDeCarga(null);
+                setIntentoDeCarga((i) => i + 1);
+              }}
+            >
+              Reintentar
+            </Button>
+          </div>
+        )}
 
-              {/* Descripción */}
-              <div className="tutor-card-body">
-                <p className="tutor-description">{tutor.descripcion}</p>
-              </div>
+        {/* Listado de Tutores */}
+        {!cargando && !errorDeCarga && (
+          <section className="tutores-grid" aria-label="Tutores disponibles">
+            {tutoresFiltrados.length === 0 ? (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: '#6B5B5E', padding: '40px 0' }}>
+                No se encontraron tutores con los criterios seleccionados.
+              </p>
+            ) : (
+              tutoresFiltrados.map((tutor: Tutor) => (
+                <article key={tutor.id} className="tutor-card">
+                  {/* Barra superior vino tinto */}
+                  <div className="tutor-card-top-bar" aria-hidden="true" />
 
-              {/* Precio */}
-              <div className="tutor-price-tag">{tutor.precioFormato}</div>
+                  {/* Cabecera con avatar e información */}
+                  <header className="tutor-card-header">
+                    <div className="tutor-avatar-circle" aria-hidden="true">
+                      {tutor.iniciales}
+                    </div>
+                    <div className="tutor-header-info">
+                      <h2
+                        className="tutor-name"
+                        onClick={() => handleVerPerfil(tutor.id)}
+                        tabIndex={0}
+                        role="button"
+                        onKeyDown={(e) => e.key === 'Enter' && handleVerPerfil(tutor.id)}
+                      >
+                        {tutor.nombres} {tutor.apellidos}
+                      </h2>
+                      <span className="tutor-subtitle">{tutor.semestreTexto}</span>
+                    </div>
+                  </header>
 
-              {/* Pie con badges y CTA */}
-              <footer className="tutor-card-footer">
-                <div className="tutor-badges-group">
-                  <span className="tutor-subject-badge">{tutor.materiaPrincipal}</span>
-                  <span className="tutor-rating-badge">
-                    <span className="tutor-star-icon">★</span> {tutor.estrellas} estrellas
-                  </span>
-                </div>
+                  {/* Descripción */}
+                  <div className="tutor-card-body">
+                    <p className="tutor-description">{tutor.descripcion}</p>
+                  </div>
 
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => handleAgendar(tutor.id)}
-                >
-                  Agendar
-                </Button>
-              </footer>
-            </article>
-          ))}
-        </section>
+                  {/* Precio */}
+                  <div className="tutor-price-tag">{tutor.precioFormato}</div>
+
+                  {}
+                  <footer className="tutor-card-footer">
+                    <div className="tutor-badges-group">
+                      <span className="tutor-subject-badge">{tutor.materiaPrincipal}</span>
+                      <span className="tutor-rating-badge">
+                        <span className="tutor-star-icon">★</span> {tutor.estrellas} estrellas
+                      </span>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={() => handleAgendar(tutor.id)}
+                    >
+                      Agendar
+                    </Button>
+                  </footer>
+                </article>
+              ))
+            )}
+          </section>
+        )}
 
         {/* Paginación */}
-        <nav className="explorar-pagination" aria-label="Paginación de resultados">
-          <button
-            type="button"
-            className="pagination-btn"
-            disabled={pagina === 1}
-            onClick={() => setPagina((p) => Math.max(1, p - 1))}
-            aria-label="Página anterior"
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            className={`pagination-btn ${pagina === 1 ? 'active' : ''}`}
-            onClick={() => setPagina(1)}
-          >
-            1
-          </button>
-          <button
-            type="button"
-            className={`pagination-btn ${pagina === 2 ? 'active' : ''}`}
-            onClick={() => setPagina(2)}
-          >
-            2
-          </button>
-          <button
-            type="button"
-            className="pagination-btn"
-            onClick={() => setPagina((p) => p + 1)}
-            aria-label="Página siguiente"
-          >
-            ›
-          </button>
-        </nav>
+        {!cargando && !errorDeCarga && tutoresFiltrados.length > 0 && (
+          <nav className="explorar-pagination" aria-label="Paginación de resultados">
+            <button
+              type="button"
+              className="pagination-btn"
+              disabled={pagina === 1}
+              onClick={() => setPagina((p) => Math.max(1, p - 1))}
+              aria-label="Página anterior"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              className={`pagination-btn ${pagina === 1 ? 'active' : ''}`}
+              onClick={() => setPagina(1)}
+            >
+              1
+            </button>
+            <button
+              type="button"
+              className={`pagination-btn ${pagina === 2 ? 'active' : ''}`}
+              onClick={() => setPagina(2)}
+            >
+              2
+            </button>
+            <button
+              type="button"
+              className="pagination-btn"
+              onClick={() => setPagina((p) => p + 1)}
+              aria-label="Página siguiente"
+            >
+              ›
+            </button>
+          </nav>
+        )}
       </main>
 
       {/* Decoración curva inferior suave */}

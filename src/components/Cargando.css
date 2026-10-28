@@ -1,0 +1,27 @@
+.cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px 24px;
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: 15px;
+  color: var(--Vino-tinto);
+}
+
+.cargando__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3.5px solid rgba(89, 0, 22, 0.12);
+  border-top-color: var(--Vino-oscuro);
+  border-radius: 50%;
+  animation: cargando-giro 0.8s linear infinite;
+}
+
+@keyframes cargando-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -41,6 +41,6 @@ export const TUTORIAS_INICIALES: TutoriaAgendada[] = [
     materia: 'Analisis Real',
     estado: 'pendiente',
     esVirtual: true,
-    linkReunion: 'https://meet.google.com/xyz-qwer-vbn',
+    linkReunion: 'https://globle-game.com',
   },
 ];

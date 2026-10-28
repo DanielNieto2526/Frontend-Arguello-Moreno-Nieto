@@ -209,7 +209,7 @@
   background-color: var(--Naranja-boton-hover);
 }
 
-/* Botón Cancelar (Vino suave / malva apagado según Figma) */
+/* Botón Cancelar  */
 .btn-cancelar {
   background-color: #9B5666;
   color: #FFFFFF;
@@ -227,7 +227,7 @@
   background-color: #874656;
 }
 
-/* Botón Link (Naranja compacto para Google Meets) */
+/* Botón Link */
 .btn-link {
   background-color: var(--Naranja-boton);
   color: var(--Vino-tinto);
@@ -245,7 +245,7 @@
   background-color: var(--Naranja-boton-hover);
 }
 
-/* Forma SVG decorativa inferior */
+/* Forma SVG */
 .pendientes-bottom-shape {
   position: absolute;
   bottom: 0;
@@ -326,7 +326,7 @@
   cursor: pointer;
 }
 
-/* Adaptación responsive */
+/* responsive */
 @media (max-width: 1060px) {
   .tutorias-grid {
     grid-template-columns: repeat(2, 1fr);
