@@ -25,4 +25,7 @@ export interface Tutor {
   materiaPrincipal: string; // "calculo II"
   estrellas: number; // 4.9
   diasDisponibles?: DiaDisponible[];
+  cursos?: string[];
+  correo?: string;
+  activo?: boolean;
 }

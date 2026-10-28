@@ -1,0 +1,329 @@
+/* Estilos para Tutorias Agendadas (Pendientes Tutor) según Figma */
+.tutor-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.tutor-main {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Título de la página */
+.tutor-page-title {
+  font-family: var(--font-family);
+  font-size: 38px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* Grid de Tarjetas (3 columnas) */
+.tutor-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .tutor-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .tutor-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tarjeta de Tutoría */
+.tutor-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tutor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(60, 9, 25, 0.08);
+}
+
+.tutor-card-top-bar {
+  height: 8px;
+  width: 100%;
+  background-color: #7D1128;
+}
+
+.tutor-card-content {
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Header del Estudiante */
+.tutor-card-student {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.tutor-student-avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(60, 9, 25, 0.15);
+  flex-shrink: 0;
+}
+
+.tutor-student-avatar-initials {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #7D1128;
+  color: var(--Blanco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 17px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.tutor-student-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.tutor-student-name {
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  line-height: 1.2;
+}
+
+.tutor-student-subtitle {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 2px;
+}
+
+/* Caja de Detalles de Cita */
+.tutor-card-details-box {
+  background-color: #FAF4F3;
+  border: 1px solid #F0E4E3;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.tutor-card-details-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tutor-card-datetime {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.tutor-card-location {
+  font-size: 12px;
+  color: var(--Texto-muted);
+}
+
+.tutor-card-time-badge {
+  background-color: #FCE8ED;
+  color: var(--Rojo-aux);
+  border: 1px solid #EADCDD;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Footer de la Tarjeta */
+.tutor-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tutor-materia-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background-color: var(--Blanco);
+  border: 1px solid #E2D9D7;
+  color: var(--Rojo-aux);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tutor-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tutor-btn-orange {
+  background-color: var(--Naranja-boton);
+  color: var(--Blanco);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tutor-btn-orange:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+/* Forma orgánica inferior de fondo */
+.tutor-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(720px, 92vw);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+/* Modal "agregar link Tutor" según Image 1 */
+.tutor-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(60, 9, 25, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.tutor-link-modal-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  padding: 40px 36px 36px;
+  max-width: 580px;
+  width: 100%;
+  box-shadow: 0 12px 36px rgba(60, 9, 25, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  text-align: center;
+}
+
+.tutor-link-modal-title {
+  font-family: var(--font-family);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--Vino-tinto);
+  margin-bottom: 24px;
+}
+
+.tutor-link-modal-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.tutor-link-modal-label {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--Vino-tinto);
+  margin-bottom: 8px;
+}
+
+.tutor-link-modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #7D1128;
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--Vino-tinto);
+  background-color: var(--Blanco);
+  box-sizing: border-box;
+}
+
+.tutor-link-modal-input:focus {
+  outline: none;
+  border-color: var(--Naranja);
+  box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.25);
+}
+
+.tutor-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--Texto-muted);
+  cursor: pointer;
+}
+
+.tutor-modal-close-btn:hover {
+  color: var(--Vino-tinto);
+}

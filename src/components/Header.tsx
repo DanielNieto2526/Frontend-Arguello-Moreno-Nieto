@@ -36,46 +36,70 @@ export function Header({ usuario, onLogout }: HeaderProps) {
     }
   };
 
-  // Datos de usuario mostrados (del usuario logueado o por defecto según Figma)
-  const nombreMostrar = usuario
+  const esTutor = usuario?.rol === 'tutor' || location.pathname.startsWith('/tutor');
+
+  // Datos mostrados según Figma
+  const nombreMostrar = esTutor
+    ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Daniel Nieto')
+    : usuario
     ? `${usuario.nombres} ${usuario.apellidos}`
     : 'Juan Filip Coral';
 
-  const badgeMostrar = usuario
+  const badgeMostrar = esTutor
+    ? 'Tutor - Matematicas Aplicadas y Ciencias de la Computacion'
+    : usuario
     ? `${usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}${
         usuario.carrera ? ` - ${usuario.carrera}` : ''
       }`
     : 'Estudiante - Ing. de Sistemas energeticos';
 
-  const iniciales = usuario
-    ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}`
-    : 'JC';
+  const iniciales = esTutor ? 'DN' : usuario ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}` : 'JC';
 
-  const esExplorarActivo =
-    location.pathname === '/app/explorar' || location.pathname === '/';
-  const esTutoriasActivo = location.pathname.startsWith('/app/tutorias');
+  const esTutoriasActivo = location.pathname.startsWith('/tutor/tutorias') || location.pathname === '/tutor';
+  const esPerfilActivo = location.pathname.startsWith('/tutor/perfil');
+  const esExplorarActivo = location.pathname === '/app/explorar' || (!esTutor && location.pathname === '/');
+  const esMisTutoriasEstudianteActivo = location.pathname.startsWith('/app/tutorias');
 
   return (
     <header className="app-header">
       {/* Sección Izquierda: Logo institucional y Navegación */}
       <div className="header-left">
-        <Link to="/app/explorar" className="header-logo">
+        <Link to={esTutor ? '/tutor/tutorias' : '/app/explorar'} className="header-logo">
           Conecta<span className="header-logo-highlight">Tutor</span>
         </Link>
 
         <nav className="header-nav" aria-label="Navegación principal">
-          <Link
-            to="/app/explorar"
-            className={`header-nav-item ${esExplorarActivo ? 'active' : ''}`}
-          >
-            explorar tutores
-          </Link>
-          <Link
-            to="/app/tutorias"
-            className={`header-nav-item ${esTutoriasActivo ? 'active' : ''}`}
-          >
-            mis tutorias
-          </Link>
+          {esTutor ? (
+            <>
+              <Link
+                to="/tutor/tutorias"
+                className={`header-nav-item ${esTutoriasActivo ? 'active' : 'outline'}`}
+              >
+                mis tutorias
+              </Link>
+              <Link
+                to="/tutor/perfil"
+                className={`header-nav-item ${esPerfilActivo ? 'active' : 'outline'}`}
+              >
+                Mi Perfil
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/app/explorar"
+                className={`header-nav-item ${esExplorarActivo ? 'active' : ''}`}
+              >
+                explorar tutores
+              </Link>
+              <Link
+                to="/app/tutorias"
+                className={`header-nav-item ${esMisTutoriasEstudianteActivo ? 'active' : ''}`}
+              >
+                mis tutorias
+              </Link>
+            </>
+          )}
         </nav>
       </div>
 
@@ -134,16 +158,30 @@ export function Header({ usuario, onLogout }: HeaderProps) {
           {/* Menú desplegable */}
           {menuAbierto && (
             <div className="header-user-menu" role="menu">
-              <button
-                type="button"
-                className="header-menu-item"
-                onClick={() => {
-                  setMenuAbierto(false);
-                  navigate('/app/perfil');
-                }}
-              >
-                Mi Perfil
-              </button>
+              {esTutor && (
+                <>
+                  <button
+                    type="button"
+                    className="header-menu-item"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      navigate('/tutor/tutorias');
+                    }}
+                  >
+                    Tutorías Agendadas
+                  </button>
+                  <button
+                    type="button"
+                    className="header-menu-item"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      navigate('/tutor/perfil');
+                    }}
+                  >
+                    Mi Perfil
+                  </button>
+                </>
+              )}
               <button
                 type="button"
                 className="header-menu-item logout"

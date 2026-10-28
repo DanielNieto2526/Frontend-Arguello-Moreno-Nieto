@@ -1,11 +1,34 @@
-import type { TutoriaAgendada } from '../types/tutoria';
+import type { TutoriaAgendada, EstadoTutoria } from '../types/tutoria';
 import { TUTORIAS_INICIALES } from '../data/tutoriasIniciales';
 import { solicitar } from './api';
+import { obtenerSesion } from '../utils/auth';
 
 const RUTA = '/tutorias';
+const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v2';
 
-// Almacén en memoria para mutaciones locales durante la sesión 3 antes de persistir en MongoDB
-let tutoriasEnMemoria: TutoriaAgendada[] = [...TUTORIAS_INICIALES];
+function cargarTutoriasPersistidas(): TutoriaAgendada[] {
+  try {
+    const data = localStorage.getItem(STORAGE_TUTORIAS_KEY);
+    if (data) {
+      const parsed = JSON.parse(data) as TutoriaAgendada[];
+      if (parsed.length > 0) return parsed;
+    }
+  } catch {
+    // fallback
+  }
+  return [...TUTORIAS_INICIALES];
+}
+
+function guardarTutoriasPersistidas(lista: TutoriaAgendada[]): void {
+  try {
+    localStorage.setItem(STORAGE_TUTORIAS_KEY, JSON.stringify(lista));
+  } catch (e) {
+    console.error('Error guardando tutorias en storage:', e);
+  }
+}
+
+// Almacén en memoria sincronizado con localStorage
+let tutoriasEnMemoria: TutoriaAgendada[] = cargarTutoriasPersistidas();
 
 export interface SolicitudAgendamiento {
   tutorId: string;
@@ -32,8 +55,48 @@ export async function obtenerTutorias(): Promise<TutoriaAgendada[]> {
   try {
     return await solicitar<TutoriaAgendada[]>(RUTA);
   } catch {
-    // Simula 600ms de red para visualizar el estado "Cargando..."
-    await new Promise((resolver) => setTimeout(resolver, 600));
+    await new Promise((resolver) => setTimeout(resolver, 400));
+    return [...tutoriasEnMemoria];
+  }
+}
+
+export async function obtenerTutoriaPorId(id: string): Promise<TutoriaAgendada> {
+  try {
+    return await solicitar<TutoriaAgendada>(`${RUTA}/${id}`);
+  } catch {
+    await new Promise((resolver) => setTimeout(resolver, 200));
+    const tutoria = tutoriasEnMemoria.find((t) => t.id === id);
+    if (!tutoria) {
+      return tutoriasEnMemoria[0] || TUTORIAS_INICIALES[0];
+    }
+    return tutoria;
+  }
+}
+
+/**
+ * Obtiene tutorías asignadas a un tutor específico.
+ */
+export async function obtenerTutoriasPorTutor(
+  tutorId?: string,
+  tutorNombres?: string
+): Promise<TutoriaAgendada[]> {
+  try {
+    const query = tutorId ? `?tutorId=${encodeURIComponent(tutorId)}` : '';
+    return await solicitar<TutoriaAgendada[]>(`${RUTA}/asignadas${query}`);
+  } catch {
+    await new Promise((resolver) => setTimeout(resolver, 300));
+    
+    if (tutorId || tutorNombres) {
+      const normalizar = (s: string) => s.toLowerCase().trim();
+      const filtradas = tutoriasEnMemoria.filter((t) => {
+        if (tutorId && (t.tutorId === tutorId || t.tutorId === '2' || t.tutorId === 'tutor-1')) return true;
+        if (tutorNombres && normalizar(`${t.tutorNombres} ${t.tutorApellidos}`).includes(normalizar(tutorNombres))) return true;
+        return false;
+      });
+
+      if (filtradas.length > 0) return filtradas;
+    }
+
     return [...tutoriasEnMemoria];
   }
 }
@@ -44,8 +107,69 @@ export async function cancelarTutoria(id: string): Promise<void> {
       method: 'DELETE',
     });
   } catch {
-    await new Promise((resolver) => setTimeout(resolver, 400));
-    tutoriasEnMemoria = tutoriasEnMemoria.filter((item) => item.id !== id);
+    await new Promise((resolver) => setTimeout(resolver, 300));
+    tutoriasEnMemoria = tutoriasEnMemoria.map((item) =>
+      item.id === id ? { ...item, estado: 'cancelada' as EstadoTutoria } : item
+    );
+    guardarTutoriasPersistidas(tutoriasEnMemoria);
+  }
+}
+
+export async function actualizarLinkReunion(
+  id: string,
+  linkReunion: string
+): Promise<TutoriaAgendada> {
+  try {
+    return await solicitar<TutoriaAgendada>(`${RUTA}/${id}/link`, {
+      method: 'PATCH',
+      body: JSON.stringify({ linkReunion }),
+    });
+  } catch {
+    await new Promise((resolver) => setTimeout(resolver, 300));
+    let actualizada: TutoriaAgendada | null = null;
+    tutoriasEnMemoria = tutoriasEnMemoria.map((item) => {
+      if (item.id === id) {
+        actualizada = { ...item, linkReunion };
+        return actualizada;
+      }
+      return item;
+    });
+    guardarTutoriasPersistidas(tutoriasEnMemoria);
+    if (!actualizada) {
+      throw new Error(`Tutoría con id ${id} no encontrada`);
+    }
+    return actualizada;
+  }
+}
+
+export async function actualizarEstadoTutoria(
+  id: string,
+  nuevoEstado: EstadoTutoria
+): Promise<TutoriaAgendada> {
+  try {
+    return await solicitar<TutoriaAgendada>(`${RUTA}/${id}/estado`, {
+      method: 'PATCH',
+      body: JSON.stringify({ estado: nuevoEstado }),
+    });
+  } catch {
+    await new Promise((resolver) => setTimeout(resolver, 300));
+    let actualizada: TutoriaAgendada | null = null;
+    tutoriasEnMemoria = tutoriasEnMemoria.map((item) => {
+      if (item.id === id) {
+        actualizada = {
+          ...item,
+          estado: nuevoEstado,
+          tiempoRestanteTexto: nuevoEstado === 'completada' ? 'Finalizada' : item.tiempoRestanteTexto,
+        };
+        return actualizada;
+      }
+      return item;
+    });
+    guardarTutoriasPersistidas(tutoriasEnMemoria);
+    if (!actualizada) {
+      throw new Error(`Tutoría con id ${id} no encontrada`);
+    }
+    return actualizada;
   }
 }
 
@@ -60,10 +184,19 @@ export async function calificarTutoria(
       body: JSON.stringify({ calificacion, comentarios }),
     });
   } catch {
-    await new Promise((resolver) => setTimeout(resolver, 400));
+    await new Promise((resolver) => setTimeout(resolver, 300));
     tutoriasEnMemoria = tutoriasEnMemoria.map((item) =>
-      item.id === id ? { ...item, puedeCalificar: false, estado: 'completada' } : item
+      item.id === id
+        ? {
+            ...item,
+            puedeCalificar: false,
+            estado: 'completada',
+            calificacion,
+            comentarioEstudiante: comentarios,
+          }
+        : item
     );
+    guardarTutoriasPersistidas(tutoriasEnMemoria);
   }
 }
 
@@ -74,7 +207,9 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
       body: JSON.stringify(datos),
     });
   } catch {
-    await new Promise((resolver) => setTimeout(resolver, 600));
+    await new Promise((resolver) => setTimeout(resolver, 500));
+
+    const sesionEstudiante = obtenerSesion();
 
     const nuevaTutoria: TutoriaAgendada = {
       id: `tutoria-${Date.now()}`,
@@ -88,15 +223,23 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
       lugarTexto:
         datos.modalidad === 'Presencial'
           ? datos.lugarOSede || 'Sede Claustro'
-          : 'Virtual • Google Meets',
+          : 'Virtual - Google Meets',
       materia: datos.materia || 'Cálculo II',
       estado: 'pendiente',
       esVirtual: datos.modalidad === 'Virtual',
       linkReunion:
-        datos.modalidad === 'Virtual' ? 'https://meet.google.com/abc-tuto-ros' : undefined,
+        datos.modalidad === 'Virtual' ? 'https://meet.google.com/foj-amx-bqp?pli=1&authuser=1' : undefined,
+      estudianteId: sesionEstudiante?.id || 'est-jf',
+      estudianteNombres: sesionEstudiante?.nombres || 'Estudiante',
+      estudianteApellidos: sesionEstudiante?.apellidos || 'Rosarista',
+      estudianteCorreo: sesionEstudiante?.correo || 'estudiante@urosario.edu.co',
+      estudianteCarrera: sesionEstudiante?.carrera || 'Pregrado URosario',
+      detalles: datos.detalles,
+      nombresArchivos: datos.nombresArchivos,
     };
 
     tutoriasEnMemoria = [nuevaTutoria, ...tutoriasEnMemoria];
+    guardarTutoriasPersistidas(tutoriasEnMemoria);
     return nuevaTutoria;
   }
 }

@@ -1,0 +1,200 @@
+/* Estilos para Informacion monitoria Tutor según Image 3 */
+.info-monitoria-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.info-monitoria-main {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Tarjeta estructurada */
+.info-monitoria-card {
+  width: 100%;
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+  margin-bottom: 28px;
+}
+
+.info-monitoria-top-bar {
+  height: 8px;
+  width: 100%;
+  background-color: #7D1128;
+}
+
+.info-monitoria-body {
+  padding: 28px 32px;
+}
+
+/* Header de la tarjeta */
+.info-monitoria-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.info-monitoria-title {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.info-monitoria-subtitle {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 2px;
+}
+
+.info-monitoria-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(60, 9, 25, 0.15);
+  flex-shrink: 0;
+}
+
+.info-monitoria-avatar-initials {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #7D1128;
+  color: var(--Blanco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Caja de Texto de Dudas */
+.info-monitoria-text-box {
+  background-color: #FAF4F3;
+  border: 1px solid #F0E4E3;
+  border-radius: 10px;
+  padding: 20px 22px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  line-height: 1.6;
+  color: #554448;
+  margin-bottom: 14px;
+  white-space: pre-line;
+}
+
+/* Adjuntos */
+.info-monitoria-attachment-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.info-monitoria-attachment-label {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+}
+
+/* Campos de Formulario / Contacto */
+.info-contact-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.info-contact-label {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--Vino-tinto);
+  margin-bottom: 6px;
+}
+
+.info-contact-value-box {
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: #554448;
+}
+
+.info-contact-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+@media (max-width: 600px) {
+  .info-contact-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Botón Volver */
+.info-monitoria-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.info-btn-volver {
+  background-color: var(--Naranja-boton);
+  color: var(--Blanco);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 48px;
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.info-btn-volver:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+
+.info-btn-descargar {
+  background-color: var(--Naranja-boton);
+  color: var(--Blanco);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 24px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.info-btn-descargar:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+

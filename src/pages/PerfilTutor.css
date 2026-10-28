@@ -1,0 +1,335 @@
+/* Estilos para Perfil Tutor según Image 5 */
+.perfil-tutor-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.perfil-tutor-main {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Layout en Dos Columnas */
+.perfil-tutor-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .perfil-tutor-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Columna Izquierda: Tarjeta de Perfil */
+.perfil-card-left {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+}
+
+.perfil-card-top-bar {
+  height: 8px;
+  width: 100%;
+  background-color: #7D1128;
+}
+
+.perfil-card-left-body {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.perfil-avatar-img {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(60, 9, 25, 0.15);
+  flex-shrink: 0;
+}
+
+.perfil-avatar-initials {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background-color: #7D1128;
+  color: var(--Blanco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.perfil-name-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.perfil-tutor-name {
+  font-family: var(--font-family);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  line-height: 1.2;
+}
+
+.perfil-tutor-subtitle {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 2px;
+}
+
+.perfil-bio-text {
+  font-family: var(--font-family);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #554448;
+  margin-bottom: 24px;
+}
+
+.perfil-section-title {
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  margin-bottom: 12px;
+}
+
+/* Acordeón de Cursos */
+.perfil-cursos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.perfil-curso-item {
+  width: 100%;
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--Vino-tinto);
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.perfil-curso-item:hover {
+  background-color: #F5ECEB;
+}
+
+.perfil-curso-chevron {
+  font-size: 12px;
+  color: var(--Rojo-aux);
+  transition: transform 0.2s;
+}
+
+.perfil-curso-chevron.open {
+  transform: rotate(180deg);
+}
+
+.perfil-curso-content {
+  padding: 8px 12px 10px;
+  font-size: 12px;
+  color: #6B5B5E;
+  background-color: #FFFDFD;
+  border-radius: 0 0 8px 8px;
+  margin-top: -6px;
+  border: 1px solid #EADCDD;
+  border-top: none;
+}
+
+/* Fila de Precio y Botón Editar */
+.perfil-precio-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.perfil-precio-box {
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--Vino-tinto);
+  white-space: nowrap;
+}
+
+/* Columna Derecha: Tarjetas de Días y Reseñas */
+.perfil-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.perfil-card-right {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+}
+
+.perfil-card-right-body {
+  padding: 24px 28px;
+}
+
+.perfil-dias-header {
+  margin-bottom: 16px;
+}
+
+.perfil-right-title {
+  font-family: var(--font-family);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.perfil-right-subtitle {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  margin-top: 2px;
+}
+
+/* Fila de Días Disponibles */
+.perfil-dias-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.perfil-dias-boxes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.perfil-dia-box {
+  width: 68px;
+  height: 54px;
+  border: 1.5px solid var(--Vino-tinto);
+  border-radius: 10px;
+  background-color: var(--Blanco);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.perfil-dia-text {
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.perfil-dia-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #2E7D32;
+}
+
+/* Sección de Reseñas */
+.perfil-resenas-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.perfil-stars {
+  font-size: 18px;
+  color: #F5A623;
+  letter-spacing: 2px;
+}
+
+.perfil-review-box {
+  background-color: #FAF4F3;
+  border: 1px solid #F0E4E3;
+  border-radius: 10px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perfil-review-author {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.perfil-review-comment {
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  color: #554448;
+}
+
+/* Botón Naranja EDITAR */
+.perfil-btn-editar {
+  background-color: var(--Naranja-boton);
+  color: var(--Blanco);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 26px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.perfil-btn-editar:hover {
+  background-color: var(--Naranja-boton-hover);
+}
+

@@ -4,6 +4,13 @@ import { Login } from './pages/Login';
 import { ExplorarTutores } from './pages/ExplorarTutores';
 import { TutoriasPendientes } from './pages/TutoriasPendientes';
 import { AgendarTutoria } from './pages/AgendarTutoria';
+import { RegisterStudent } from './pages/RegistroEstudiante';
+import { RegistroTutor } from './pages/RegistroTutor';
+import { VistaTutor } from './pages/VistaTutor';
+import { InformacionMonitoriaTutor } from './pages/InformacionMonitoriaTutor';
+import { PerfilTutor } from './pages/PerfilTutor';
+import { EditarTutor } from './pages/EditarTutor';
+import { EditarHorarioTutor } from './pages/EditarHorarioTutor';
 import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
@@ -109,29 +116,24 @@ export function App() {
           {/* Rutas públicas de autenticación */}
           <Route path="/" element={<LoginWrapper />} />
           <Route path="/login" element={<LoginWrapper />} />
-          <Route
-            path="/registro/estudiante"
-            element={<PlaceholderView titulo="Registro de Estudiante" rolEsperado="Público / Estudiante" />}
-          />
-          <Route
-            path="/registro/tutor"
-            element={<PlaceholderView titulo="Registro de Tutor" rolEsperado="Público / Tutor" />}
-          />
+
+          {/* Módulos de Registro con diseño Split-Card y cápsulas */}
+          <Route path="/registro/estudiante" element={<RegisterStudent />} />
+          <Route path="/registro/tutor" element={<RegistroTutor />} />
 
           {/* Rutas de Estudiante */}
           <Route path="/app/explorar" element={<ExplorarTutores />} />
           <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
           <Route path="/app/agendar" element={<AgendarTutoria />} />
-          <Route
-            path="/app/tutorias"
-            element={<TutoriasPendientes />}
-          />
+          <Route path="/app/tutorias" element={<TutoriasPendientes />} />
 
-          {/* Rutas de Tutor */}
-          <Route
-            path="/tutor/tutorias"
-            element={<PlaceholderView titulo="Tutorías Asignadas" rolEsperado="tutor" />}
-          />
+          {/* Módulo de Tutor según Figma */}
+          <Route path="/tutor" element={<Navigate to="/tutor/tutorias" replace />} />
+          <Route path="/tutor/tutorias" element={<VistaTutor />} />
+          <Route path="/tutor/tutorias/:id" element={<InformacionMonitoriaTutor />} />
+          <Route path="/tutor/perfil" element={<PerfilTutor />} />
+          <Route path="/tutor/perfil/editar" element={<EditarTutor />} />
+          <Route path="/tutor/perfil/horario" element={<EditarHorarioTutor />} />
 
           {/* Rutas de Administrador */}
           <Route
