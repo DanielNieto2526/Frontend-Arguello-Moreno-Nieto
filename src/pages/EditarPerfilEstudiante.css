@@ -1,0 +1,319 @@
+/* Estilos para Pantalla Editar Perfil Estudiante según Figma */
+.edita-perfil-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco, #FFFFFF);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.edita-perfil-main {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 32px 20px 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+/* Título de la pantalla centrado */
+.edita-perfil-title {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--Vino-tinto, #3C0919);
+  margin-top: 0;
+  margin-bottom: 28px;
+  text-align: center;
+  letter-spacing: -0.2px;
+}
+
+/* Tarjeta estructurada con barra superior vino tinto */
+.edita-perfil-card {
+  width: 100%;
+  background-color: var(--Blanco, #FFFFFF);
+  border: 1.5px solid #EADCDD;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.edita-perfil-top-bar {
+  height: 7px;
+  width: 100%;
+  background-color: #7D1128;
+}
+
+.edita-perfil-card-body {
+  padding: 24px 36px 28px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 650px) {
+  .edita-perfil-card-body {
+    padding: 20px 18px;
+  }
+}
+
+/* Cabecera del usuario dentro de la tarjeta */
+.edita-perfil-user-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.edita-perfil-avatar-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7D1128, #3C0919);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(60, 9, 25, 0.18);
+  flex-shrink: 0;
+}
+
+.edita-perfil-user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.edita-perfil-user-name {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  line-height: 1.2;
+}
+
+.edita-perfil-user-subtitle {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-style: italic;
+  color: #7D1128;
+}
+
+/* Fila de 3 campos: Telefono, Correo Institucional, Semestre */
+.edita-perfil-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1.5fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .edita-perfil-fields-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.edita-perfil-field-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edita-perfil-label {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--Vino-tinto, #3C0919);
+}
+
+.edita-perfil-input {
+  width: 100%;
+  height: 42px;
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  color: #554448;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.edita-perfil-input:focus {
+  border-color: #F89B48;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(248, 155, 72, 0.2);
+}
+
+/* Botón naranja EDITAR centrado */
+.edita-perfil-orange-btn-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.edita-perfil-btn-orange {
+  background-color: #F89B48;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  padding: 9px 40px;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(248, 155, 72, 0.35);
+  transition: all 0.2s ease;
+}
+
+.edita-perfil-btn-orange:hover {
+  background-color: #E27B2B;
+  transform: translateY(-1px);
+}
+
+/* Tarjeta 2: Cambio de foto de perfil */
+.edita-perfil-heading {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.edita-perfil-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  max-width: 100%;
+  height: 80px;
+  margin: 0 auto;
+  background-color: #FAF4F3;
+  border: 1px dashed #D4B8BE;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.edita-perfil-dropzone:hover,
+.edita-perfil-dropzone.dragging {
+  border-color: #F89B48;
+  background-color: #FFF6F3;
+}
+
+.edita-perfil-dropzone-text {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 12px;
+  color: #8C787D;
+}
+
+/* Botón inferior Cerrara Sesion */
+.edita-perfil-logout-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+  margin-bottom: 24px;
+}
+
+.edita-perfil-btn-logout {
+  background-color: #D9A2AF;
+  color: #3C0919;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 48px;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(115, 25, 36, 0.12);
+  transition: all 0.2s ease;
+}
+
+.edita-perfil-btn-logout:hover {
+  background-color: #C88294;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+/* Forma orgánica inferior según Figma */
+.edita-perfil-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: min(450px, 45vw);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+/* Modal de confirmación al guardar */
+.confirmar-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(60, 9, 25, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.confirmar-modal-card {
+  background-color: #FFFFFF;
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  padding: 50px 40px;
+  max-width: 540px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(60, 9, 25, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.confirmar-modal-title {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 24px;
+  font-weight: 400;
+  color: #3C0919;
+  margin-bottom: 28px;
+}
+
+.confirmar-modal-btn {
+  background-color: #FCE8ED;
+  border: 1.5px solid #7D1128;
+  border-radius: 999px;
+  color: #3C0919;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 36px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmar-modal-btn:hover {
+  background-color: #F8D7DE;
+  border-color: #3C0919;
+}

@@ -1,0 +1,330 @@
+/* Estilos para Pantalla Ver Perfil Tutor desde Estudiante según Figma */
+.ver-tutor-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco, #FFFFFF);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.ver-tutor-main {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 36px 32px 100px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .ver-tutor-main {
+    padding: 24px 16px 80px;
+  }
+}
+
+.ver-tutor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 36px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .ver-tutor-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* Barra superior vino tinto de las tarjetas */
+.ver-tutor-top-bar {
+  height: 6px;
+  width: 100%;
+  background-color: #7D1128;
+}
+
+/* --- COLUMNA IZQUIERDA: TARJETA DEL TUTOR --- */
+.ver-tutor-card-left {
+  background-color: var(--Blanco, #FFFFFF);
+  border: 1px solid #EADCDD;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+}
+
+.ver-tutor-left-body {
+  padding: 28px 28px 32px;
+}
+
+.ver-tutor-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ver-tutor-avatar-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: #7D1128;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(60, 9, 25, 0.18);
+  flex-shrink: 0;
+}
+
+.ver-tutor-name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ver-tutor-name {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ver-tutor-subtitle {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-style: italic;
+  color: #7D1128;
+}
+
+.ver-tutor-bio {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #554448;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.ver-tutor-section-title {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.ver-tutor-cursos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.ver-tutor-curso-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.ver-tutor-curso-btn {
+  width: 100%;
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13.5px;
+  color: var(--Vino-tinto, #3C0919);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ver-tutor-curso-btn:hover {
+  background-color: #F4EAEB;
+  border-color: #D4B8BE;
+}
+
+.ver-tutor-chevron {
+  font-size: 10px;
+  color: #8C787D;
+  transition: transform 0.2s ease;
+}
+
+.ver-tutor-chevron.open {
+  transform: rotate(180deg);
+}
+
+.ver-tutor-curso-content {
+  background-color: #FFFFFF;
+  border: 1px solid #EADCDD;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 10px 14px;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 12.5px;
+  color: #6B5B5E;
+  line-height: 1.4;
+}
+
+.ver-tutor-agendar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.ver-tutor-btn-agendar {
+  background-color: #F89B48;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 36px;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(248, 155, 72, 0.35);
+  transition: all 0.2s ease;
+}
+
+.ver-tutor-btn-agendar:hover {
+  background-color: #E27B2B;
+  transform: translateY(-1px);
+}
+
+/* --- COLUMNA DERECHA: DÍAS Y RESEÑAS --- */
+.ver-tutor-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ver-tutor-card-right {
+  background-color: var(--Blanco, #FFFFFF);
+  border: 1px solid #EADCDD;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
+}
+
+.ver-tutor-right-body {
+  padding: 24px 28px 28px;
+}
+
+.ver-tutor-dias-header,
+.ver-tutor-resenas-header {
+  margin-bottom: 18px;
+}
+
+.ver-tutor-resenas-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ver-tutor-right-title {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ver-tutor-right-subtitle {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-style: italic;
+  color: #7D1128;
+  margin-top: 3px;
+  margin-bottom: 0;
+}
+
+/* Cajas de días disponibles */
+.ver-tutor-dias-boxes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ver-tutor-dia-box {
+  width: 62px;
+  height: 52px;
+  border: 1px solid #7D1128;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 1px 4px rgba(60, 9, 25, 0.04);
+}
+
+.ver-tutor-dia-text {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+}
+
+.ver-tutor-dia-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #27AE60;
+}
+
+/* Estrellas de reseñas */
+.ver-tutor-stars {
+  color: #F89B48;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* Contenedor de la reseña */
+.ver-tutor-review-box {
+  background-color: #FAF4F3;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.ver-tutor-review-author {
+  display: block;
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--Vino-tinto, #3C0919);
+  margin-bottom: 6px;
+}
+
+.ver-tutor-review-comment {
+  font-family: var(--font-family, Georgia, serif);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #554448;
+  margin: 0;
+}
+
+/* Forma decorativa inferior */
+.ver-tutor-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: min(450px, 45vw);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}

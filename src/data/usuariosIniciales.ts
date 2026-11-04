@@ -10,6 +10,12 @@ export const USUARIOS_INICIALES: Usuario[] = [
     rol: 'estudiante',
     carrera: 'Ingeniería de Sistemas',
     semestre: 6,
+    semestreTexto: '6º semestre Ingeniería de Sistemas - Claustro',
+    telefono: '320 4051954',
+    sede: 'Claustro',
+    cursos: ['Cálculo II', 'Estructuras de Datos', 'Álgebra Lineal'],
+    descripcion:
+      'Estudiante de sexto semestre interesada en profundizar en matemáticas aplicadas, estructuras de datos y desarrollo de software.',
   },
   {
     id: '2',

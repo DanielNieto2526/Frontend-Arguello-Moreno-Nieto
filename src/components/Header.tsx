@@ -61,7 +61,10 @@ export function Header({ usuario, onLogout }: HeaderProps) {
 
   const esTutoriasActivo = location.pathname.startsWith('/tutor/tutorias') || location.pathname === '/tutor';
   const esPerfilActivo = location.pathname.startsWith('/tutor/perfil');
-  const esExplorarActivo = location.pathname === '/app/explorar' || (!esTutor && location.pathname === '/');
+  const esExplorarActivo =
+    location.pathname === '/app/explorar' ||
+    location.pathname.startsWith('/app/tutores') ||
+    (!esTutor && location.pathname === '/');
   const esMisTutoriasEstudianteActivo = location.pathname.startsWith('/app/tutorias');
 
   return (
@@ -154,7 +157,7 @@ export function Header({ usuario, onLogout }: HeaderProps) {
           {/* Menú desplegable */}
           {menuAbierto && (
             <div className="header-user-menu" role="menu">
-              {esTutor && (
+              {esTutor ? (
                 <>
                   <button
                     type="button"
@@ -175,6 +178,29 @@ export function Header({ usuario, onLogout }: HeaderProps) {
                     }}
                   >
                     Mi Perfil
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="header-menu-item"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      navigate('/app/perfil');
+                    }}
+                  >
+                    Mi Perfil
+                  </button>
+                  <button
+                    type="button"
+                    className="header-menu-item"
+                    onClick={() => {
+                      setMenuAbierto(false);
+                      navigate('/app/perfil/editar');
+                    }}
+                  >
+                    Editar Perfil
                   </button>
                 </>
               )}

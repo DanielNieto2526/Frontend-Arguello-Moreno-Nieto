@@ -6,6 +6,8 @@ import { TutoriasPendientes } from './pages/TutoriasPendientes';
 import { AgendarTutoria } from './pages/AgendarTutoria';
 import { RegisterStudent } from './pages/RegistroEstudiante';
 import { RegistroTutor } from './pages/RegistroTutor';
+import { EditarPerfilEstudiante } from './pages/EditarPerfilEstudiante';
+import { VerPerfilTutorDesdeEstudiante } from './pages/VerPerfilTutorDesdeEstudiante';
 import { VistaTutor } from './pages/VistaTutor';
 import { InformacionMonitoriaTutor } from './pages/InformacionMonitoriaTutor';
 import { PerfilTutor } from './pages/PerfilTutor';
@@ -123,9 +125,13 @@ export function App() {
 
           {/* Rutas de Estudiante */}
           <Route path="/app/explorar" element={<ExplorarTutores />} />
+          <Route path="/app/tutores/:tutorId" element={<VerPerfilTutorDesdeEstudiante />} />
+          <Route path="/app/tutores" element={<VerPerfilTutorDesdeEstudiante />} />
           <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
           <Route path="/app/agendar" element={<AgendarTutoria />} />
           <Route path="/app/tutorias" element={<TutoriasPendientes />} />
+          <Route path="/app/perfil" element={<EditarPerfilEstudiante />} />
+          <Route path="/app/perfil/editar" element={<EditarPerfilEstudiante />} />
 
           {/* Módulo de Tutor según Figma */}
           <Route path="/tutor" element={<Navigate to="/tutor/tutorias" replace />} />
