@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './InformacionMonitoriaTutor.css';
 import { Header } from '../components/Header';
 import { Cargando } from '../components/Cargando';
+import { Button } from '../components/Button';
 import { obtenerTutoriaPorId } from '../services/tutoriasService';
 import type { TutoriaAgendada } from '../types/tutoria';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion } from '../utils/auth';
-import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
+import fomaTutor from '../assets/fomaTutor.svg';
 
 export function InformacionMonitoriaTutor() {
   const { id } = useParams<{ id: string }>();
@@ -116,13 +117,13 @@ export function InformacionMonitoriaTutor() {
 
             <div className="info-monitoria-attachment-row">
               <span className="info-monitoria-attachment-label">1 archivo adjunto</span>
-              <button
-                type="button"
-                className="info-btn-descargar"
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={handleDescargar}
               >
                 Descargar
-              </button>
+              </Button>
             </div>
           </div>
         </section>
@@ -172,19 +173,19 @@ export function InformacionMonitoriaTutor() {
 
         {/* Botón Volver */}
         <div className="info-monitoria-actions">
-          <button
-            type="button"
-            className="info-btn-volver"
+          <Button
+            variant="primary"
+            size="md"
             onClick={() => navigate('/tutor/tutorias')}
           >
             Volver
-          </button>
+          </Button>
         </div>
       </main>
 
-      {/* Forma decorativa inferior según Figma */}
+      {/* Forma decorativa inferior según Figma (fomaTutor.svg) */}
       <img
-        src={formaPendientesEstudiantes}
+        src={fomaTutor}
         alt=""
         className="tutor-bottom-shape"
         aria-hidden="true"

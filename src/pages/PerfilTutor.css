@@ -13,7 +13,7 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 40px 24px 100px;
+  padding: 40px 24px 140px;
   position: relative;
   z-index: 1;
 }
@@ -283,20 +283,67 @@
   margin-bottom: 16px;
 }
 
-.perfil-stars {
-  font-size: 18px;
+.perfil-stars-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.perfil-score-text {
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.perfil-stars-icons {
+  display: flex;
+  gap: 3px;
+  font-size: 14px;
+}
+
+.star-filled {
   color: #F5A623;
-  letter-spacing: 2px;
+}
+
+.star-empty {
+  color: #DDD0D2;
+}
+
+.perfil-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .perfil-review-box {
   background-color: #FAF4F3;
   border: 1px solid #F0E4E3;
   border-radius: 10px;
-  padding: 18px 22px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+}
+
+.perfil-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+}
+
+.perfil-review-score {
+  font-family: var(--font-family);
+  font-size: 11px;
+  font-weight: 700;
+  color: #7D1128;
+  background-color: #F8DDE3;
+  padding: 2px 7px;
+  border-radius: 6px;
 }
 
 .perfil-review-author {
@@ -314,22 +361,36 @@
   color: #554448;
 }
 
-/* Botón Naranja EDITAR */
+/* Botón Naranja Editar (Figma: destacado y amplio) */
 .perfil-btn-editar {
   background-color: var(--Naranja-boton);
-  color: var(--Blanco);
+  color: var(--Vino-tinto);
   border: none;
-  border-radius: 8px;
-  padding: 8px 26px;
-  font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: 700;
+  border-radius: 8px !important;
+  padding: 10px 32px !important;
+  font-family: var(--font-family) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
   cursor: pointer;
-  transition: background-color 0.2s;
-  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+  min-width: 120px;
 }
 
 .perfil-btn-editar:hover {
   background-color: var(--Naranja-boton-hover);
+}
+
+/* Forma orgánica inferior de fondo según Figma (fomaTutor.svg) */
+.tutor-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(707px, 100vw);
+  height: 142px;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
 }
 

@@ -176,28 +176,30 @@
 
 .horario-btn-guardar {
   background-color: var(--Naranja-boton);
-  color: var(--Blanco);
+  color: var(--Vino-tinto);
   border: none;
   border-radius: 8px;
   padding: 10px 36px;
   font-family: var(--font-family);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
 }
 
 .horario-btn-guardar:hover {
   background-color: var(--Naranja-boton-hover);
 }
 
-/* Forma decorativa inferior izquierda según Figma */
+/* Forma decorativa inferior según Figma (fomaTutor.svg) */
 .tutor-bottom-shape {
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: min(450px, 45vw);
-  height: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(707px, 100vw);
+  height: 142px;
   pointer-events: none;
   z-index: 0;
   display: block;

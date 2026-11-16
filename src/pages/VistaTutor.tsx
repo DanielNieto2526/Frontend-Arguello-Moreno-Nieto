@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './VistaTutor.css';
 import { Header } from '../components/Header';
 import { Cargando } from '../components/Cargando';
+import { Button } from '../components/Button';
 import {
   obtenerTutoriasPorTutor,
   actualizarLinkReunion,
@@ -11,7 +12,7 @@ import { obtenerMensajeDeError } from '../services/api';
 import type { TutoriaAgendada } from '../types/tutoria';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion } from '../utils/auth';
-import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
+import fomaTutor from '../assets/fomaTutor.svg';
 
 export function VistaTutor() {
   const navigate = useNavigate();
@@ -157,28 +158,30 @@ export function VistaTutor() {
                       </span>
                     </div>
 
-                    {/* Footer de Tarjeta con Materia y Botones */}
+                    {/* Footer de Tarjeta con Materia a la izquierda y Botones a la derecha */}
                     <div className="tutor-card-footer">
                       <span className="tutor-materia-pill">{tutoria.materia}</span>
 
                       <div className="tutor-card-actions">
                         {tutoria.esVirtual && (
-                          <button
-                            type="button"
-                            className="tutor-btn-orange"
+                          <Button
+                            variant="primary"
+                            className="tutor-btn-link"
                             onClick={() => handleAbrirModalLink(tutoria)}
                           >
                             agregar link
-                          </button>
+                          </Button>
                         )}
 
-                        <button
-                          type="button"
-                          className="tutor-btn-orange"
+                        <Button
+                          variant="primary"
+                          className={`tutor-btn-info ${
+                            !tutoria.esVirtual ? 'tutor-btn-info--wide' : ''
+                          }`}
                           onClick={() => navigate(`/tutor/tutorias/${tutoria.id}`)}
                         >
                           Informacion
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -189,9 +192,9 @@ export function VistaTutor() {
         )}
       </main>
 
-      {/* Forma decorativa inferior según Figma */}
+      {/* Forma decorativa inferior según Figma (fomaTutor.svg) */}
       <img
-        src={formaPendientesEstudiantes}
+        src={fomaTutor}
         alt=""
         className="tutor-bottom-shape"
         aria-hidden="true"
@@ -237,15 +240,15 @@ export function VistaTutor() {
               />
             </div>
 
-            <button
-              type="button"
-              className="tutor-btn-orange"
-              style={{ minWidth: '130px', padding: '10px 24px', fontSize: '14px' }}
+            <Button
+              variant="primary"
+              size="md"
+              style={{ minWidth: '130px' }}
               onClick={handleGuardarLink}
               disabled={guardandoLink}
             >
               {guardandoLink ? 'Guardando...' : 'Guardar'}
-            </button>
+            </Button>
           </div>
         </div>
       )}

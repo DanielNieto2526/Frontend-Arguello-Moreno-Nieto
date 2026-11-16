@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './RegistroEstudiante.css';
 import { registrarUsuarioLocal, guardarSesion, validarCorreoURosario } from '../utils/auth';
 import type { Usuario } from '../types/usuario';
+import { Button } from '../components/Button';
 
 interface StudentFormData {
   nombres: string;
@@ -223,9 +224,9 @@ export function RegisterStudent() {
                   />
                   Acepto términos y condiciones
                 </label>
-                <button type="submit" className="submit-btn">
-                  registrarse ▸
-                </button>
+                <Button type="submit" variant="primary" size="lg">
+                  Registrarse ▸
+                </Button>
               </div>
             </form>
           ) : (

@@ -4,7 +4,7 @@ import { solicitar } from './api';
 import { obtenerSesion } from '../utils/auth';
 
 const RUTA = '/tutorias';
-const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v3';
+const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v4';
 
 function cargarTutoriasPersistidas(): TutoriaAgendada[] {
   try {
@@ -56,7 +56,15 @@ export async function obtenerTutorias(): Promise<TutoriaAgendada[]> {
     return await solicitar<TutoriaAgendada[]>(RUTA);
   } catch {
     await new Promise((resolver) => setTimeout(resolver, 300));
-    return [...tutoriasEnMemoria];
+    const sesion = obtenerSesion();
+    const tutoriasEstudiante = tutoriasEnMemoria.filter((t) => {
+      if (t.id.startsWith('tutoria-tutor-')) return false;
+      if (sesion && sesion.rol === 'estudiante') {
+        return t.estudianteId === sesion.id || t.id.startsWith('tutoria-');
+      }
+      return true;
+    });
+    return tutoriasEstudiante.length > 0 ? tutoriasEstudiante : tutoriasEnMemoria.slice(0, 3);
   }
 }
 
@@ -86,18 +94,16 @@ export async function obtenerTutoriasPorTutor(
   } catch {
     await new Promise((resolver) => setTimeout(resolver, 300));
     
-    if (tutorId || tutorNombres) {
-      const normalizar = (s: string) => s.toLowerCase().trim();
-      const filtradas = tutoriasEnMemoria.filter((t) => {
-        if (tutorId && (t.tutorId === tutorId || t.tutorId === '2' || t.tutorId === 'tutor-1')) return true;
-        if (tutorNombres && normalizar(`${t.tutorNombres} ${t.tutorApellidos}`).includes(normalizar(tutorNombres))) return true;
-        return false;
-      });
+    const normalizar = (s: string) => s.toLowerCase().trim();
+    const asignadas = tutoriasEnMemoria.filter((t) => {
+      if (t.id.startsWith('tutoria-tutor-')) return true;
+      if (tutorId && (t.tutorId === tutorId || t.tutorId === '2' || t.tutorId === 'tutor-1')) return true;
+      if (tutorNombres && normalizar(`${t.tutorNombres} ${t.tutorApellidos}`).includes(normalizar(tutorNombres))) return true;
+      return false;
+    });
 
-      if (filtradas.length > 0) return filtradas;
-    }
-
-    return [...tutoriasEnMemoria];
+    if (asignadas.length > 0) return asignadas;
+    return tutoriasEnMemoria.filter((t) => t.id.startsWith('tutoria-tutor-'));
   }
 }
 

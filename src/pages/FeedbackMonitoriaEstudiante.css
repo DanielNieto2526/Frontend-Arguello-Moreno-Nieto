@@ -1,0 +1,291 @@
+/* Estilos para Feedback Monitoria Estudiante según Figma */
+.feedback-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--Blanco);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Forma decorativa superior derecha provista en assets */
+.feedback-top-shape {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(395px, 35vw);
+  height: auto;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
+}
+
+/* Contenedor principal centrado */
+.feedback-main {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 50px 24px 80px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.feedback-title {
+  font-family: var(--font-family);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.feedback-tutor-sub {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--Rojo-aux);
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 36px;
+}
+
+.feedback-loading {
+  font-family: var(--font-family);
+  color: var(--Rojo-aux);
+  font-size: 14px;
+  margin: 40px auto;
+}
+
+/* Formulario en layout de 2 columnas según Figma */
+.feedback-form {
+  width: 100%;
+  max-width: 860px;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .feedback-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+/* Columna izquierda de preguntas */
+.feedback-questions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feedback-question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-question-label {
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  line-height: 1.35;
+}
+
+.feedback-number-input {
+  height: 44px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--Blanco);
+  border: 1.5px solid #8A2035;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: var(--Vino-tinto);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-number-input::placeholder {
+  color: #A69296;
+  font-size: 12.5px;
+  font-family: var(--font-family);
+}
+
+.feedback-number-input:focus {
+  border-color: #590016;
+  box-shadow: 0 0 0 2px rgba(125, 17, 40, 0.15);
+}
+
+/* Columna derecha: comentarios opcionales */
+.feedback-comments-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedback-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 228px;
+  background-color: #FAF4F3;
+  border: 1.5px solid #8A2035;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: #554448;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feedback-textarea::placeholder {
+  color: #A69296;
+  font-size: 13px;
+  font-family: var(--font-family);
+}
+
+.feedback-textarea:focus {
+  border-color: #590016;
+  box-shadow: 0 0 0 2px rgba(125, 17, 40, 0.15);
+}
+
+/* Banner de error de validación */
+.feedback-error-banner {
+  margin-top: 24px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  background-color: #FDF1F2;
+  border: 1px solid #EADCDD;
+  color: var(--Rojo-aux);
+  font-family: var(--font-family);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Botón Enviar según Figma */
+.feedback-submit-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.feedback-submit-btn {
+  background-color: var(--Naranja-boton);
+  color: #FFFFFF;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 42px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(235, 116, 59, 0.3);
+}
+
+.feedback-submit-btn:hover:not(:disabled) {
+  background-color: var(--Naranja-boton-hover);
+  transform: translateY(-1px);
+}
+
+.feedback-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- MODAL CONFIRMACIÓN 'envio feedback' SEGÚN FIGMA --- */
+.feedback-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(60, 9, 25, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.feedback-modal-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 16px;
+  padding: 44px 50px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(60, 9, 25, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.feedback-modal-title {
+  font-family: var(--font-family);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.feedback-modal-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.feedback-modal-btn-menu {
+  background-color: #FDF1F2;
+  border: 1.5px solid var(--Vino-tinto);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feedback-modal-btn-menu:hover {
+  background-color: #F8DDE3;
+}
+
+.feedback-modal-btn-perfil {
+  background-color: transparent;
+  border: none;
+  color: var(--Rojo-aux);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.2s ease;
+}
+
+.feedback-modal-btn-perfil:hover {
+  color: var(--Vino-tinto);
+}

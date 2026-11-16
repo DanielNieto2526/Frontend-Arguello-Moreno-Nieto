@@ -11,9 +11,9 @@
 
 .tutor-main {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 40px 24px 100px;
+  padding: 40px 24px 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,7 +76,7 @@
 }
 
 .tutor-card-content {
-  padding: 24px 20px 20px;
+  padding: 24px 18px 22px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -184,57 +184,110 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .tutor-materia-pill {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
+  justify-content: center;
+  padding: 6px 12px;
   border-radius: 999px;
   background-color: var(--Blanco);
-  border: 1px solid #E2D9D7;
-  color: var(--Rojo-aux);
+  border: 1px solid #C4A2A9;
+  color: var(--Vino-tinto);
   font-family: var(--font-family);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tutor-card-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .tutor-btn-orange {
   background-color: var(--Naranja-boton);
-  color: var(--Blanco);
+  color: var(--Vino-tinto);
   border: none;
   border-radius: 8px;
   padding: 8px 16px;
   font-family: var(--font-family);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
 }
 
 .tutor-btn-orange:hover {
   background-color: var(--Naranja-boton-hover);
 }
 
-/* Forma orgánica inferior de fondo */
+/* Botón agregar link (Figma) */
+.tutor-btn-link {
+  background-color: var(--Naranja-boton) !important;
+  color: var(--Vino-tinto) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 14px !important;
+  font-family: var(--font-family) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+}
+
+.tutor-btn-link:hover {
+  background-color: var(--Naranja-boton-hover) !important;
+}
+
+/* Botón Información en tarjeta compartida */
+.tutor-btn-info {
+  background-color: var(--Naranja-boton) !important;
+  color: var(--Vino-tinto) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 8px 18px !important;
+  font-family: var(--font-family) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+}
+
+.tutor-btn-info:hover {
+  background-color: var(--Naranja-boton-hover) !important;
+}
+
+/* Botón Información en tarjetas 2 y 3: grande, amplio y destacado como en Figma */
+.tutor-btn-info--wide {
+  padding: 10px 36px !important;
+  font-size: 16px !important;
+  min-width: 145px;
+}
+
+/* Forma orgánica inferior de fondo según Figma (fomaTutor.svg) */
 .tutor-bottom-shape {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: min(720px, 92vw);
-  height: auto;
+  width: min(707px, 100vw);
+  height: 142px;
   pointer-events: none;
   z-index: 0;
   display: block;

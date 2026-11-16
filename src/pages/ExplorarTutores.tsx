@@ -19,7 +19,8 @@ export function ExplorarTutores() {
   const [errorDeCarga, setErrorDeCarga] = useState<string | null>(null);
   const [intentoDeCarga, setIntentoDeCarga] = useState(0);
 
-  // Estados de filtros y paginación
+  // Estados de filtros y paginación (6 tutores por pantalla según requerimiento)
+  const TUTORES_POR_PAGINA = 6;
   const [busqueda, setBusqueda] = useState('');
   const [sede, setSede] = useState('Todas');
   const [modalidad, setModalidad] = useState('Todas');
@@ -68,6 +69,14 @@ export function ExplorarTutores() {
     });
   }, [tutores, busqueda, sede, modalidad]);
 
+  // Cálculo de páginas y división de 6 tutores por página
+  const totalPaginas = Math.ceil(tutoresFiltrados.length / TUTORES_POR_PAGINA) || 1;
+
+  const tutoresPaginados = useMemo(() => {
+    const inicio = (pagina - 1) * TUTORES_POR_PAGINA;
+    return tutoresFiltrados.slice(inicio, inicio + TUTORES_POR_PAGINA);
+  }, [tutoresFiltrados, pagina]);
+
   const handleAgendar = (tutorId: string) => {
     navigate(`/app/agendar/${tutorId}`);
   };
@@ -106,12 +115,18 @@ export function ExplorarTutores() {
               placeholder="Busca por materia (Calculo)"
               className="filter-search-input"
               value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
+              onChange={(e) => {
+                setBusqueda(e.target.value);
+                setPagina(1);
+              }}
             />
             {busqueda && (
               <button
                 type="button"
-                onClick={() => setBusqueda('')}
+                onClick={() => {
+                  setBusqueda('');
+                  setPagina(1);
+                }}
                 className="filter-clear-btn"
                 aria-label="Limpiar búsqueda"
               >
@@ -125,7 +140,10 @@ export function ExplorarTutores() {
             <select
               className="filter-select"
               value={sede}
-              onChange={(e) => setSede(e.target.value)}
+              onChange={(e) => {
+                setSede(e.target.value);
+                setPagina(1);
+              }}
               aria-label="Seleccionar sede"
             >
               <option value="Todas">Sede: Todas</option>
@@ -141,7 +159,10 @@ export function ExplorarTutores() {
             <select
               className="filter-select"
               value={modalidad}
-              onChange={(e) => setModalidad(e.target.value)}
+              onChange={(e) => {
+                setModalidad(e.target.value);
+                setPagina(1);
+              }}
               aria-label="Seleccionar modalidad"
             >
               <option value="Todas">Modalidad: Todas</option>
@@ -186,7 +207,7 @@ export function ExplorarTutores() {
           </div>
         )}
 
-        {/* Listado de Tutores */}
+        {/* Listado de Tutores (6 por página) */}
         {!cargando && !errorDeCarga && (
           <section className="tutores-grid" aria-label="Tutores disponibles">
             {tutoresFiltrados.length === 0 ? (
@@ -194,7 +215,7 @@ export function ExplorarTutores() {
                 No se encontraron tutores con los criterios seleccionados.
               </p>
             ) : (
-              tutoresFiltrados.map((tutor: Tutor) => (
+              tutoresPaginados.map((tutor: Tutor) => (
                 <article key={tutor.id} className="tutor-card">
                   {/* Barra superior vino tinto */}
                   <div className="tutor-card-top-bar" aria-hidden="true" />
@@ -226,7 +247,6 @@ export function ExplorarTutores() {
                   {/* Precio */}
                   <div className="tutor-price-tag">{tutor.precioFormato}</div>
 
-                  {}
                   <footer className="tutor-card-footer">
                     <div className="tutor-badges-group">
                       <span className="tutor-subject-badge">{tutor.materiaPrincipal}</span>
@@ -249,36 +269,46 @@ export function ExplorarTutores() {
           </section>
         )}
 
-        {/* Paginación */}
-        {!cargando && !errorDeCarga && tutoresFiltrados.length > 0 && (
+        {/* Paginación dinámica según total de páginas */}
+        {!cargando && !errorDeCarga && tutoresFiltrados.length > 0 && totalPaginas > 1 && (
           <nav className="explorar-pagination" aria-label="Paginación de resultados">
             <button
               type="button"
               className="pagination-btn"
               disabled={pagina === 1}
-              onClick={() => setPagina((p) => Math.max(1, p - 1))}
+              onClick={() => {
+                setPagina((p) => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               aria-label="Página anterior"
             >
               ‹
             </button>
-            <button
-              type="button"
-              className={`pagination-btn ${pagina === 1 ? 'active' : ''}`}
-              onClick={() => setPagina(1)}
-            >
-              1
-            </button>
-            <button
-              type="button"
-              className={`pagination-btn ${pagina === 2 ? 'active' : ''}`}
-              onClick={() => setPagina(2)}
-            >
-              2
-            </button>
+
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((numPagina) => (
+              <button
+                key={numPagina}
+                type="button"
+                className={`pagination-btn ${pagina === numPagina ? 'active' : ''}`}
+                onClick={() => {
+                  setPagina(numPagina);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                aria-label={`Página ${numPagina}`}
+                aria-current={pagina === numPagina ? 'page' : undefined}
+              >
+                {numPagina}
+              </button>
+            ))}
+
             <button
               type="button"
               className="pagination-btn"
-              onClick={() => setPagina((p) => p + 1)}
+              disabled={pagina === totalPaginas}
+              onClick={() => {
+                setPagina((p) => Math.min(totalPaginas, p + 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               aria-label="Página siguiente"
             >
               ›

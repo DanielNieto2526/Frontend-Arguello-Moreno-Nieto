@@ -1,44 +1,97 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import './VerPerfilTutorDesdeEstudiante.css';
 import { Header } from '../components/Header';
-import type { Tutor } from '../types/tutor';
 import type { Usuario } from '../types/usuario';
-import { obtenerTutorPorId } from '../services/tutoresService';
+import { obtenerSesion, obtenerListaUsuarios } from '../utils/auth';
+import { USUARIOS_INICIALES } from '../data/usuariosIniciales';
 import { TUTORES_INICIALES } from '../data/tutoresIniciales';
-import { obtenerSesion } from '../utils/auth';
-import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
+import { obtenerResenasPorTutor, calcularPromedioTutor } from '../services/resenasService';
+import fomaVerPerilTutor from '../assets/fomaVerPerilTutor.svg';
 
 export function VerPerfilTutorDesdeEstudiante() {
   const { tutorId } = useParams<{ tutorId: string }>();
-  const navigate = useNavigate();
 
-  // Usuario estudiante actualmente con sesión
-  const [usuarioEstudiante] = useState<Usuario | null>(() => obtenerSesion());
-
-  // Estado del tutor visualizado (por defecto Juan Céspedes / tutor-2 si no se halla)
-  const [tutor, setTutor] = useState<Tutor>(() => {
-    return TUTORES_INICIALES.find((t) => t.id === 'tutor-2') || TUTORES_INICIALES[0];
+  // Usuario estudiante actualmente con sesión (Juan Filip Coral por defecto si no hay sesión)
+  const [usuarioEstudiante] = useState<Usuario | null>(() => {
+    const sesion = obtenerSesion();
+    if (sesion && sesion.rol === 'estudiante') {
+      return sesion;
+    }
+    return {
+      id: '1',
+      nombres: 'Juan Filip',
+      apellidos: 'Coral',
+      correo: 'jcoral@urosario.edu.co',
+      rol: 'estudiante',
+      carrera: 'Ing. de Sistemas energeticos',
+      semestre: 6,
+      semestreTexto: '6º semestre ISE',
+    };
   });
 
-  const [cursoAbierto, setCursoAbierto] = useState<string | null>(null);
+  // Información del tutor visualizado (Daniel Nieto por defecto o el indicado en la URL)
+  const tutor = useMemo<Usuario>(() => {
+    const listaUsuarios = obtenerListaUsuarios();
+    const tutorEncontrado = listaUsuarios.find(
+      (u) =>
+        u.rol === 'tutor' &&
+        (tutorId
+          ? u.id === tutorId ||
+            (u.nombres + ' ' + u.apellidos).toLowerCase().includes(tutorId.toLowerCase())
+          : u.id === '2' ||
+            u.correo.toLowerCase() === 'dnieto@urosario.edu.co' ||
+            u.nombres.toLowerCase().includes('daniel'))
+    );
+    if (tutorEncontrado) return tutorEncontrado;
 
-  useEffect(() => {
-    if (tutorId) {
-      obtenerTutorPorId(tutorId)
-        .then((t) => {
-          if (t) setTutor(t);
-        })
-        .catch(() => {
-          // Si no se encuentra en API/persistido, buscar en iniciales o usar Juan Céspedes
-          const encontrado =
-            TUTORES_INICIALES.find((t) => t.id === tutorId) ||
-            TUTORES_INICIALES.find((t) => t.id === 'tutor-2') ||
-            TUTORES_INICIALES[0];
-          setTutor(encontrado);
-        });
+    const tutorInicial = TUTORES_INICIALES.find(
+      (t) =>
+        t.id === tutorId ||
+        (tutorId &&
+          (t.nombres + ' ' + t.apellidos).toLowerCase().includes(tutorId.toLowerCase()))
+    );
+    if (tutorInicial) {
+      return {
+        id: tutorInicial.id,
+        nombres: tutorInicial.nombres,
+        apellidos: tutorInicial.apellidos,
+        correo: `${tutorInicial.nombres.toLowerCase()}.${tutorInicial.apellidos.toLowerCase()}@urosario.edu.co`,
+        rol: 'tutor',
+        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
+        semestre: 6,
+        semestreTexto: tutorInicial.semestreTexto,
+        cursos: tutorInicial.cursos,
+        sede: tutorInicial.sede,
+        modalidad: tutorInicial.modalidad,
+        precioHora: tutorInicial.precioHora,
+        descripcion: tutorInicial.descripcion,
+        diasDisponibles: ['LU', 'MA', 'MI', 'JU'],
+      };
     }
+
+    return (
+      USUARIOS_INICIALES.find((u) => u.id === '2') || {
+        id: '2',
+        nombres: 'Daniel',
+        apellidos: 'Nieto',
+        correo: 'dnieto@urosario.edu.co',
+        rol: 'tutor',
+        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
+        semestre: 6,
+        semestreTexto: '6º semestre MACC - Claustro',
+        cursos: ['Calculo II', 'Algebra Lineal', 'Analisis Real'],
+        sede: 'Claustro',
+        modalidad: 'Híbrida',
+        precioHora: 20000,
+        descripcion:
+          'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
+        diasDisponibles: ['LU', 'MA', 'MI', 'JU'],
+      }
+    );
   }, [tutorId]);
+
+  const [cursoAbierto, setCursoAbierto] = useState<string | null>(null);
 
   const toggleCurso = (curso: string) => {
     setCursoAbierto((prev) => (prev === curso ? null : curso));
@@ -49,7 +102,24 @@ export function VerPerfilTutorDesdeEstudiante() {
       ? tutor.cursos
       : ['Calculo II', 'Algebra Lineal', 'Analisis Real'];
 
-  const diasDisponibles = ['LU', 'MA', 'MI', 'JU'];
+  const diasDisponibles =
+    tutor.diasDisponibles && tutor.diasDisponibles.length > 0
+      ? tutor.diasDisponibles
+      : ['LU', 'MA', 'MI', 'JU'];
+
+  const iniciales =
+    tutor.nombres && tutor.apellidos
+      ? `${tutor.nombres.charAt(0)}${tutor.apellidos.charAt(0)}`.toUpperCase()
+      : 'DN';
+
+  // Reseñas y promedio dinámico según requerimiento
+  const resenas = useMemo(() => {
+    return obtenerResenasPorTutor(tutor.id, `${tutor.nombres} ${tutor.apellidos}`);
+  }, [tutor.id, tutor.nombres, tutor.apellidos]);
+
+  const { promedio, estrellas } = useMemo(() => {
+    return calcularPromedioTutor(tutor.id, `${tutor.nombres} ${tutor.apellidos}`);
+  }, [tutor.id, tutor.nombres, tutor.apellidos]);
 
   return (
     <div className="ver-tutor-page">
@@ -65,7 +135,7 @@ export function VerPerfilTutorDesdeEstudiante() {
               {/* Avatar e información principal */}
               <div className="ver-tutor-avatar-row">
                 <div className="ver-tutor-avatar-circle" aria-hidden="true">
-                  {tutor.iniciales || 'JC'}
+                  {iniciales}
                 </div>
 
                 <div className="ver-tutor-name-block">
@@ -78,14 +148,14 @@ export function VerPerfilTutorDesdeEstudiante() {
                 </div>
               </div>
 
-              {/* Biografía / Descripción */}
+              {/* Biografía / Descripción del tutor */}
               <p className="ver-tutor-bio">
                 {tutor.descripcion ||
                   'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.'}
               </p>
 
-              {/* Sección de cursos que asesora */}
-              <h2 className="ver-tutor-section-title">Cursos que asesora:</h2>
+              {/* Sección de cursos que asesoro */}
+              <h2 className="ver-tutor-section-title">Cursos que asesoro:</h2>
 
               <div className="ver-tutor-cursos-list">
                 {cursos.map((curso) => {
@@ -113,17 +183,6 @@ export function VerPerfilTutorDesdeEstudiante() {
                   );
                 })}
               </div>
-
-              {/* Botón opcional para agendar directamente con este tutor */}
-              <div className="ver-tutor-agendar-wrap">
-                <button
-                  type="button"
-                  className="ver-tutor-btn-agendar"
-                  onClick={() => navigate(`/app/agendar/${tutor.id}`)}
-                >
-                  Agendar Tutoría
-                </button>
-              </div>
             </div>
           </section>
 
@@ -150,7 +209,7 @@ export function VerPerfilTutorDesdeEstudiante() {
               </div>
             </section>
 
-            {/* Tarjeta Reseñas */}
+            {/* Tarjeta Reseñas con Promedio de Estrellas y Comentarios adicionales según Figma */}
             <section className="ver-tutor-card-right" aria-label="Reseñas de estudiantes">
               <div className="ver-tutor-top-bar" />
 
@@ -161,19 +220,50 @@ export function VerPerfilTutorDesdeEstudiante() {
                     <p className="ver-tutor-right-subtitle">Que piensan los demás</p>
                   </div>
 
-                  <div className="ver-tutor-stars" aria-label="Calificación 3 estrellas">
-                    ★ ★ ★
+                  <div
+                    className="ver-tutor-rating-badge"
+                    aria-label={`Calificación promedio: ${promedio.toFixed(1)} estrellas`}
+                  >
+                    <div className="ver-tutor-score-row">
+                      <span className="ver-tutor-score-text">{promedio.toFixed(1)}</span>
+                      <span className="ver-tutor-big-star">★</span>
+                    </div>
+                    <div className="ver-tutor-small-stars">
+                      {[1, 2, 3].map((starIdx) => (
+                        <span
+                          key={starIdx}
+                          className={starIdx <= estrellas ? 'star-filled' : 'star-empty'}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="ver-tutor-review-box">
-                  <span className="ver-tutor-review-author">Mariana Fuentes:</span>
-                  <p className="ver-tutor-review-comment">
-                    "Daniel explica con mucha paciencia. Tenía un bloqueo total con cambio de
-                    coordenadas polares y en solo hora y media logré resolver los ejercicios del
-                    taller que caían fijo en el examen. Saqué 4.6 en el parcial. Súper
-                    recomendado."
-                  </p>
+                {/* Lista de reseñas con comentarios adicionales enviados por los estudiantes */}
+                <div className="ver-tutor-reviews-list">
+                  {resenas.length === 0 ? (
+                    <div className="ver-tutor-review-box">
+                      <p className="ver-tutor-review-comment" style={{ color: '#8A7B7E' }}>
+                        Este tutor aún no cuenta con reseñas registradas.
+                      </p>
+                    </div>
+                  ) : (
+                    resenas.map((res) => (
+                      <div key={res.id} className="ver-tutor-review-box">
+                        <div className="ver-tutor-review-header">
+                          <span className="ver-tutor-review-author">{res.autor}:</span>
+                          <span className="ver-tutor-review-stars-pill">
+                            ★ {res.calificacion.toFixed(1)}
+                          </span>
+                        </div>
+                        <p className="ver-tutor-review-comment">
+                          "{res.comentario}"
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </section>
@@ -181,9 +271,9 @@ export function VerPerfilTutorDesdeEstudiante() {
         </div>
       </main>
 
-      {/* Forma decorativa inferior según Figma */}
+      {/* Forma decorativa inferior derecha según Figma (fomaVerPerilTutor.svg) */}
       <img
-        src={formaPendientesEstudiantes}
+        src={fomaVerPerilTutor}
         alt=""
         className="ver-tutor-bottom-shape"
         aria-hidden="true"

@@ -166,15 +166,16 @@
 
 .info-btn-volver {
   background-color: var(--Naranja-boton);
-  color: var(--Blanco);
+  color: var(--Vino-tinto);
   border: none;
   border-radius: 8px;
   padding: 10px 48px;
   font-family: var(--font-family);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
 }
 
 .info-btn-volver:hover {
@@ -183,18 +184,32 @@
 
 .info-btn-descargar {
   background-color: var(--Naranja-boton);
-  color: var(--Blanco);
+  color: var(--Vino-tinto);
   border: none;
   border-radius: 8px;
   padding: 8px 24px;
   font-family: var(--font-family);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
 }
 
 .info-btn-descargar:hover {
   background-color: var(--Naranja-boton-hover);
+}
+
+/* Forma decorativa inferior según Figma (fomaTutor.svg) */
+.tutor-bottom-shape {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(707px, 100vw);
+  height: 142px;
+  pointer-events: none;
+  z-index: 0;
+  display: block;
 }
 

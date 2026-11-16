@@ -1,12 +1,12 @@
-/* Reseteo y contenedor principal */
+/* Reseteo y contenedor principal de Registro Estudiante */
 .register-body {
-  font-family: Georgia, serif;
-  background-color: #ffffff; /* Fondo Blanco Puro */
+  font-family: var(--font-family);
+  background-color: var(--Blanco);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px 20px;
+  padding: 40px 20px;
   box-sizing: border-box;
   position: relative;
 }
@@ -15,21 +15,21 @@
 .register-card-container {
   display: flex;
   width: 100%;
-  max-width: 850px;
-  background-color: #ffffff;
+  max-width: 900px;
+  background-color: var(--Blanco);
   border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(115, 25, 36, 0.12);
+  box-shadow: 0 16px 40px rgba(60, 9, 25, 0.12);
   position: relative;
-  border: 1px solid #EAEAEA;
+  border: 1.5px solid #EADCDD;
 }
 
-/* --- Panel Izquierdo Rojo (Vino Tinto) --- */
+/* --- Panel Izquierdo Vino Oscuro Institucional --- */
 .left-panel {
-  width: 40%;
-  background-color: #731924; /* Rojo Vino Tinto del UI Kit */
-  color: #ffffff;
-  padding: 40px 30px;
+  width: 38%;
+  background-color: var(--Vino-oscuro, #590016);
+  color: var(--Blanco);
+  padding: 48px 36px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -37,111 +37,171 @@
 }
 
 .left-panel-title {
+  font-family: var(--font-family);
   font-size: 32px;
-  font-weight: normal;
-  letter-spacing: 1px;
-  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
   margin: 0;
-  color: #ffffff;
+  color: var(--Blanco);
 }
 
 .left-panel-subtitle {
+  font-family: var(--font-family);
   font-size: 14px;
-  color: #F7B5C6; /* Rosa Claro del UI Kit */
-  margin-top: 15px;
-  line-height: 1.5;
+  color: #F8ECE9;
+  margin-top: 18px;
+  line-height: 1.6;
 }
 
 .logo-text {
+  font-family: var(--font-family);
   font-size: 16px;
-  font-weight: bold;
-  color: #F89B48; /* Naranja Warm del UI Kit */
+  font-weight: 700;
+  color: var(--Naranja);
+  letter-spacing: 1px;
 }
 
-/* --- Botón Circular Flotante --- */
+/* --- Botón Circular Flotante Central --- */
 .circle-divider {
   position: absolute;
-  left: 40%;
+  left: 38%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 46px;
-  height: 46px;
-  background-color: #F7B5C6; /* Rosa Claro UI Kit */
-  color: #731924; /* Rojo Vino Tinto UI Kit */
+  width: 44px;
+  height: 44px;
+  background-color: var(--Rosa-badge, #FCE8ED);
+  color: var(--Vino-oscuro, #590016);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  font-size: 18px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(60, 9, 25, 0.18);
+  border: 2px solid var(--Blanco);
   z-index: 10;
 }
 
-/* --- Panel Derecho --- */
+/* --- Panel Derecho del Formulario --- */
 .right-panel {
-  width: 60%;
-  padding: 35px 40px;
-  background-color: #ffffff;
+  width: 62%;
+  padding: 44px 48px;
+  background-color: var(--Blanco);
   box-sizing: border-box;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 /* Pestañas (Tabs) */
 .tabs-container {
   display: flex;
   justify-content: flex-end;
-  gap: 30px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #EAEAEA;
+  gap: 32px;
+  margin-bottom: 28px;
+  border-bottom: 1.5px solid #EADCDD;
 }
 
 .tab-btn {
   background: none;
   border: none;
-  padding-bottom: 8px;
-  font-family: inherit;
-  font-size: 16px;
-  color: #731924; /* Rojo Vino Tinto UI Kit */
+  padding-bottom: 10px;
+  font-family: var(--font-family);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--Vino-tinto);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .tab-btn.active {
-  color: #F89B48; /* Naranja Warm UI Kit */
-  font-weight: bold;
-  border-bottom: 3px solid #F89B48;
+  color: var(--Naranja-boton);
+  font-weight: 700;
+  border-bottom: 3px solid var(--Naranja-boton);
 }
 
 /* Campos de entrada tipo Píldora/Cápsula */
 .input-capsule {
   display: flex;
   align-items: center;
-  border: 1.5px solid #731924; /* Rojo Vino Tinto UI Kit */
-  border-radius: 50px;
-  padding: 6px 16px;
-  margin-bottom: 14px;
-  background-color: #ffffff;
+  border: 1.5px solid var(--Vino-tinto);
+  border-radius: 999px;
+  padding: 0 20px;
+  height: 48px;
+  margin-bottom: 20px;
+  background-color: var(--Blanco);
   box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.input-capsule:focus-within {
+  border-color: var(--Naranja);
+  box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
 }
 
 .capsule-label {
-  font-size: 13px;
-  color: #731924; /* Rojo Vino Tinto UI Kit */
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: var(--Vino-tinto);
   white-space: nowrap;
-  margin-right: 8px;
-  font-weight: 600;
+  margin-right: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  flex-shrink: 0;
 }
 
 .capsule-field {
   border: none;
   outline: none;
   width: 100%;
-  font-family: inherit;
-  font-size: 14px;
-  color: #2A0E18; /* Vino Oscuro UI Kit */
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 13.5px;
+  color: var(--Vino-tinto);
   background: transparent;
+  box-sizing: border-box;
+}
+
+.capsule-field::placeholder {
+  color: #8C787D;
+  font-family: var(--font-family);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Selector estilizado (Semestre) integrado en la cápsula */
+select.capsule-field {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  padding-right: 28px;
+  font-family: var(--font-family) !important;
+  font-size: 13.5px !important;
+  color: var(--Vino-tinto) !important;
+  font-weight: 600;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75L6 6.25L10.5 1.75' stroke='%233C0919' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: calc(100% - 2px) center !important;
+  background-size: 11px 7px !important;
+}
+
+select.capsule-field::-ms-expand {
+  display: none;
+}
+
+/* Opciones del selector desplegable */
+select.capsule-field option {
+  background-color: var(--Blanco);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 14px;
+  padding: 10px;
 }
 
 /* Pie del Formulario */
@@ -149,35 +209,45 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 28px;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 16px;
 }
 
 .terms-label {
-  font-size: 12px;
-  color: #731924; /* Rojo Vino Tinto UI Kit */
+  font-family: var(--font-family);
+  font-size: 12.5px;
+  color: var(--Vino-tinto);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.terms-label input[type="checkbox"] {
+  accent-color: var(--Vino-oscuro, #590016);
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
 .submit-btn {
-  background-color: #F89B48; /* Naranja Warm UI Kit */
-  color: #ffffff;
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
   border: none;
-  padding: 10px 24px;
-  border-radius: 50px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: bold;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 14.5px;
+  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
+  transition: all 0.2s ease;
 }
 
 .submit-btn:hover {
-  opacity: 0.9;
+  background-color: var(--Naranja-boton-hover);
 }
 
 .submit-btn:disabled {
@@ -187,32 +257,43 @@
 
 .register-error-msg {
   color: #D32F2F;
+  font-family: var(--font-family);
   font-size: 13px;
-  margin-bottom: 14px;
-  padding: 8px 12px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
   background-color: #FDEDED;
   border-radius: 8px;
+  border: 1px solid #FFCDD2;
 }
 
 .login-placeholder {
   padding: 40px 0;
   text-align: center;
-  color: #731924;
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
 }
 
 /* Responsive */
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .register-card-container {
     flex-direction: column;
+    max-width: 520px;
   }
-  
-  .left-panel, 
+
+  .left-panel,
   .right-panel {
     width: 100%;
+  }
+
+  .left-panel {
+    padding: 36px 28px;
+  }
+
+  .right-panel {
+    padding: 32px 24px;
   }
 
   .circle-divider {
     display: none;
   }
 }
-

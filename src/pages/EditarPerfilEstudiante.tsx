@@ -3,6 +3,7 @@ import type { ChangeEvent, DragEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EditarPerfilEstudiante.css';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion, guardarSesion, cerrarSesion } from '../utils/auth';
 import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
@@ -157,15 +158,15 @@ export function EditarPerfilEstudiante() {
               </div>
             </div>
 
-            {/* Botón naranja EDITAR centrado */}
+            {/* Botón naranja Editar centrado */}
             <div className="edita-perfil-orange-btn-wrap">
-              <button
-                type="button"
-                className="edita-perfil-btn-orange"
+              <Button
+                variant="primary"
+                size="md"
                 onClick={handleGuardar}
               >
-                EDITAR
-              </button>
+                Editar
+              </Button>
             </div>
           </div>
         </section>
@@ -219,13 +220,13 @@ export function EditarPerfilEstudiante() {
         <div className="confirmar-modal-backdrop" role="dialog" aria-modal="true">
           <div className="confirmar-modal-card">
             <h2 className="confirmar-modal-title">Sus cambios se han guardado</h2>
-            <button
-              type="button"
-              className="confirmar-modal-btn"
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => setModalConfirmacion(false)}
             >
-              volver al perfil
-            </button>
+              Volver al perfil
+            </Button>
           </div>
         </div>
       )}

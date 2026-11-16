@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './RegistroTutor.css';
 import { registrarNuevoTutor } from '../services/tutoresService';
 import { guardarSesion, validarCorreoURosario } from '../utils/auth';
+import { Button } from '../components/Button';
 
 interface TutorFormData {
   nombres: string;
@@ -317,13 +318,14 @@ export function RegistroTutor() {
                   Acepto términos y condiciones
                 </label>
 
-                <button
+                <Button
                   type="submit"
-                  className="register-tutor-submit-btn"
+                  variant="primary"
+                  size="lg"
                   disabled={guardando}
                 >
-                  {guardando ? 'registrando...' : 'registrarse como tutor ▸'}
-                </button>
+                  {guardando ? 'Registrando...' : 'Registrarse como tutor ▸'}
+                </Button>
               </div>
             </form>
           ) : (

@@ -165,22 +165,21 @@
 }
 
 .edita-perfil-btn-orange {
-  background-color: #F89B48;
-  color: #FFFFFF;
+  background-color: var(--Naranja-boton);
+  color: var(--Vino-tinto);
   border: none;
-  border-radius: 9999px;
-  padding: 9px 40px;
-  font-family: var(--font-family, Georgia, serif);
-  font-size: 13px;
+  border-radius: 8px;
+  padding: 8px 26px;
+  font-family: var(--font-family);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.5px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(248, 155, 72, 0.35);
+  box-shadow: 0 1px 3px rgba(246, 142, 95, 0.3);
   transition: all 0.2s ease;
 }
 
 .edita-perfil-btn-orange:hover {
-  background-color: #E27B2B;
+  background-color: var(--Naranja-boton-hover);
   transform: translateY(-1px);
 }
 

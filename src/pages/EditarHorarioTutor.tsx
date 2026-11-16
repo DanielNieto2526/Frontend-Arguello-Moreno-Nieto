@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EditarHorarioTutor.css';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
-import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
+import fomaTutor from '../assets/fomaTutor.svg';
 
 interface DiaConfig {
   clave: string;
@@ -134,21 +135,21 @@ export function EditarHorarioTutor() {
             </div>
 
             <div className="horario-footer-actions">
-              <button
-                type="button"
-                className="horario-btn-guardar"
+              <Button
+                variant="primary"
+                size="md"
                 onClick={handleGuardar}
               >
                 Guardar
-              </button>
+              </Button>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Forma decorativa inferior según Figma */}
+      {/* Forma decorativa inferior según Figma (fomaTutor.svg) */}
       <img
-        src={formaPendientesEstudiantes}
+        src={fomaTutor}
         alt=""
         className="tutor-bottom-shape"
         aria-hidden="true"
@@ -166,13 +167,13 @@ export function EditarHorarioTutor() {
               Sus cambios se han guardado
             </h2>
 
-            <button
-              type="button"
-              className="confirmar-modal-btn"
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => navigate('/tutor/perfil')}
             >
-              volver al perfil
-            </button>
+              Volver al perfil
+            </Button>
           </div>
         </div>
       )}

@@ -8,11 +8,13 @@ import { RegisterStudent } from './pages/RegistroEstudiante';
 import { RegistroTutor } from './pages/RegistroTutor';
 import { EditarPerfilEstudiante } from './pages/EditarPerfilEstudiante';
 import { VerPerfilTutorDesdeEstudiante } from './pages/VerPerfilTutorDesdeEstudiante';
+import { FeedbackMonitoriaEstudiante } from './pages/FeedbackMonitoriaEstudiante';
 import { VistaTutor } from './pages/VistaTutor';
 import { InformacionMonitoriaTutor } from './pages/InformacionMonitoriaTutor';
 import { PerfilTutor } from './pages/PerfilTutor';
 import { EditarTutor } from './pages/EditarTutor';
 import { EditarHorarioTutor } from './pages/EditarHorarioTutor';
+import { Button } from './components/Button';
 import type { Usuario } from './types/usuario';
 import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
@@ -74,33 +76,19 @@ function PlaceholderView({ titulo, rolEsperado }: { titulo: string; rolEsperado:
         </div>
       )}
       <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-        <button
-          type="button"
+        <Button
+          variant="primary"
           onClick={() => navigate('/login')}
-          style={{
-            padding: '10px 20px',
-            background: 'var(--Naranja-boton)',
-            color: 'var(--Vino-tinto)',
-            borderRadius: '8px',
-            cursor: 'pointer',
-          }}
         >
           Volver al Login
-        </button>
+        </Button>
         {usuario && (
-          <button
-            type="button"
+          <Button
+            variant="cancel"
             onClick={handleCerrarSesion}
-            style={{
-              padding: '10px 20px',
-              background: 'var(--Vino-tinto)',
-              color: 'var(--Blanco)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-            }}
           >
             Cerrar Sesión
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -130,6 +118,9 @@ export function App() {
           <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
           <Route path="/app/agendar" element={<AgendarTutoria />} />
           <Route path="/app/tutorias" element={<TutoriasPendientes />} />
+          <Route path="/app/tutorias/:tutoriaId/feedback" element={<FeedbackMonitoriaEstudiante />} />
+          <Route path="/app/feedback/:tutoriaId" element={<FeedbackMonitoriaEstudiante />} />
+          <Route path="/app/feedback" element={<FeedbackMonitoriaEstudiante />} />
           <Route path="/app/perfil" element={<EditarPerfilEstudiante />} />
           <Route path="/app/perfil/editar" element={<EditarPerfilEstudiante />} />
 

@@ -3,9 +3,10 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EditarTutor.css';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
-import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
+import fomaTutor from '../assets/fomaTutor.svg';
 
 export function EditarTutor() {
   const navigate = useNavigate();
@@ -132,24 +133,25 @@ export function EditarTutor() {
 
           {/* Botones Guardar y Volver */}
           <div className="editar-actions">
-            <button type="submit" className="editar-btn-guardar">
+            <Button type="submit" variant="primary" size="md">
               Guardar
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
-              className="editar-btn-volver"
+              variant="outline"
+              size="md"
               onClick={() => navigate('/tutor/perfil')}
             >
               Cancelar y volver a mi perfil
-            </button>
+            </Button>
           </div>
         </form>
       </main>
 
-      {/* Forma decorativa inferior según Figma */}
+      {/* Forma decorativa inferior según Figma (fomaTutor.svg) */}
       <img
-        src={formaPendientesEstudiantes}
+        src={fomaTutor}
         alt=""
         className="tutor-bottom-shape"
         aria-hidden="true"
@@ -167,13 +169,13 @@ export function EditarTutor() {
               Sus cambios se han guardado
             </h2>
 
-            <button
-              type="button"
-              className="confirmar-modal-btn"
+            <Button
+              variant="primary"
+              size="md"
               onClick={() => navigate('/tutor/perfil')}
             >
-              volver al perfil
-            </button>
+              Volver al perfil
+            </Button>
           </div>
         </div>
       )}

@@ -116,8 +116,12 @@ export function TutoriasPendientes() {
                   {/* Barra superior vino tinto */}
                   <div className="tutoria-card-top-bar" aria-hidden="true" />
 
-                  {/* Encabezado: Avatar + Nombre y semestre */}
-                  <header className="tutoria-card-header">
+                  {/* Encabezado: Avatar + Nombre y semestre (Clickable para ir al perfil del tutor) */}
+                  <header
+                    className="tutoria-card-header tutoria-card-header--clickable"
+                    onClick={() => navigate(`/app/tutores/${tutoria.tutorId}`)}
+                    title="Ver perfil del tutor"
+                  >
                     <div className="tutoria-avatar-circle" aria-hidden="true">
                       {tutoria.tutorIniciales}
                     </div>
@@ -147,14 +151,21 @@ export function TutoriasPendientes() {
                     <span className="tutoria-materia-badge">{tutoria.materia}</span>
 
                     <div className="tutoria-actions-group">
-                      {tutoria.puedeCalificar && (
-                        <Button
-                          variant="primary"
-                          size="md"
-                          onClick={() => handleCalificar(tutoria.id)}
-                        >
-                          Calificar
-                        </Button>
+                      {(tutoria.puedeCalificar || tutoria.tiempoRestanteTexto === 'Ya Tomada') &&
+                        !tutoria.calificacion && (
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleCalificar(tutoria.id)}
+                          >
+                            Calificar
+                          </Button>
+                        )}
+
+                      {tutoria.calificacion && (
+                        <span className="tutoria-calificada-badge">
+                          ★ {tutoria.calificacion.toFixed(1)} Calificada
+                        </span>
                       )}
 
                       {tutoria.esVirtual && tutoria.linkReunion && (
@@ -167,7 +178,7 @@ export function TutoriasPendientes() {
                         </Button>
                       )}
 
-                      {!tutoria.puedeCalificar && (
+                      {!tutoria.puedeCalificar && tutoria.tiempoRestanteTexto !== 'Ya Tomada' && !tutoria.calificacion && (
                         <Button
                           variant="cancel"
                           size="md"

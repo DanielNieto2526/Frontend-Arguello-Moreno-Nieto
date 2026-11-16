@@ -84,6 +84,20 @@
   margin-top: 4px;
 }
 
+.tutoria-card-header--clickable {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+
+.tutoria-card-header--clickable:hover {
+  opacity: 0.85;
+}
+
+.tutoria-card-header--clickable:hover .tutoria-tutor-name {
+  text-decoration: underline;
+}
+
 .tutoria-avatar-circle {
   width: 50px;
   height: 50px;
@@ -188,6 +202,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.tutoria-calificada-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 /* Botón Calificar (Naranja institucional) */
