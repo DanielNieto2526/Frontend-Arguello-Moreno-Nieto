@@ -28,4 +28,11 @@ export interface Tutor {
   cursos?: string[];
   correo?: string;
   activo?: boolean;
+  estadoAprobacion?: 'pendiente' | 'aprobado' | 'rechazado';
+  notaMateria?: number;
+  promedioAcumulado?: number;
+  soporteNotasNombre?: string;
+  soporteNotasUrl?: string;
+  motivoRechazo?: string;
+  fechaRegistro?: string;
 }

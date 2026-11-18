@@ -7,7 +7,7 @@ import { registrarUsuarioLocal } from '../utils/auth';
 const RUTA = '/tutores';
 const STORAGE_TUTORES_KEY = 'conecta_tutor_nuevos_tutores';
 
-function obtenerTutoresPersistidos(): Tutor[] {
+export function obtenerTutoresPersistidos(): Tutor[] {
   try {
     const data = localStorage.getItem(STORAGE_TUTORES_KEY);
     return data ? (JSON.parse(data) as Tutor[]) : [];
@@ -16,7 +16,7 @@ function obtenerTutoresPersistidos(): Tutor[] {
   }
 }
 
-function guardarTutorPersistido(tutor: Tutor): void {
+export function guardarTutorPersistido(tutor: Tutor): void {
   try {
     const lista = obtenerTutoresPersistidos();
     const filtrada = lista.filter((t) => t.id !== tutor.id);
@@ -24,6 +24,14 @@ function guardarTutorPersistido(tutor: Tutor): void {
     localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(filtrada));
   } catch (e) {
     console.error('Error guardando tutor persistido:', e);
+  }
+}
+
+export function guardarTodosLosTutoresPersistidos(lista: Tutor[]): void {
+  try {
+    localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(lista));
+  } catch (e) {
+    console.error('Error guardando lista de tutores:', e);
   }
 }
 
@@ -56,10 +64,23 @@ export async function obtenerTutores(): Promise<Tutor[]> {
   try {
     return await solicitar<Tutor[]>(RUTA);
   } catch {
-    // simulamos 500ms de latencia de red para reflejar los estados de carga.
-    await new Promise((resolver) => setTimeout(resolver, 500));
+    await new Promise((resolver) => setTimeout(resolver, 300));
     const tutoresPersistidos = obtenerTutoresPersistidos();
-    return [...tutoresPersistidos, ...TUTORES_INICIALES];
+    const mapa = new Map<string, Tutor>();
+
+    TUTORES_INICIALES.forEach((t) => {
+      mapa.set(t.id, {
+        ...t,
+        estadoAprobacion: 'aprobado',
+        activo: t.activo !== undefined ? t.activo : true,
+      });
+    });
+
+    tutoresPersistidos.forEach((t) => {
+      mapa.set(t.id, t);
+    });
+
+    return Array.from(mapa.values());
   }
 }
 
@@ -90,7 +111,7 @@ export async function registrarNuevoTutor(
     await new Promise((resolver) => setTimeout(resolver, 600));
 
     const idTutor = `tutor-${Date.now()}`;
-    const idUsuario = `user-tutor-${Date.now()}`;
+    const idUsuario = idTutor;
     const iniciales = `${datos.nombres.charAt(0)}${datos.apellidos.charAt(0)}`.toUpperCase();
     const semestreTexto = `${datos.semestre}º semestre ${datos.carrera} - ${datos.sede.toLowerCase()}`;
     const precioFormato = `$${Number(datos.precioHora).toLocaleString('es-CO')} x hora`;
@@ -114,7 +135,13 @@ export async function registrarNuevoTutor(
         ...(datos.cursosAdicionales || []).map((c) => c.trim()),
       ],
       correo: datos.correo.trim().toLowerCase(),
-      activo: true,
+      activo: false, // Inicia inactivo hasta que el admin lo apruebe
+      estadoAprobacion: 'pendiente',
+      notaMateria: Number(datos.notaMateria) || 4.5,
+      promedioAcumulado: Number(datos.promedioAcumulado) || 4.2,
+      soporteNotasNombre: datos.soporteNotasNombre || 'certificado_notas.pdf',
+      soporteNotasUrl: datos.soporteNotasUrl,
+      fechaRegistro: new Date().toLocaleDateString('es-CO'),
     };
 
     const nuevoUsuario: Usuario = {
@@ -132,6 +159,13 @@ export async function registrarNuevoTutor(
       precioHora: Number(datos.precioHora),
       descripcion: datos.descripcion.trim(),
       materiaPrincipal: datos.materiaPrincipal.trim(),
+      activo: false,
+      estadoAprobacion: 'pendiente',
+      notaMateria: Number(datos.notaMateria) || 4.5,
+      promedioAcumulado: Number(datos.promedioAcumulado) || 4.2,
+      soporteNotasNombre: datos.soporteNotasNombre || 'certificado_notas.pdf',
+      soporteNotasUrl: datos.soporteNotasUrl,
+      fechaRegistro: new Date().toLocaleDateString('es-CO'),
     };
 
     // Guardar en persistencia local

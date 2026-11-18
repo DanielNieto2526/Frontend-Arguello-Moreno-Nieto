@@ -15,7 +15,7 @@
 .register-tutor-card-container {
   display: flex;
   width: 100%;
-  max-width: 940px;
+  max-width: 1060px;
   background-color: var(--Blanco);
   border-radius: 28px;
   overflow: hidden;
@@ -26,7 +26,7 @@
 
 /* --- Panel Izquierdo Vino Oscuro Institucional --- */
 .register-tutor-left-panel {
-  width: 38%;
+  width: 35%;
   background-color: var(--Vino-oscuro, #590016);
   color: var(--Blanco);
   padding: 48px 36px;
@@ -65,7 +65,7 @@
 /* --- Botón Circular Flotante Central --- */
 .register-tutor-circle-divider {
   position: absolute;
-  left: 38%;
+  left: 35%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: 44px;
@@ -85,12 +85,13 @@
 
 /* --- Panel Derecho del Formulario --- */
 .register-tutor-right-panel {
-  width: 62%;
-  padding: 40px 48px;
+  width: 65%;
+  padding: 40px 44px;
   background-color: var(--Blanco);
   box-sizing: border-box;
   max-height: 92vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Pestañas (Tabs) */
@@ -266,6 +267,106 @@ select.register-tutor-capsule-field option {
   background-color: #FDEDED;
   border-radius: 8px;
   border: 1px solid #FFCDD2;
+}
+
+/* Cápsula de Carga de Archivo de Soporte de Notas */
+.register-tutor-capsule--file {
+  position: relative;
+  cursor: pointer;
+  padding: 0 12px 0 20px;
+}
+
+.register-tutor-hidden-file {
+  position: absolute;
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.register-tutor-file-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1;
+}
+
+.register-tutor-file-name {
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--Vino-tinto);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.register-tutor-file-badge {
+  background-color: var(--Rosa-badge, #FCE8ED);
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 16px;
+  border-radius: 999px;
+  border: 1px solid #C77C8A;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 10px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-tutor-file-trigger:hover .register-tutor-file-badge {
+  background-color: var(--Vino-tinto);
+  color: var(--Blanco);
+}
+
+/* Modal de Confirmación de Postulación Enviada */
+.register-tutor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(60, 9, 25, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.register-tutor-modal-card {
+  background-color: var(--Blanco);
+  border: 1.5px solid #EADCDD;
+  border-radius: 20px;
+  padding: 44px 40px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(60, 9, 25, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+  box-sizing: border-box;
+}
+
+.register-tutor-modal-text {
+  font-family: var(--font-family);
+  font-size: 16px;
+  color: var(--Vino-tinto);
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
 }
 
 /* Responsive */

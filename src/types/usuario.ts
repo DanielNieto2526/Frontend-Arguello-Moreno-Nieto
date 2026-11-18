@@ -1,6 +1,8 @@
 export const ROLES = ['estudiante', 'tutor', 'admin'] as const;
 export type Rol = (typeof ROLES)[number];
 
+export type EstadoAprobacion = 'pendiente' | 'aprobado' | 'rechazado';
+
 export interface Usuario {
   id: string;
   nombres: string;
@@ -20,6 +22,14 @@ export interface Usuario {
   materiaPrincipal?: string;
   telefono?: string;
   diasDisponibles?: string[];
+  estadoAprobacion?: EstadoAprobacion;
+  activo?: boolean;
+  notaMateria?: number;
+  promedioAcumulado?: number;
+  soporteNotasNombre?: string;
+  soporteNotasUrl?: string;
+  motivoRechazo?: string;
+  fechaRegistro?: string;
 }
 
 export interface CredencialesLogin {
@@ -44,4 +54,8 @@ export interface DatosRegistroTutor {
   precioHora: number;
   descripcion: string;
   diasDisponibles?: string[];
+  notaMateria: number;
+  promedioAcumulado?: number;
+  soporteNotasNombre?: string;
+  soporteNotasUrl?: string;
 }

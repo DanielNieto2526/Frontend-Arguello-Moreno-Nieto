@@ -20,7 +20,9 @@ export function obtenerUsuariosRegistrados(): Usuario[] {
 export function registrarUsuarioLocal(usuario: Usuario): void {
   try {
     const existentes = obtenerUsuariosRegistrados();
-    const filtrados = existentes.filter((u) => u.correo.toLowerCase() !== usuario.correo.toLowerCase());
+    const filtrados = existentes.filter(
+      (u) => u.correo.toLowerCase() !== usuario.correo.toLowerCase() && u.id !== usuario.id
+    );
     filtrados.push(usuario);
     localStorage.setItem(USUARIOS_REGISTRADOS_KEY, JSON.stringify(filtrados));
   } catch (e) {
@@ -28,9 +30,37 @@ export function registrarUsuarioLocal(usuario: Usuario): void {
   }
 }
 
+export function actualizarUsuarioLocal(idOrCorreo: string, updates: Partial<Usuario>): void {
+  try {
+    const existentes = obtenerUsuariosRegistrados();
+    const index = existentes.findIndex(
+      (u) => u.id === idOrCorreo || u.correo.toLowerCase() === idOrCorreo.toLowerCase()
+    );
+    if (index !== -1) {
+      existentes[index] = { ...existentes[index], ...updates };
+      localStorage.setItem(USUARIOS_REGISTRADOS_KEY, JSON.stringify(existentes));
+    } else {
+      // Si era de USUARIOS_INICIALES, lo agregamos a registrados con los updates
+      const inicial = USUARIOS_INICIALES.find(
+        (u) => u.id === idOrCorreo || u.correo.toLowerCase() === idOrCorreo.toLowerCase()
+      );
+      if (inicial) {
+        existentes.push({ ...inicial, ...updates });
+        localStorage.setItem(USUARIOS_REGISTRADOS_KEY, JSON.stringify(existentes));
+      }
+    }
+  } catch (e) {
+    console.error('Error actualizando usuario registrado:', e);
+  }
+}
+
 export function obtenerListaUsuarios(): Usuario[] {
   const registrados = obtenerUsuariosRegistrados();
-  return [...USUARIOS_INICIALES, ...registrados];
+  const correosRegistrados = new Set(registrados.map((u) => u.correo.toLowerCase()));
+  const inicialesFiltrados = USUARIOS_INICIALES.filter(
+    (u) => !correosRegistrados.has(u.correo.toLowerCase())
+  );
+  return [...inicialesFiltrados, ...registrados];
 }
 
 export function autenticarUsuario(credenciales: CredencialesLogin): Usuario | null {

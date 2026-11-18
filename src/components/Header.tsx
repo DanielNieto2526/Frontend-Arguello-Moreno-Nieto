@@ -36,16 +36,21 @@ export function Header({ usuario, onLogout }: HeaderProps) {
     }
   };
 
-  const esTutor = usuario?.rol === 'tutor' || location.pathname.startsWith('/tutor');
+  const esAdmin = usuario?.rol === 'admin' || location.pathname.startsWith('/admin');
+  const esTutor = !esAdmin && (usuario?.rol === 'tutor' || location.pathname.startsWith('/tutor'));
 
   // Datos de usuario mostrados
-  const nombreMostrar = esTutor
+  const nombreMostrar = esAdmin
+    ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Coordinador URosario')
+    : esTutor
     ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Daniel Nieto')
     : usuario?.nombres
     ? `${usuario.nombres} ${usuario.apellidos}`
     : 'Daniela Moreno';
 
-  const badgeMostrar = esTutor
+  const badgeMostrar = esAdmin
+    ? 'Administrador - Coordinación Académica'
+    : esTutor
     ? 'Tutor - Matematicas Aplicadas y Ciencias de la Computacion'
     : usuario
     ? `${usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}${
@@ -53,7 +58,9 @@ export function Header({ usuario, onLogout }: HeaderProps) {
       }`
     : 'Estudiante - Ingeniería de Sistemas';
 
-  const iniciales = esTutor
+  const iniciales = esAdmin
+    ? 'AD'
+    : esTutor
     ? 'DN'
     : usuario
     ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}`.toUpperCase()
@@ -71,12 +78,19 @@ export function Header({ usuario, onLogout }: HeaderProps) {
     <header className="app-header">
       {/* Sección Izquierda: Logo institucional y Navegación */}
       <div className="header-left">
-        <Link to={esTutor ? '/tutor/tutorias' : '/app/explorar'} className="header-logo">
+        <Link to={esAdmin ? '/admin' : esTutor ? '/tutor/tutorias' : '/app/explorar'} className="header-logo">
           Conecta<span className="header-logo-highlight">Tutor</span>
         </Link>
 
         <nav className="header-nav" aria-label="Navegación principal">
-          {esTutor ? (
+          {esAdmin ? (
+            <Link
+              to="/admin"
+              className={`header-nav-item ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+            >
+              panel de administración
+            </Link>
+          ) : esTutor ? (
             <>
               <Link
                 to="/tutor/tutorias"
@@ -157,7 +171,16 @@ export function Header({ usuario, onLogout }: HeaderProps) {
           {/* Menú desplegable */}
           {menuAbierto && (
             <div className="header-user-menu" role="menu">
-              {esTutor ? (
+              {esAdmin ? (
+                /* Para el administrador no hay edición de perfil, solo cerrar sesión */
+                <button
+                  type="button"
+                  className="header-menu-item logout"
+                  onClick={handleCerrarSesion}
+                >
+                  Cerrar Sesión
+                </button>
+              ) : esTutor ? (
                 <>
                   <button
                     type="button"
@@ -179,19 +202,16 @@ export function Header({ usuario, onLogout }: HeaderProps) {
                   >
                     Mi Perfil
                   </button>
+                  <button
+                    type="button"
+                    className="header-menu-item logout"
+                    onClick={handleCerrarSesion}
+                  >
+                    Cerrar Sesión
+                  </button>
                 </>
               ) : (
                 <>
-                  <button
-                    type="button"
-                    className="header-menu-item"
-                    onClick={() => {
-                      setMenuAbierto(false);
-                      navigate('/app/perfil');
-                    }}
-                  >
-                    Mi Perfil
-                  </button>
                   <button
                     type="button"
                     className="header-menu-item"
@@ -202,15 +222,15 @@ export function Header({ usuario, onLogout }: HeaderProps) {
                   >
                     Editar Perfil
                   </button>
+                  <button
+                    type="button"
+                    className="header-menu-item logout"
+                    onClick={handleCerrarSesion}
+                  >
+                    Cerrar Sesión
+                  </button>
                 </>
               )}
-              <button
-                type="button"
-                className="header-menu-item logout"
-                onClick={handleCerrarSesion}
-              >
-                Cerrar Sesión
-              </button>
             </div>
           )}
         </div>

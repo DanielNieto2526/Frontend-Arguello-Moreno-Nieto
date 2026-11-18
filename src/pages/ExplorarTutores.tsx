@@ -52,6 +52,13 @@ export function ExplorarTutores() {
   // Valores derivados: filtrado en memoria sin duplicar estado
   const tutoresFiltrados = useMemo(() => {
     return tutores.filter((tutor) => {
+      // Solo mostrar tutores aprobados por el administrador y activos en el catálogo
+      const estaAprobado = !tutor.estadoAprobacion || tutor.estadoAprobacion === 'aprobado';
+      const estaActivo = tutor.activo !== false;
+      if (!estaAprobado || !estaActivo) {
+        return false;
+      }
+
       const cumpleMateria =
         busqueda.trim() === '' ||
         tutor.materiaPrincipal.toLowerCase().includes(busqueda.toLowerCase()) ||

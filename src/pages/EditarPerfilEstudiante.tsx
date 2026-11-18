@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EditarPerfilEstudiante.css';
@@ -11,6 +11,15 @@ import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg
 export function EditarPerfilEstudiante() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const sesion = obtenerSesion();
+    if (sesion?.rol === 'admin') {
+      navigate('/admin', { replace: true });
+    } else if (sesion?.rol === 'tutor') {
+      navigate('/tutor/perfil', { replace: true });
+    }
+  }, [navigate]);
 
   const [usuario, setUsuario] = useState<Usuario>(() => {
     const sesion = obtenerSesion();

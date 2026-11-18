@@ -3,16 +3,19 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistroTutor.css';
 import { registrarNuevoTutor } from '../services/tutoresService';
-import { guardarSesion, validarCorreoURosario } from '../utils/auth';
+import { validarCorreoURosario } from '../utils/auth';
 import { Button } from '../components/Button';
 
 interface TutorFormData {
   nombres: string;
   apellidos: string;
   correo: string;
+  clave: string;
   semestre: string;
   carrera: string;
   materiaPrincipal: string;
+  notaMateria: string;
+  promedioAcumulado: string;
   precioHora: string;
   modalidad: 'Híbrida' | 'Presencial' | 'Virtual';
   descripcion: string;
@@ -24,14 +27,20 @@ export function RegistroTutor() {
   const [activeTab, setActiveTab] = useState<'register' | 'login'>('register');
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [nombreArchivo, setNombreArchivo] = useState<string>('');
+  const [soporteNotasUrl, setSoporteNotasUrl] = useState<string>('');
+  const [modalRegistroExitoso, setModalRegistroExitoso] = useState(false);
 
   const [formData, setFormData] = useState<TutorFormData>({
     nombres: '',
     apellidos: '',
     correo: '',
+    clave: '',
     semestre: '6',
     carrera: '',
     materiaPrincipal: '',
+    notaMateria: '4.5',
+    promedioAcumulado: '4.2',
     precioHora: '20000',
     modalidad: 'Híbrida',
     descripcion: '',
@@ -47,6 +56,32 @@ export function RegistroTutor() {
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setNombreArchivo(file.name);
+
+      // Si el archivo es menor a 2.5MB, lo convertimos a DataURL para que persista
+      if (file.size <= 2.5 * 1024 * 1024) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            setSoporteNotasUrl(reader.result);
+          }
+        };
+        reader.onerror = () => {
+          setSoporteNotasUrl('');
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Para archivos mayores a 2.5MB, el almacenamiento persistente debe ser en el backend
+        setSoporteNotasUrl('');
+      }
+
+      setError(null);
     }
   };
 
@@ -67,8 +102,34 @@ export function RegistroTutor() {
       return;
     }
 
+    if (!formData.clave.trim()) {
+      setError('Por favor ingresa una contraseña para tu cuenta.');
+      return;
+    }
+
+    if (formData.clave.trim().length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     if (!formData.materiaPrincipal.trim()) {
       setError('Por favor indica cuál es tu materia principal a asesorar.');
+      return;
+    }
+
+    const notaNum = parseFloat(formData.notaMateria);
+    if (isNaN(notaNum) || notaNum < 0 || notaNum > 5) {
+      setError('Por favor ingresa una nota válida en la materia (entre 0.0 y 5.0).');
+      return;
+    }
+
+    if (notaNum < 4.0) {
+      setError('Para postularte como tutor debes haber obtenido una calificación mínima de 4.0 en la materia.');
+      return;
+    }
+
+    if (!nombreArchivo) {
+      setError('Debes adjuntar el soporte o certificado de notas oficial en PDF o imagen para verificar tu calificación.');
       return;
     }
 
@@ -80,11 +141,11 @@ export function RegistroTutor() {
     setGuardando(true);
 
     try {
-      const resultado = await registrarNuevoTutor({
+      await registrarNuevoTutor({
         nombres: formData.nombres.trim(),
         apellidos: formData.apellidos.trim(),
         correo: formData.correo.trim().toLowerCase(),
-        clave: 'conecta2026',
+        clave: formData.clave.trim(),
         carrera: formData.carrera.trim() || 'Matemáticas y Computación',
         semestre: Number(formData.semestre) || 6,
         sede: 'Claustro',
@@ -95,10 +156,14 @@ export function RegistroTutor() {
           formData.descripcion.trim() ||
           `Monitor de ${formData.materiaPrincipal.trim()} con promedio destacado y vocación pedagógica.`,
         diasDisponibles: ['LU', 'MA', 'MI'],
+        notaMateria: notaNum,
+        promedioAcumulado: parseFloat(formData.promedioAcumulado) || 4.2,
+        soporteNotasNombre: nombreArchivo,
+        soporteNotasUrl: soporteNotasUrl || undefined,
       });
 
-      guardarSesion(resultado.usuario);
-      navigate('/tutor/tutorias');
+      // No se inicia sesión directamente como activo; se notifica que está en revisión
+      setModalRegistroExitoso(true);
     } catch (err: unknown) {
       setError(
         err instanceof Error
@@ -108,6 +173,11 @@ export function RegistroTutor() {
     } finally {
       setGuardando(false);
     }
+  };
+
+  const handleCerrarModal = () => {
+    setModalRegistroExitoso(false);
+    navigate('/login');
   };
 
   return (
@@ -202,6 +272,22 @@ export function RegistroTutor() {
               </div>
 
               <div className="register-tutor-capsule">
+                <label className="register-tutor-capsule-label" htmlFor="tutor-clave">
+                  Contraseña ▸
+                </label>
+                <input
+                  className="register-tutor-capsule-field"
+                  type="password"
+                  id="tutor-clave"
+                  name="clave"
+                  placeholder="Mínimo 6 caracteres"
+                  value={formData.clave}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="register-tutor-capsule">
                 <label className="register-tutor-capsule-label" htmlFor="tutor-carrera">
                   Carrera ▸
                 </label>
@@ -256,6 +342,63 @@ export function RegistroTutor() {
                   onChange={handleChange}
                   required
                 />
+              </div>
+
+              {/* NUEVOS CAMPOS: VERIFICACIÓN DE NOTAS Y CERTIFICADO */}
+              <div className="register-tutor-capsule">
+                <label className="register-tutor-capsule-label" htmlFor="tutor-nota">
+                  Nota en la Materia ▸
+                </label>
+                <input
+                  className="register-tutor-capsule-field"
+                  type="number"
+                  id="tutor-nota"
+                  name="notaMateria"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  placeholder="Ej. 4.6 (mínimo 4.0)"
+                  value={formData.notaMateria}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="register-tutor-capsule">
+                <label className="register-tutor-capsule-label" htmlFor="tutor-pga">
+                  Promedio Acumulado ▸
+                </label>
+                <input
+                  className="register-tutor-capsule-field"
+                  type="number"
+                  id="tutor-pga"
+                  name="promedioAcumulado"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  placeholder="Ej. 4.3"
+                  value={formData.promedioAcumulado}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="register-tutor-capsule register-tutor-capsule--file">
+                <label className="register-tutor-capsule-label" htmlFor="tutor-archivo">
+                  Certificado Notas (PDF/IMG) ▸
+                </label>
+                <input
+                  type="file"
+                  id="tutor-archivo"
+                  accept=".pdf,image/png,image/jpeg"
+                  onChange={handleFileChange}
+                  className="register-tutor-hidden-file"
+                />
+                <label htmlFor="tutor-archivo" className="register-tutor-file-trigger">
+                  <span className="register-tutor-file-name">
+                    {nombreArchivo ? nombreArchivo : 'Seleccionar archivo (PDF o Imagen)...'}
+                  </span>
+                  <span className="register-tutor-file-badge">Examinar</span>
+                </label>
               </div>
 
               <div className="register-tutor-capsule">
@@ -324,7 +467,7 @@ export function RegistroTutor() {
                   size="lg"
                   disabled={guardando}
                 >
-                  {guardando ? 'Registrando...' : 'Registrarse como tutor ▸'}
+                  {guardando ? 'Enviando postulación...' : 'Registrarse como tutor ▸'}
                 </Button>
               </div>
             </form>
@@ -335,6 +478,30 @@ export function RegistroTutor() {
           )}
         </div>
       </div>
+
+      {/* MODAL DE CONFIRMACIÓN: POSTULACIÓN PENDIENTE DE REVISIÓN */}
+      {modalRegistroExitoso && (
+        <div
+          className="register-tutor-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="register-tutor-modal-card">
+            <p className="register-tutor-modal-text">
+              Tu registro y tu certificado de calificaciones{' '}
+              <strong>({nombreArchivo || 'Taller_3.pdf'})</strong> han sido recibidos
+              satisfactoriamente.
+            </p>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={handleCerrarModal}
+            >
+              Entendido / Ir al Inicio
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EditarTutor.css';
@@ -10,6 +10,15 @@ import fomaTutor from '../assets/fomaTutor.svg';
 
 export function EditarTutor() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const sesion = obtenerSesion();
+    if (sesion?.rol === 'admin') {
+      navigate('/admin', { replace: true });
+    } else if (sesion?.rol === 'estudiante') {
+      navigate('/app/perfil', { replace: true });
+    }
+  }, [navigate]);
 
   const [usuario, setUsuario] = useState<Usuario>(() => {
     const sesion = obtenerSesion();

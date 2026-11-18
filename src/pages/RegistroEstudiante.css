@@ -15,7 +15,7 @@
 .register-card-container {
   display: flex;
   width: 100%;
-  max-width: 900px;
+  max-width: 1040px;
   background-color: var(--Blanco);
   border-radius: 28px;
   overflow: hidden;
@@ -26,7 +26,7 @@
 
 /* --- Panel Izquierdo Vino Oscuro Institucional --- */
 .left-panel {
-  width: 38%;
+  width: 35%;
   background-color: var(--Vino-oscuro, #590016);
   color: var(--Blanco);
   padding: 48px 36px;
@@ -65,7 +65,7 @@
 /* --- Botón Circular Flotante Central --- */
 .circle-divider {
   position: absolute;
-  left: 38%;
+  left: 35%;
   top: 50%;
   transform: translate(-50%, -50%);
   width: 44px;
@@ -85,10 +85,11 @@
 
 /* --- Panel Derecho del Formulario --- */
 .right-panel {
-  width: 62%;
+  width: 65%;
   padding: 44px 48px;
   background-color: var(--Blanco);
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Pestañas (Tabs) */

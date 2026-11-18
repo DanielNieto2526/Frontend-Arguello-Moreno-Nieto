@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { ExplorarTutores } from './pages/ExplorarTutores';
@@ -14,9 +13,8 @@ import { InformacionMonitoriaTutor } from './pages/InformacionMonitoriaTutor';
 import { PerfilTutor } from './pages/PerfilTutor';
 import { EditarTutor } from './pages/EditarTutor';
 import { EditarHorarioTutor } from './pages/EditarHorarioTutor';
-import { Button } from './components/Button';
+import { DashboardAdmin } from './pages/DashboardAdmin';
 import type { Usuario } from './types/usuario';
-import { obtenerSesion, cerrarSesion } from './utils/auth';
 import './App.css';
 
 const TITULO_SITIO = 'Aprende con ConectaTutor ';
@@ -46,52 +44,6 @@ function LoginWrapper() {
       onNavigateToRegisterStudent={() => navigate('/registro/estudiante')}
       onNavigateToRegisterTutor={() => navigate('/registro/tutor')}
     />
-  );
-}
-
-/**
- * Vista de demostración para rutas en desarrollo
- */
-function PlaceholderView({ titulo, rolEsperado }: { titulo: string; rolEsperado: string }) {
-  const navigate = useNavigate();
-  const [usuario, setUsuario] = useState<Usuario | null>(() => obtenerSesion());
-
-  const handleCerrarSesion = () => {
-    cerrarSesion();
-    setUsuario(null);
-    navigate('/login');
-  };
-
-  return (
-    <div style={{ padding: '40px 24px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-      <h1 style={{ color: 'var(--Vino-tinto)', marginBottom: '16px' }}>{titulo}</h1>
-      <p style={{ color: 'var(--Rojo-aux)', marginBottom: '24px' }}>
-        Pantalla en desarrollo para el rol: <strong>{rolEsperado}</strong>
-      </p>
-      {usuario && (
-        <div style={{ background: 'var(--Gris-fondo)', padding: '20px', borderRadius: '12px', marginBottom: '24px' }}>
-          <p><strong>Usuario activo:</strong> {usuario.nombres} {usuario.apellidos}</p>
-          <p><strong>Correo:</strong> {usuario.correo}</p>
-          <p><strong>Rol:</strong> {usuario.rol}</p>
-        </div>
-      )}
-      <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-        <Button
-          variant="primary"
-          onClick={() => navigate('/login')}
-        >
-          Volver al Login
-        </Button>
-        {usuario && (
-          <Button
-            variant="cancel"
-            onClick={handleCerrarSesion}
-          >
-            Cerrar Sesión
-          </Button>
-        )}
-      </div>
-    </div>
   );
 }
 
@@ -133,10 +85,7 @@ export function App() {
           <Route path="/tutor/perfil/horario" element={<EditarHorarioTutor />} />
 
           {/* Rutas de Administrador */}
-          <Route
-            path="/admin"
-            element={<PlaceholderView titulo="Dashboard Administrador" rolEsperado="admin" />}
-          />
+          <Route path="/admin" element={<DashboardAdmin />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/login" replace />} />

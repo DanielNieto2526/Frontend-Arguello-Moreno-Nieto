@@ -10,6 +10,7 @@ interface StudentFormData {
   nombres: string;
   apellidos: string;
   correo: string;
+  clave: string;
   semestre: string;
   carrera: string;
   aceptaTerminos: boolean;
@@ -24,6 +25,7 @@ export function RegisterStudent() {
     nombres: '',
     apellidos: '',
     correo: '',
+    clave: '',
     semestre: '',
     carrera: '',
     aceptaTerminos: false,
@@ -58,6 +60,16 @@ export function RegisterStudent() {
       return;
     }
 
+    if (!formData.clave.trim()) {
+      setError('Por favor ingresa una contraseña para tu cuenta.');
+      return;
+    }
+
+    if (formData.clave.trim().length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
     if (!formData.aceptaTerminos) {
       setError('Debes aceptar los términos y condiciones para continuar.');
       return;
@@ -68,7 +80,7 @@ export function RegisterStudent() {
       nombres: formData.nombres.trim(),
       apellidos: formData.apellidos.trim(),
       correo: formData.correo.trim().toLowerCase(),
-      clave: 'conecta2026',
+      clave: formData.clave.trim(),
       rol: 'estudiante',
       carrera: formData.carrera.trim(),
       semestre: Number(formData.semestre) || 1,
@@ -166,6 +178,22 @@ export function RegisterStudent() {
                   name="correo"
                   placeholder="usuario@urosario.edu.co"
                   value={formData.correo}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="input-capsule">
+                <label className="capsule-label" htmlFor="clave">
+                  Contraseña ▸
+                </label>
+                <input
+                  className="capsule-field"
+                  type="password"
+                  id="clave"
+                  name="clave"
+                  placeholder="Mínimo 6 caracteres"
+                  value={formData.clave}
                   onChange={handleChange}
                   required
                 />
