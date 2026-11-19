@@ -1,8 +1,7 @@
 /* Contenedor principal de la pantalla de Login */
 .login-screen {
-
   position: relative;
-  min-height: 100vh;
+  flex: 1;
   width: 100%;
   display: flex;
   align-items: center;

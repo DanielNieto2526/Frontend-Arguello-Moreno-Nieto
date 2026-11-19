@@ -2,7 +2,7 @@
 .register-body {
   font-family: var(--font-family);
   background-color: var(--Blanco);
-  min-height: 100vh;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;

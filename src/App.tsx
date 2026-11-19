@@ -14,6 +14,7 @@ import { PerfilTutor } from './pages/PerfilTutor';
 import { EditarTutor } from './pages/EditarTutor';
 import { EditarHorarioTutor } from './pages/EditarHorarioTutor';
 import { DashboardAdmin } from './pages/DashboardAdmin';
+import { Footer } from './components/Footer';
 import type { Usuario } from './types/usuario';
 import './App.css';
 
@@ -54,42 +55,45 @@ export function App() {
   return (
     <BrowserRouter>
       <div className="app-container">
-        <Routes>
-          {/* Rutas públicas de autenticación */}
-          <Route path="/" element={<LoginWrapper />} />
-          <Route path="/login" element={<LoginWrapper />} />
+        <div className="app-main-content">
+          <Routes>
+            {/* Rutas públicas de autenticación */}
+            <Route path="/" element={<LoginWrapper />} />
+            <Route path="/login" element={<LoginWrapper />} />
 
-          {/* Módulos de Registro con diseño Split-Card y cápsulas */}
-          <Route path="/registro/estudiante" element={<RegisterStudent />} />
-          <Route path="/registro/tutor" element={<RegistroTutor />} />
+            {/* Módulos de Registro con diseño Split-Card y cápsulas */}
+            <Route path="/registro/estudiante" element={<RegisterStudent />} />
+            <Route path="/registro/tutor" element={<RegistroTutor />} />
 
-          {/* Rutas de Estudiante */}
-          <Route path="/app/explorar" element={<ExplorarTutores />} />
-          <Route path="/app/tutores/:tutorId" element={<VerPerfilTutorDesdeEstudiante />} />
-          <Route path="/app/tutores" element={<VerPerfilTutorDesdeEstudiante />} />
-          <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
-          <Route path="/app/agendar" element={<AgendarTutoria />} />
-          <Route path="/app/tutorias" element={<TutoriasPendientes />} />
-          <Route path="/app/tutorias/:tutoriaId/feedback" element={<FeedbackMonitoriaEstudiante />} />
-          <Route path="/app/feedback/:tutoriaId" element={<FeedbackMonitoriaEstudiante />} />
-          <Route path="/app/feedback" element={<FeedbackMonitoriaEstudiante />} />
-          <Route path="/app/perfil" element={<EditarPerfilEstudiante />} />
-          <Route path="/app/perfil/editar" element={<EditarPerfilEstudiante />} />
+            {/* Rutas de Estudiante */}
+            <Route path="/app/explorar" element={<ExplorarTutores />} />
+            <Route path="/app/tutores/:tutorId" element={<VerPerfilTutorDesdeEstudiante />} />
+            <Route path="/app/tutores" element={<VerPerfilTutorDesdeEstudiante />} />
+            <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
+            <Route path="/app/agendar" element={<AgendarTutoria />} />
+            <Route path="/app/tutorias" element={<TutoriasPendientes />} />
+            <Route path="/app/tutorias/:tutoriaId/feedback" element={<FeedbackMonitoriaEstudiante />} />
+            <Route path="/app/feedback/:tutoriaId" element={<FeedbackMonitoriaEstudiante />} />
+            <Route path="/app/feedback" element={<FeedbackMonitoriaEstudiante />} />
+            <Route path="/app/perfil" element={<EditarPerfilEstudiante />} />
+            <Route path="/app/perfil/editar" element={<EditarPerfilEstudiante />} />
 
-          {/* Módulo de Tutor según Figma */}
-          <Route path="/tutor" element={<Navigate to="/tutor/tutorias" replace />} />
-          <Route path="/tutor/tutorias" element={<VistaTutor />} />
-          <Route path="/tutor/tutorias/:id" element={<InformacionMonitoriaTutor />} />
-          <Route path="/tutor/perfil" element={<PerfilTutor />} />
-          <Route path="/tutor/perfil/editar" element={<EditarTutor />} />
-          <Route path="/tutor/perfil/horario" element={<EditarHorarioTutor />} />
+            {/* Módulo de Tutor según Figma */}
+            <Route path="/tutor" element={<Navigate to="/tutor/tutorias" replace />} />
+            <Route path="/tutor/tutorias" element={<VistaTutor />} />
+            <Route path="/tutor/tutorias/:id" element={<InformacionMonitoriaTutor />} />
+            <Route path="/tutor/perfil" element={<PerfilTutor />} />
+            <Route path="/tutor/perfil/editar" element={<EditarTutor />} />
+            <Route path="/tutor/perfil/horario" element={<EditarHorarioTutor />} />
 
-          {/* Rutas de Administrador */}
-          <Route path="/admin" element={<DashboardAdmin />} />
+            {/* Rutas de Administrador */}
+            <Route path="/admin" element={<DashboardAdmin />} />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </div>
+        <Footer />
       </div>
     </BrowserRouter>
   );

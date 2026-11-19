@@ -1,0 +1,117 @@
+/* Footer Institucional de ConectaTutor */
+.app-footer {
+  width: 100%;
+  background-color: var(--Vino-oscuro, #590016);
+  color: #F8ECE9;
+  font-family: var(--font-family);
+  border-top: 2px solid #7D1128;
+  margin-top: auto;
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 36px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--Blanco, #FFFFFF);
+  letter-spacing: -0.2px;
+}
+
+.footer-logo-highlight {
+  color: var(--Naranja, #FF8C42);
+}
+
+.footer-tagline {
+  font-size: 13px;
+  color: #F8ECE9;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.footer-info-col {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.footer-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #F8ECE9;
+}
+
+.footer-icon {
+  color: var(--Naranja, #FF8C42);
+  flex-shrink: 0;
+}
+
+.footer-text {
+  color: #F8ECE9;
+}
+
+.footer-link {
+  color: #F8ECE9;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--Naranja, #FF8C42);
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 36px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.footer-copyright {
+  font-size: 12px;
+  color: #E2D9D7;
+  opacity: 0.8;
+  margin: 0;
+}
+
+@media (max-width: 992px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 24px 18px;
+    gap: 18px;
+  }
+
+  .footer-info-col {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .footer-bottom {
+    padding: 12px 24px;
+    text-align: left;
+  }
+}

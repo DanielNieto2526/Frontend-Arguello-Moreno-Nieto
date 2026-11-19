@@ -1,6 +1,6 @@
 /* Estilos para Tutorias Agendadas (Pendientes Tutor) según Figma */
 .tutor-page {
-  min-height: 100vh;
+  flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;

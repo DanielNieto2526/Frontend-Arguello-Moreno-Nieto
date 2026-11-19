@@ -1,6 +1,6 @@
 /* Estilos para Informacion monitoria Tutor según Image 3 */
 .info-monitoria-page {
-  min-height: 100vh;
+  flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
