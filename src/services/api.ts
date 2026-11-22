@@ -3,8 +3,9 @@
  * Centraliza fetch: URL base, encabezados, conversión a JSON y manejo de errores.
  */
 
-// La URL de la API se lee de las variables de entorno (archivo .env).
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api';
+// La URL de la API se lee de las variables de entorno (archivo .env o Vercel Environment Variables).
+const rawApiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3000/api';
+export const API_URL = rawApiUrl.trim().replace(/\/+$/, '');
 
 /** Error con la información que devuelve el backend: { mensaje, errores? } */
 export class ApiError extends Error {
