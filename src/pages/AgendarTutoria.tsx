@@ -8,6 +8,7 @@ import { Cargando } from '../components/Cargando';
 import { obtenerTutorPorId } from '../services/tutoresService';
 import { agendarTutoria } from '../services/tutoriasService';
 import { obtenerMensajeDeError } from '../services/api';
+import { comprimirImagen } from '../utils/imagen';
 import type { Tutor } from '../types/tutor';
 import { obtenerSesion } from '../utils/auth';
 
@@ -293,6 +294,14 @@ export function AgendarTutoria() {
   const handleArchivoChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const nuevosArchivos = Array.from(e.target.files);
+      const archivosPesados = nuevosArchivos.filter(
+        (f) => f.size > 2.5 * 1024 * 1024 && !f.type.startsWith('image/')
+      );
+      if (archivosPesados.length > 0) {
+        alert(
+          `Aviso: El archivo "${archivosPesados[0].name}" supera los 2.5 MB. Se registrará el nombre del archivo en la tutoría; te sugerimos incluir también el enlace (Drive/OneDrive) en los detalles para que tu tutor pueda descargarlo.`
+        );
+      }
       setArchivos((prev) => [...prev, ...nuevosArchivos]);
     }
   };
@@ -325,21 +334,51 @@ export function AgendarTutoria() {
       const precioTotalCalculado = Math.round(precioPorHora * duracionHoras);
       const fechaTextoCompleta = `${fechaSeleccionada.textoCompleto}, ${horaSeleccionada}`;
 
-      // Convertir archivos reales a Base64 para guardado persistente en MongoDB
+      // Convertir archivos para guardado persistente en MongoDB Atlas sin superar el límite de Vercel Serverless (4.5MB)
       const archivosConvertidos = await Promise.all(
-        archivos.map((file) => {
-          return new Promise<{ nombre: string; tipo: string; url: string }>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-              resolve({
+        archivos.map(async (file) => {
+          // Si es imagen, se comprime automáticamente a <100KB
+          if (file.type.startsWith('image/')) {
+            try {
+              const urlComprimida = await comprimirImagen(file, 800, 0.85);
+              return {
                 nombre: file.name,
-                tipo: file.type || 'application/pdf',
-                url: reader.result as string,
-              });
-            };
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(file);
-          });
+                tipo: file.type,
+                url: urlComprimida,
+              };
+            } catch {
+              // fallback
+            }
+          }
+
+          // Si es PDF u otro archivo de hasta 2.5MB, se convierte a Base64
+          if (file.size <= 2.5 * 1024 * 1024) {
+            return new Promise<{ nombre: string; tipo: string; url: string }>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                resolve({
+                  nombre: file.name,
+                  tipo: file.type || 'application/pdf',
+                  url: reader.result as string,
+                });
+              };
+              reader.onerror = () => {
+                resolve({
+                  nombre: file.name,
+                  tipo: file.type || 'application/pdf',
+                  url: '',
+                });
+              };
+              reader.readAsDataURL(file);
+            });
+          }
+
+          // Para archivos mayores a 2.5MB (como notebooks de Colab o talleres pesados), se registra el nombre
+          return {
+            nombre: file.name,
+            tipo: file.type || 'application/pdf',
+            url: '',
+          };
         })
       );
 

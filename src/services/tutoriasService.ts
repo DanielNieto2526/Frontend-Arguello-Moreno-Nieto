@@ -380,9 +380,23 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
   // Intentar guardar en el backend (MongoDB Atlas)
   let errorBackend: unknown = null;
   try {
+    // Protección contra payloads mayores al límite de Vercel Serverless (4.5MB)
+    const payloadLimpio = { ...datosCompletos };
+    if (payloadLimpio.archivos && Array.isArray(payloadLimpio.archivos)) {
+      const tamanoAprox = JSON.stringify(payloadLimpio).length;
+      if (tamanoAprox > 3.5 * 1024 * 1024) {
+        payloadLimpio.archivos = payloadLimpio.archivos.map((a) => ({
+          nombre: a.nombre,
+          tipo: a.tipo,
+          url: (a.url && a.url.length > 300000) ? '' : a.url,
+        }));
+        payloadLimpio.archivosAdjuntos = payloadLimpio.archivos;
+      }
+    }
+
     const res = await solicitar<TutoriaAgendada>(RUTA, {
       method: 'POST',
-      body: JSON.stringify(datosCompletos),
+      body: JSON.stringify(payloadLimpio),
     });
     if (res && res.id) {
       const resCalculada: TutoriaAgendada = {
