@@ -257,11 +257,11 @@ export async function cancelarTutoria(id: string): Promise<void> {
     await solicitar<void>(`${RUTA}/${id}`, {
       method: 'DELETE',
     });
-  } catch (error) {
-    console.error('Error al cancelar la tutoría en el backend:', error);
-  } finally {
     tutoriasEnMemoria = tutoriasEnMemoria.filter((item) => item.id !== id);
     guardarTutoriasPersistidas(tutoriasEnMemoria);
+  } catch (error) {
+    console.error('Error al cancelar la tutoría en el backend:', error);
+    throw error;
   }
 }
 
@@ -270,25 +270,18 @@ export async function actualizarLinkReunion(
   linkReunion: string
 ): Promise<TutoriaAgendada> {
   try {
-    return await solicitar<TutoriaAgendada>(`${RUTA}/${id}/link`, {
+    const actualizada = await solicitar<TutoriaAgendada>(`${RUTA}/${id}/link`, {
       method: 'PATCH',
       body: JSON.stringify({ linkReunion }),
     });
-  } catch {
-    await new Promise((resolver) => setTimeout(resolver, 300));
-    let actualizada: TutoriaAgendada | null = null;
-    tutoriasEnMemoria = tutoriasEnMemoria.map((item) => {
-      if (item.id === id) {
-        actualizada = { ...item, linkReunion };
-        return actualizada;
-      }
-      return item;
-    });
+    tutoriasEnMemoria = tutoriasEnMemoria.map((item) =>
+      item.id === id ? { ...item, linkReunion } : item
+    );
     guardarTutoriasPersistidas(tutoriasEnMemoria);
-    if (!actualizada) {
-      throw new Error(`Tutoría con id ${id} no encontrada`);
-    }
     return actualizada;
+  } catch (error) {
+    console.error('Error actualizando link de reunión:', error);
+    throw error;
   }
 }
 
@@ -297,29 +290,24 @@ export async function actualizarEstadoTutoria(
   nuevoEstado: EstadoTutoria
 ): Promise<TutoriaAgendada> {
   try {
-    return await solicitar<TutoriaAgendada>(`${RUTA}/${id}/estado`, {
+    const actualizada = await solicitar<TutoriaAgendada>(`${RUTA}/${id}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({ estado: nuevoEstado }),
     });
-  } catch {
-    await new Promise((resolver) => setTimeout(resolver, 300));
-    let actualizada: TutoriaAgendada | null = null;
-    tutoriasEnMemoria = tutoriasEnMemoria.map((item) => {
-      if (item.id === id) {
-        actualizada = {
-          ...item,
-          estado: nuevoEstado,
-          tiempoRestanteTexto: nuevoEstado === 'completada' ? 'Finalizada' : item.tiempoRestanteTexto,
-        };
-        return actualizada;
-      }
-      return item;
-    });
+    tutoriasEnMemoria = tutoriasEnMemoria.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            estado: nuevoEstado,
+            tiempoRestanteTexto: nuevoEstado === 'completada' ? 'Finalizada' : item.tiempoRestanteTexto,
+          }
+        : item
+    );
     guardarTutoriasPersistidas(tutoriasEnMemoria);
-    if (!actualizada) {
-      throw new Error(`Tutoría con id ${id} no encontrada`);
-    }
     return actualizada;
+  } catch (error) {
+    console.error('Error actualizando estado de tutoría:', error);
+    throw error;
   }
 }
 
@@ -333,8 +321,6 @@ export async function calificarTutoria(
       method: 'POST',
       body: JSON.stringify({ calificacion, comentarios }),
     });
-  } catch {
-    await new Promise((resolver) => setTimeout(resolver, 300));
     tutoriasEnMemoria = tutoriasEnMemoria.map((item) =>
       item.id === id
         ? {
@@ -347,6 +333,9 @@ export async function calificarTutoria(
         : item
     );
     guardarTutoriasPersistidas(tutoriasEnMemoria);
+  } catch (error) {
+    console.error('Error calificando tutoría:', error);
+    throw error;
   }
 }
 

@@ -11,21 +11,16 @@ export async function obtenerTodasLasSolicitudesAdmin(): Promise<Tutor[]> {
   try {
     const solicitudes = await solicitar<Tutor[]>('/admin/solicitudes');
     if (Array.isArray(solicitudes)) {
-      const persistidos = obtenerTutoresPersistidos();
-      const mapa = new Map<string, Tutor>();
-      solicitudes.forEach((t) => mapa.set(t.id, t));
-      persistidos.forEach((t) => {
-        if (!mapa.has(t.id)) {
-          mapa.set(t.id, t);
-        }
-      });
-      return Array.from(mapa.values());
+      return solicitudes;
     }
   } catch (error) {
-    console.warn('Fallo al obtener solicitudes de admin desde la API, usando respaldo:', error);
+    console.warn('Fallo al obtener solicitudes de admin desde la API:', error);
+    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
+      throw error;
+    }
   }
 
-  // Respaldo en memoria / localStorage si la API no está disponible
+  // Respaldo únicamente si no hay conexión al backend
   const persistidos = obtenerTutoresPersistidos();
   const mapaTutores = new Map<string, Tutor>();
 
@@ -78,8 +73,7 @@ export async function aprobarTutor(id: string): Promise<Tutor> {
       body: JSON.stringify(tutorLocal || {}),
     });
 
-    // Sincronizar en almacenamiento local
-    const persistidos = obtenerTutoresPersistidos();
+    // Sincronizar en almacenamiento local si existe
     const actualizados = persistidos.map((t) =>
       t.id === id ? { ...t, estadoAprobacion: 'aprobado' as const, activo: true } : t
     );
@@ -92,32 +86,8 @@ export async function aprobarTutor(id: string): Promise<Tutor> {
 
     return tutorAprobado;
   } catch (error) {
-    console.warn('Error llamando API de aprobación, usando respaldo local:', error);
-    const persistidos = obtenerTutoresPersistidos();
-    let tutorModificado: Tutor | null = null;
-
-    const actualizados = persistidos.map((t) => {
-      if (t.id === id) {
-        tutorModificado = {
-          ...t,
-          estadoAprobacion: 'aprobado' as const,
-          activo: true,
-        };
-        return tutorModificado;
-      }
-      return t;
-    });
-
-    guardarTodosLosTutoresPersistidos(actualizados);
-    actualizarUsuarioLocal(id, {
-      estadoAprobacion: 'aprobado',
-      activo: true,
-    });
-
-    if (!tutorModificado) {
-      throw new Error(`Tutor con ID ${id} no encontrado.`);
-    }
-    return tutorModificado;
+    console.error('Error llamando API de aprobación:', error);
+    throw error;
   }
 }
 
@@ -131,20 +101,15 @@ export async function rechazarTutor(
       body: JSON.stringify({ motivo }),
     });
 
-    // Al rechazar, el perfil se elimina por completo para que no exista
+    // Al rechazar, el perfil se elimina por completo
     const persistidos = obtenerTutoresPersistidos();
     const actualizados = persistidos.filter((t) => t.id !== id);
     guardarTodosLosTutoresPersistidos(actualizados);
 
     return res as Tutor;
   } catch (error) {
-    console.warn('Error llamando API de rechazo, usando eliminación local:', error);
-    // Eliminar completamente de persistidos para que el perfil no exista
-    const persistidos = obtenerTutoresPersistidos();
-    const actualizados = persistidos.filter((t) => t.id !== id);
-    guardarTodosLosTutoresPersistidos(actualizados);
-
-    return { id, estadoAprobacion: 'rechazado', motivoRechazo: motivo } as any;
+    console.error('Error llamando API de rechazo:', error);
+    throw error;
   }
 }
 
@@ -170,29 +135,7 @@ export async function alternarEstadoTutor(
 
     return tutorActualizado;
   } catch (error) {
-    console.warn('Error llamando API de estado tutor, usando respaldo local:', error);
-    const persistidos = obtenerTutoresPersistidos();
-    let tutorModificado: Tutor | null = null;
-
-    const actualizados = persistidos.map((t) => {
-      if (t.id === id) {
-        tutorModificado = {
-          ...t,
-          activo: nuevoEstadoActivo,
-        };
-        return tutorModificado;
-      }
-      return t;
-    });
-
-    guardarTodosLosTutoresPersistidos(actualizados);
-    actualizarUsuarioLocal(id, {
-      activo: nuevoEstadoActivo,
-    });
-
-    if (!tutorModificado) {
-      throw new Error(`Tutor con ID ${id} no encontrado.`);
-    }
-    return tutorModificado;
+    console.error('Error llamando API de alternar estado tutor:', error);
+    throw error;
   }
 }

@@ -31,6 +31,7 @@ export function DashboardAdmin() {
   const [tutores, setTutores] = useState<Tutor[]>([]);
   const [cargando, setCargando] = useState(true);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
 
   // Modal para ver soporte de notas
   const [tutorVerSoporte, setTutorVerSoporte] = useState<Tutor | null>(null);
@@ -47,6 +48,7 @@ export function DashboardAdmin() {
       })
       .catch((err) => {
         console.error('Error cargando tutores para admin:', err);
+        setMensajeError(err instanceof Error ? err.message : 'Error cargando datos del servidor');
       });
   };
 
@@ -63,6 +65,7 @@ export function DashboardAdmin() {
         if (!cancelado) {
           console.error('Error cargando tutores para admin:', err);
           setCargando(false);
+          setMensajeError(err instanceof Error ? err.message : 'Error conectando con el servidor');
         }
       });
     return () => {
@@ -82,18 +85,22 @@ export function DashboardAdmin() {
 
   const handleAprobar = async (id: string, nombre: string) => {
     try {
+      setMensajeError(null);
       await aprobarTutor(id);
       setMensajeExito(`El tutor ${nombre} ha sido aprobado exitosamente y ya es visible en el catálogo.`);
       recargarDatos();
       setTimeout(() => setMensajeExito(null), 4000);
     } catch (e) {
       console.error(e);
+      setMensajeError(e instanceof Error ? e.message : 'Error al aprobar el tutor');
+      setTimeout(() => setMensajeError(null), 6000);
     }
   };
 
   const handleConfirmarRechazo = async () => {
     if (!tutorARechazar) return;
     try {
+      setMensajeError(null);
       await rechazarTutor(tutorARechazar.id, motivoRechazo);
       setMensajeExito(`La solicitud de ${tutorARechazar.nombres} ${tutorARechazar.apellidos} ha sido rechazada.`);
       setTutorARechazar(null);
@@ -101,12 +108,15 @@ export function DashboardAdmin() {
       setTimeout(() => setMensajeExito(null), 4000);
     } catch (e) {
       console.error(e);
+      setMensajeError(e instanceof Error ? e.message : 'Error al rechazar la solicitud');
+      setTimeout(() => setMensajeError(null), 6000);
     }
   };
 
   const handleAlternarEstado = async (id: string, nombre: string, estadoActual: boolean) => {
     const nuevoEstado = !estadoActual;
     try {
+      setMensajeError(null);
       await alternarEstadoTutor(id, nuevoEstado);
       setMensajeExito(
         `El perfil de ${nombre} ha sido ${nuevoEstado ? 'habilitado' : 'deshabilitado'} en el catálogo.`
@@ -115,6 +125,8 @@ export function DashboardAdmin() {
       setTimeout(() => setMensajeExito(null), 4000);
     } catch (e) {
       console.error(e);
+      setMensajeError(e instanceof Error ? e.message : 'Error al modificar estado del tutor');
+      setTimeout(() => setMensajeError(null), 6000);
     }
   };
 
@@ -136,6 +148,21 @@ export function DashboardAdmin() {
         {mensajeExito && (
           <div className="admin-success-toast" role="status">
             <span>✓ {mensajeExito}</span>
+          </div>
+        )}
+
+        {/* Mensaje de error temporal */}
+        {mensajeError && (
+          <div
+            className="admin-success-toast"
+            role="alert"
+            style={{
+              backgroundColor: '#fff5f5',
+              borderColor: '#feb2b2',
+              color: '#c53030'
+            }}
+          >
+            <span>⚠ {mensajeError}</span>
           </div>
         )}
 

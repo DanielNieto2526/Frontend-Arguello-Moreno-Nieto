@@ -52,25 +52,8 @@ export async function registrarEstudiante(
     }
     return nuevo;
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
-      throw error;
-    }
-    await new Promise((resolver) => setTimeout(resolver, 300));
-    const localEstudiante: Usuario = {
-      id: datos.id || `estudiante-${Date.now()}`,
-      nombres: datos.nombres?.trim() || '',
-      apellidos: datos.apellidos?.trim() || '',
-      correo: datos.correo?.trim().toLowerCase() || '',
-      clave: datos.clave,
-      rol: 'estudiante',
-      carrera: datos.carrera?.trim() || '',
-      semestre: Number(datos.semestre) || 1,
-      estadoAprobacion: 'aprobado',
-      activo: true,
-    };
-    registrarUsuarioLocal(localEstudiante);
-    guardarSesion(localEstudiante);
-    return localEstudiante;
+    console.error('Error al registrar estudiante en el backend:', error);
+    throw error;
   }
 }
 
@@ -89,11 +72,7 @@ export async function actualizarPerfilUsuario(
     }
     return usuarioActualizado;
   } catch (err) {
-    console.warn('Actualizando usuario localmente como contingencia:', err);
-    const sesion = obtenerSesion();
-    const actualizado = { ...sesion, ...cambios } as Usuario;
-    guardarSesion(actualizado);
-    registrarUsuarioLocal(actualizado);
-    return actualizado;
+    console.error('Error al actualizar perfil de usuario en el backend:', err);
+    throw err;
   }
 }

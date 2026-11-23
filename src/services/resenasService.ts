@@ -148,7 +148,7 @@ export async function obtenerResenasPorTutorAsync(
     if (tutorNombres) params.append('tutorNombres', tutorNombres);
     const query = params.toString() ? `?${params.toString()}` : '';
     const res = await solicitar<Resena[]>(`/resenas/tutor/${encodeURIComponent(tutorId)}${query}`);
-    if (Array.isArray(res) && res.length > 0) {
+    if (Array.isArray(res)) {
       const idsExistentes = new Set(res.map((r) => r.id));
       resenasEnMemoria = [
         ...res,
@@ -157,8 +157,8 @@ export async function obtenerResenasPorTutorAsync(
       guardarResenasPersistidas(resenasEnMemoria);
       return res;
     }
-  } catch {
-    // fallback
+  } catch (error) {
+    console.warn('Fallo al obtener reseñas de la API, usando respaldo:', error);
   }
   return obtenerResenasPorTutor(tutorId, tutorNombres);
 }
@@ -209,14 +209,9 @@ export async function guardarNuevaResena(
       guardarResenasPersistidas(resenasEnMemoria);
       return res;
     }
-  } catch {
-    // fallback
+    return res;
+  } catch (error) {
+    console.error('Error al guardar reseña en el backend:', error);
+    throw error;
   }
-
-  const nuevaResena: Resena = {
-    ...payload,
-  };
-  resenasEnMemoria = [nuevaResena, ...resenasEnMemoria];
-  guardarResenasPersistidas(resenasEnMemoria);
-  return nuevaResena;
 }

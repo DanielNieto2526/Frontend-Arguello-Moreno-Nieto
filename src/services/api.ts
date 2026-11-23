@@ -4,8 +4,22 @@
  */
 
 // La URL de la API se lee de las variables de entorno (archivo .env o Vercel Environment Variables).
-const rawApiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3000/api';
-export const API_URL = rawApiUrl.trim().replace(/\/+$/, '');
+let rawApiUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
+
+// En producción (despliegue en Vercel): si no se configuró o apunta a localhost, usar el backend de Vercel por defecto
+if (import.meta.env.PROD && (!rawApiUrl || rawApiUrl.includes('localhost'))) {
+  rawApiUrl = 'https://backend-alpha-bice-20.vercel.app/api';
+} else if (!rawApiUrl) {
+  rawApiUrl = 'http://localhost:3000/api';
+}
+
+// Normalizar: quitar barras finales y asegurar sufijo /api
+let baseNormalizada = rawApiUrl.replace(/\/+$/, '');
+if (!baseNormalizada.endsWith('/api')) {
+  baseNormalizada = `${baseNormalizada}/api`;
+}
+
+export const API_URL = baseNormalizada;
 
 /** Error con la información que devuelve el backend: { mensaje, errores? } */
 export class ApiError extends Error {
@@ -36,7 +50,8 @@ interface RespuestaDeError {
  * - Captura errores de red (status 0)
  */
 export async function solicitar<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
-  const url = `${API_URL}${ruta.startsWith('/') ? ruta : `/${ruta}`}`;
+  const rutaLimpia = ruta.startsWith('/') ? ruta : `/${ruta}`;
+  const url = `${API_URL}${rutaLimpia}`;
 
   const headers = new Headers(opciones.headers);
   if (opciones.body && !headers.has('Content-Type')) {
@@ -63,6 +78,7 @@ export async function solicitar<T>(ruta: string, opciones: RequestInit = {}): Pr
         // La respuesta no era JSON
       }
 
+      console.warn(`[API HTTP ${respuesta.status}] ${url}:`, mensaje);
       throw new ApiError(respuesta.status, mensaje, errores);
     }
 
@@ -71,8 +87,9 @@ export async function solicitar<T>(ruta: string, opciones: RequestInit = {}): Pr
     if (error instanceof ApiError) {
       throw error;
     }
+    console.error(`[API Network Error] ${url}:`, error);
     // Error de red, CORS o servidor apagado
-    throw new ApiError(0, 'No se pudo conectar con el servidor. Verifica tu conexión.');
+    throw new ApiError(0, `No se pudo conectar con el servidor backend (${url}). Verifica tu conexión o el despliegue del backend.`);
   }
 }
 

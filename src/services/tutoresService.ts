@@ -97,76 +97,8 @@ export async function registrarNuevoTutor(
     }
     return res;
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
-      throw error;
-    }
-    await new Promise((resolver) => setTimeout(resolver, 400));
-
-    const idTutor = `tutor-${Date.now()}`;
-    const idUsuario = idTutor;
-    const iniciales = `${datos.nombres.charAt(0)}${datos.apellidos.charAt(0)}`.toUpperCase();
-    const semestreTexto = `${datos.semestre}º semestre ${datos.carrera} - ${datos.sede.toLowerCase()}`;
-    const precioFormato = `$${Number(datos.precioHora).toLocaleString('es-CO')} x hora`;
-
-    const nuevoTutor: Tutor = {
-      id: idTutor,
-      nombres: datos.nombres.trim(),
-      apellidos: datos.apellidos.trim(),
-      iniciales,
-      semestreTexto,
-      sede: datos.sede,
-      modalidad: datos.modalidad,
-      descripcion: datos.descripcion.trim(),
-      precioHora: Number(datos.precioHora),
-      precioFormato,
-      materiaPrincipal: datos.materiaPrincipal.trim(),
-      estrellas: 0,
-      diasDisponibles: [],
-      salones: datos.salones || [],
-      cursos: [
-        datos.materiaPrincipal.trim(),
-        ...(datos.cursosAdicionales || []).map((c) => c.trim()),
-      ],
-      correo: datos.correo.trim().toLowerCase(),
-      activo: false, // Inicia inactivo hasta que el admin lo apruebe
-      estadoAprobacion: 'pendiente',
-      notaMateria: Number(datos.notaMateria) || 0,
-      promedioAcumulado: Number(datos.promedioAcumulado) || 0,
-      soporteNotasNombre: datos.soporteNotasNombre || 'certificado_notas.pdf',
-      soporteNotasUrl: datos.soporteNotasUrl,
-      fechaRegistro: new Date().toLocaleDateString('es-CO'),
-    };
-
-    const nuevoUsuario: Usuario = {
-      id: idUsuario,
-      nombres: datos.nombres.trim(),
-      apellidos: datos.apellidos.trim(),
-      correo: datos.correo.trim().toLowerCase(),
-      clave: datos.clave,
-      rol: 'tutor',
-      carrera: datos.carrera,
-      semestre: datos.semestre,
-      cursos: nuevoTutor.cursos,
-      sede: datos.sede,
-      modalidad: datos.modalidad,
-      precioHora: Number(datos.precioHora),
-      descripcion: datos.descripcion.trim(),
-      materiaPrincipal: datos.materiaPrincipal.trim(),
-      salones: datos.salones || [],
-      activo: false,
-      estadoAprobacion: 'pendiente',
-      notaMateria: Number(datos.notaMateria) || 4.5,
-      promedioAcumulado: Number(datos.promedioAcumulado) || 4.2,
-      soporteNotasNombre: datos.soporteNotasNombre || 'certificado_notas.pdf',
-      soporteNotasUrl: datos.soporteNotasUrl,
-      fechaRegistro: new Date().toLocaleDateString('es-CO'),
-    };
-
-    // Guardar en persistencia local
-    guardarTutorPersistido(nuevoTutor);
-    registrarUsuarioLocal(nuevoUsuario);
-
-    return { usuario: nuevoUsuario, tutor: nuevoTutor };
+    console.error('Error al registrar nuevo tutor en el backend:', error);
+    throw error;
   }
 }
 
@@ -179,14 +111,16 @@ export async function actualizarDisponibilidadTutor(
       method: 'PATCH',
       body: JSON.stringify({ activo }),
     });
-  } catch {
-    await new Promise((resolver) => setTimeout(resolver, 300));
+
     const tutores = obtenerTutoresPersistidos();
     const index = tutores.findIndex((t) => t.id === tutorId);
     if (index !== -1) {
       tutores[index].activo = activo;
       localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(tutores));
     }
+  } catch (error) {
+    console.error('Error al actualizar disponibilidad:', error);
+    throw error;
   }
 }
 
@@ -216,27 +150,7 @@ export async function actualizarTutor(
     }
     return tutorActualizado;
   } catch (error) {
-    console.warn('Persistiendo tutor localmente como fallback:', error);
-    const tutores = obtenerTutoresPersistidos();
-    const index = tutores.findIndex((t) => t.id === tutorId);
-    let tutorRetorno: Tutor;
-    if (index !== -1) {
-      tutores[index] = { ...tutores[index], ...cambios } as Tutor;
-      localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(tutores));
-      tutorRetorno = tutores[index];
-    } else {
-      tutorRetorno = { id: tutorId, ...cambios } as Tutor;
-    }
-    const sesion = obtenerSesion();
-    if (
-      sesion &&
-      (sesion.id === tutorId ||
-        sesion.correo === (cambios as any).correo)
-    ) {
-      const sesionActualizada = { ...sesion, ...cambios };
-      guardarSesion(sesionActualizada);
-      registrarUsuarioLocal(sesionActualizada);
-    }
-    return tutorRetorno;
+    console.error('Error actualizando tutor en el backend:', error);
+    throw error;
   }
 }
