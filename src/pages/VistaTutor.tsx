@@ -163,21 +163,17 @@ export function VistaTutor() {
                       <span className="tutor-materia-pill">{tutoria.materia}</span>
 
                       <div className="tutor-card-actions">
-                        {tutoria.esVirtual && (
-                          <Button
-                            variant="primary"
-                            className="tutor-btn-link"
-                            onClick={() => handleAbrirModalLink(tutoria)}
-                          >
-                            agregar link
-                          </Button>
-                        )}
+                        <Button
+                          variant="primary"
+                          className="tutor-btn-link"
+                          onClick={() => handleAbrirModalLink(tutoria)}
+                        >
+                          agregar link
+                        </Button>
 
                         <Button
                           variant="primary"
-                          className={`tutor-btn-info ${
-                            !tutoria.esVirtual ? 'tutor-btn-info--wide' : ''
-                          }`}
+                          className="tutor-btn-info"
                           onClick={() => navigate(`/tutor/tutorias/${tutoria.id}`)}
                         >
                           Informacion

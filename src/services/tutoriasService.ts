@@ -4,7 +4,7 @@ import { solicitar } from './api';
 import { obtenerSesion } from '../utils/auth';
 
 const RUTA = '/tutorias';
-const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v4';
+const STORAGE_TUTORIAS_KEY = 'conecta_tutor_tutorias_persisted_v5';
 
 function cargarTutoriasPersistidas(): TutoriaAgendada[] {
   try {

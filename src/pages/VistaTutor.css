@@ -37,15 +37,16 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   width: 100%;
+  align-items: stretch;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1060px) {
   .tutor-cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 680px) {
   .tutor-cards-grid {
     grid-template-columns: 1fr;
   }
@@ -61,6 +62,7 @@
   box-shadow: 0 4px 16px rgba(60, 9, 25, 0.04);
   display: flex;
   flex-direction: column;
+  height: 100%;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -73,10 +75,11 @@
   height: 8px;
   width: 100%;
   background-color: #7D1128;
+  flex-shrink: 0;
 }
 
 .tutor-card-content {
-  padding: 24px 18px 22px;
+  padding: 22px 14px 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -86,8 +89,8 @@
 .tutor-card-student {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .tutor-student-avatar-img {
@@ -145,25 +148,33 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
+  min-height: 72px;
+  box-sizing: border-box;
 }
 
 .tutor-card-details-left {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
+  flex: 1;
 }
 
 .tutor-card-datetime {
   font-family: var(--font-family);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--Vino-tinto);
+  line-height: 1.25;
 }
 
 .tutor-card-location {
   font-size: 12px;
   color: var(--Texto-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tutor-card-time-badge {
@@ -175,6 +186,7 @@
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Footer de la Tarjeta */
@@ -183,7 +195,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: nowrap;
   width: 100%;
 }
@@ -192,22 +204,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 5px 10px;
   border-radius: 999px;
   background-color: var(--Blanco);
   border: 1px solid #C4A2A9;
   color: var(--Vino-tinto);
   font-family: var(--font-family);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
-  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+  flex-shrink: 1;
 }
 
 .tutor-card-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
@@ -233,15 +248,15 @@
   background-color: var(--Naranja-boton-hover);
 }
 
-/* Botón agregar link (Figma) */
+/* Botón agregar link */
 .tutor-btn-link {
   background-color: var(--Naranja-boton) !important;
   color: var(--Vino-tinto) !important;
   border: none !important;
   border-radius: 8px !important;
-  padding: 8px 14px !important;
+  padding: 7px 11px !important;
   font-family: var(--font-family) !important;
-  font-size: 13px !important;
+  font-size: 12.5px !important;
   font-weight: 700 !important;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -253,15 +268,15 @@
   background-color: var(--Naranja-boton-hover) !important;
 }
 
-/* Botón Información en tarjeta compartida */
+/* Botón Información uniforme */
 .tutor-btn-info {
   background-color: var(--Naranja-boton) !important;
   color: var(--Vino-tinto) !important;
   border: none !important;
   border-radius: 8px !important;
-  padding: 8px 18px !important;
+  padding: 7px 13px !important;
   font-family: var(--font-family) !important;
-  font-size: 14px !important;
+  font-size: 12.5px !important;
   font-weight: 700 !important;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -273,11 +288,10 @@
   background-color: var(--Naranja-boton-hover) !important;
 }
 
-/* Botón Información en tarjetas 2 y 3: grande, amplio y destacado como en Figma */
 .tutor-btn-info--wide {
-  padding: 10px 36px !important;
-  font-size: 16px !important;
-  min-width: 145px;
+  /* Deprecated: todas las cards mantienen tamaño uniforme */
+  padding: 7px 13px !important;
+  font-size: 12.5px !important;
 }
 
 /* Forma orgánica inferior de fondo según Figma (fomaTutor.svg) */
