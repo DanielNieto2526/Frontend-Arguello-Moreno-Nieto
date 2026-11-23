@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion, cerrarSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
 import { actualizarPerfilUsuario } from '../services/authService';
+import { comprimirImagen } from '../utils/imagen';
 import { solicitar } from '../services/api';
 import formaPendientesEstudiantes from '../assets/formaPendientesEstudiantes.svg';
 
@@ -75,21 +76,19 @@ export function EditarPerfilEstudiante() {
 
   const iniciales = `${(usuario.nombres || 'D').charAt(0)}${(usuario.apellidos || 'M').charAt(0)}`.toUpperCase();
 
-  const procesarArchivo = (file: File) => {
+  const procesarArchivo = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       alert('Por favor selecciona un archivo de imagen válido.');
       return;
     }
     setFotoNombre(file.name);
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const resultado = event.target?.result as string;
-      if (resultado) {
-        setFotoPreview(resultado);
-        setMensajeFoto('Foto seleccionada. Haz clic en "Guardar foto de perfil" para confirmarla.');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const optimizada = await comprimirImagen(file, 500, 0.82);
+      setFotoPreview(optimizada);
+      setMensajeFoto('Foto seleccionada y optimizada. Haz clic en "Guardar foto de perfil" para confirmarla.');
+    } catch {
+      alert('No se pudo procesar la imagen seleccionada.');
+    }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +143,7 @@ export function EditarPerfilEstudiante() {
       setTimeout(() => setMensajeFoto(null), 4000);
     } catch (err: any) {
       console.error('Error al guardar foto:', err);
-      alert('Error al guardar la foto de perfil en la base de datos.');
+      alert(err instanceof Error ? err.message : 'Error al guardar la foto de perfil en la base de datos.');
     } finally {
       setGuardandoFoto(false);
     }

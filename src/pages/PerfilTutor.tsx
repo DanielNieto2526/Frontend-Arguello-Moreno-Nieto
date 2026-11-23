@@ -7,6 +7,8 @@ import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
 import { obtenerSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
 import { obtenerTutorPorId, actualizarTutor } from '../services/tutoresService';
+import { actualizarPerfilUsuario } from '../services/authService';
+import { comprimirImagen } from '../utils/imagen';
 import {
   obtenerResenasPorTutor,
   obtenerResenasPorTutorAsync,
@@ -66,7 +68,7 @@ export function PerfilTutor() {
     setCursoAbierto((prev) => (prev === curso ? null : curso));
   };
 
-  const handleSeleccionarArchivo = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleSeleccionarArchivo = async (e: ChangeEvent<HTMLInputElement>) => {
     const archivo = e.target.files?.[0];
     if (!archivo) return;
 
@@ -75,15 +77,13 @@ export function PerfilTutor() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const resultado = event.target?.result as string;
-      if (resultado) {
-        setFotoPreview(resultado);
-        setMensajeFoto('Foto seleccionada. Haz clic en "Guardar foto de perfil" para confirmar.');
-      }
-    };
-    reader.readAsDataURL(archivo);
+    try {
+      const comprimida = await comprimirImagen(archivo, 500, 0.82);
+      setFotoPreview(comprimida);
+      setMensajeFoto('Foto seleccionada y optimizada. Haz clic en "Guardar foto de perfil" para confirmar.');
+    } catch {
+      alert('No se pudo procesar la imagen seleccionada.');
+    }
   };
 
   const handleGuardarFoto = async () => {
@@ -99,9 +99,16 @@ export function PerfilTutor() {
 
     try {
       await actualizarTutor(usuario.id, {
+        correo: usuario.correo,
         avatarUrl: fotoAGuardar,
         fotoPerfil: fotoAGuardar,
       });
+
+      try {
+        await actualizarPerfilUsuario(usuario.id, {
+          avatarUrl: fotoAGuardar,
+        });
+      } catch {}
 
       const usuarioActualizado: Usuario = {
         ...usuario,
@@ -116,7 +123,7 @@ export function PerfilTutor() {
       setTimeout(() => setMensajeFoto(null), 4000);
     } catch (err: any) {
       console.error('Error al guardar foto de perfil:', err);
-      alert('Error al guardar la foto de perfil en la base de datos.');
+      alert(err instanceof Error ? err.message : 'Error al guardar la foto de perfil en la base de datos.');
     } finally {
       setGuardandoFoto(false);
     }
