@@ -295,11 +295,11 @@ export function AgendarTutoria() {
     if (e.target.files) {
       const nuevosArchivos = Array.from(e.target.files);
       const archivosPesados = nuevosArchivos.filter(
-        (f) => f.size > 1.5 * 1024 * 1024 && !f.type.startsWith('image/')
+        (f) => f.size > 800 * 1024 && !f.type.startsWith('image/')
       );
       if (archivosPesados.length > 0) {
         alert(
-          `Aviso: El archivo "${archivosPesados[0].name}" supera 1.5 MB. Se registrará el nombre del archivo en la tutoría; te sugerimos incluir también el enlace (Drive/OneDrive) en los detalles para que tu tutor pueda descargarlo.`
+          `Aviso: El archivo "${archivosPesados[0].name}" supera 800 KB. Se registrará el nombre del archivo en la tutoría; te sugerimos incluir también el enlace (Drive/OneDrive) en los detalles para que tu tutor pueda descargarlo.`
         );
       }
       setArchivos((prev) => [...prev, ...nuevosArchivos]);
@@ -351,8 +351,8 @@ export function AgendarTutoria() {
             }
           }
 
-          // Si es PDF u otro archivo de hasta 1.5MB, se convierte a Base64
-          if (file.size <= 1.5 * 1024 * 1024) {
+          // Si es PDF u otro archivo de hasta 800KB, se convierte a Base64
+          if (file.size <= 800 * 1024) {
             return new Promise<{ nombre: string; tipo: string; url: string }>((resolve) => {
               const reader = new FileReader();
               reader.onload = () => {
@@ -373,7 +373,7 @@ export function AgendarTutoria() {
             });
           }
 
-          // Para archivos mayores a 2.5MB (como notebooks de Colab o talleres pesados), se registra el nombre
+          // Para archivos mayores a 800KB (como notebooks de Colab o talleres pesados), se registra el nombre
           return {
             nombre: file.name,
             tipo: file.type || 'application/pdf',

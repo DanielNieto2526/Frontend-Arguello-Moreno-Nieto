@@ -384,11 +384,11 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
     const payloadLimpio = { ...datosCompletos };
     if (payloadLimpio.archivos && Array.isArray(payloadLimpio.archivos)) {
       const tamanoAprox = JSON.stringify(payloadLimpio).length;
-      if (tamanoAprox > 3.5 * 1024 * 1024) {
+      if (tamanoAprox > 1.2 * 1024 * 1024) {
         payloadLimpio.archivos = payloadLimpio.archivos.map((a) => ({
           nombre: a.nombre,
           tipo: a.tipo,
-          url: (a.url && a.url.length > 300000) ? '' : a.url,
+          url: (a.url && a.url.length > 200000) ? '' : a.url,
         }));
         payloadLimpio.archivosAdjuntos = payloadLimpio.archivos;
       }
