@@ -4,7 +4,7 @@ import './TutoriasPendientes.css';
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
 import { Cargando } from '../components/Cargando';
-import { obtenerTutorias, cancelarTutoria } from '../services/tutoriasService';
+import { obtenerTutorias, cancelarTutoria, calcularTiempoRestante } from '../services/tutoriasService';
 import { obtenerMensajeDeError } from '../services/api';
 import type { TutoriaAgendada } from '../types/tutoria';
 import { obtenerSesion } from '../utils/auth';
@@ -30,7 +30,7 @@ export function TutoriasPendientes() {
     obtenerTutorias()
       .then((datos) => {
         if (!cancelado) {
-          setTutorias(datos);
+          setTutorias(datos.filter((item) => item.estado !== 'cancelada'));
           setCargando(false);
         }
       })
@@ -111,48 +111,64 @@ export function TutoriasPendientes() {
                 No tienes tutorías pendientes ni agendadas en este momento.
               </p>
             ) : (
-              tutorias.map((tutoria) => (
-                <article key={tutoria.id} className="tutoria-card">
-                  {/* Barra superior vino tinto */}
-                  <div className="tutoria-card-top-bar" aria-hidden="true" />
+              tutorias.map((tutoria) => {
+                const tiempoRestante = calcularTiempoRestante(
+                  tutoria.fechaISO,
+                  tutoria.fechaTexto,
+                  tutoria.estado,
+                  tutoria.calificacion
+                ) || tutoria.tiempoRestanteTexto;
+                const yaTomada = tutoria.puedeCalificar || tiempoRestante === 'Ya Tomada';
 
-                  {/* Encabezado: Avatar + Nombre y semestre (Clickable para ir al perfil del tutor) */}
-                  <header
-                    className="tutoria-card-header tutoria-card-header--clickable"
-                    onClick={() => navigate(`/app/tutores/${tutoria.tutorId}`)}
-                    title="Ver perfil del tutor"
-                  >
-                    <div className="tutoria-avatar-circle" aria-hidden="true">
-                      {tutoria.tutorIniciales}
+                return (
+                  <article key={tutoria.id} className="tutoria-card">
+                    {/* Barra superior vino tinto */}
+                    <div className="tutoria-card-top-bar" aria-hidden="true" />
+
+                    {/* Encabezado: Avatar + Nombre y semestre (Clickable para ir al perfil del tutor) */}
+                    <header
+                      className="tutoria-card-header tutoria-card-header--clickable"
+                      onClick={() => navigate(`/app/tutores/${tutoria.tutorId}`)}
+                      title="Ver perfil del tutor"
+                    >
+                      <div className="tutoria-avatar-circle" aria-hidden="true" style={{ overflow: 'hidden' }}>
+                        {tutoria.tutorAvatar ? (
+                          <img
+                            src={tutoria.tutorAvatar}
+                            alt={`${tutoria.tutorNombres} ${tutoria.tutorApellidos}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                          />
+                        ) : (
+                          tutoria.tutorIniciales
+                        )}
+                      </div>
+                      <div className="tutoria-tutor-info">
+                        <h2 className="tutoria-tutor-name">
+                          {tutoria.tutorNombres} {tutoria.tutorApellidos}
+                        </h2>
+                        <span className="tutoria-tutor-subtitle">
+                          {tutoria.tutorSemestreTexto}
+                        </span>
+                      </div>
+                    </header>
+
+                    {/* Caja rosada con horario, tiempo restante y lugar */}
+                    <div className="tutoria-details-box">
+                      <div className="tutoria-details-row-top">
+                        <span className="tutoria-datetime-text">{tutoria.fechaTexto}</span>
+                        <span className="tutoria-countdown-badge">
+                          {tiempoRestante}
+                        </span>
+                      </div>
+                      <span className="tutoria-location-text">{tutoria.lugarTexto}</span>
                     </div>
-                    <div className="tutoria-tutor-info">
-                      <h2 className="tutoria-tutor-name">
-                        {tutoria.tutorNombres} {tutoria.tutorApellidos}
-                      </h2>
-                      <span className="tutoria-tutor-subtitle">
-                        {tutoria.tutorSemestreTexto}
-                      </span>
-                    </div>
-                  </header>
 
-                  {/* Caja rosada con horario, tiempo restante y lugar */}
-                  <div className="tutoria-details-box">
-                    <div className="tutoria-details-row-top">
-                      <span className="tutoria-datetime-text">{tutoria.fechaTexto}</span>
-                      <span className="tutoria-countdown-badge">
-                        {tutoria.tiempoRestanteTexto}
-                      </span>
-                    </div>
-                    <span className="tutoria-location-text">{tutoria.lugarTexto}</span>
-                  </div>
+                    {/* Pie de la tarjeta: Materia y botones */}
+                    <footer className="tutoria-card-footer">
+                      <span className="tutoria-materia-badge">{tutoria.materia}</span>
 
-                  {/* Pie de la tarjeta: Materia y botones */}
-                  <footer className="tutoria-card-footer">
-                    <span className="tutoria-materia-badge">{tutoria.materia}</span>
-
-                    <div className="tutoria-actions-group">
-                      {(tutoria.puedeCalificar || tutoria.tiempoRestanteTexto === 'Ya Tomada') &&
-                        !tutoria.calificacion && (
+                      <div className="tutoria-actions-group">
+                        {yaTomada && !tutoria.calificacion && (
                           <Button
                             variant="primary"
                             size="md"
@@ -162,35 +178,36 @@ export function TutoriasPendientes() {
                           </Button>
                         )}
 
-                      {tutoria.calificacion && (
-                        <span className="tutoria-calificada-badge">
-                          ★ {tutoria.calificacion.toFixed(1)} Calificada
-                        </span>
-                      )}
+                        {tutoria.calificacion && (
+                          <span className="tutoria-calificada-badge">
+                            ★ {tutoria.calificacion.toFixed(1)} Calificada
+                          </span>
+                        )}
 
-                      {tutoria.esVirtual && tutoria.linkReunion && (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleAbrirLink(tutoria.linkReunion)}
-                        >
-                          Link
-                        </Button>
-                      )}
+                        {tutoria.esVirtual && tutoria.linkReunion && (
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleAbrirLink(tutoria.linkReunion)}
+                          >
+                            Link
+                          </Button>
+                        )}
 
-                      {!tutoria.puedeCalificar && tutoria.tiempoRestanteTexto !== 'Ya Tomada' && !tutoria.calificacion && (
-                        <Button
-                          variant="cancel"
-                          size="md"
-                          onClick={() => setTutoriaACancelar(tutoria)}
-                        >
-                          Cancelar
-                        </Button>
-                      )}
-                    </div>
-                  </footer>
-                </article>
-              ))
+                        {!yaTomada && !tutoria.calificacion && (
+                          <Button
+                            variant="cancel"
+                            size="md"
+                            onClick={() => setTutoriaACancelar(tutoria)}
+                          >
+                            Cancelar
+                          </Button>
+                        )}
+                      </div>
+                    </footer>
+                  </article>
+                );
+              })
             )}
           </section>
         )}

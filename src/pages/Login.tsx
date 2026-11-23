@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import loginHeroImg from '../assets/login.png';
 import formaLoginImg from '../assets/formaLogin.svg';
-import { autenticarUsuario } from '../utils/auth';
+import { login } from '../services/authService';
+import { guardarSesion } from '../utils/auth';
+import { obtenerMensajeDeError } from '../services/api';
 import type { Usuario } from '../types/usuario';
 import { Button } from '../components/Button';
 
@@ -22,6 +25,7 @@ export function Login({
   onNavigateToRegisterStudent,
   onNavigateToRegisterTutor,
 }: LoginProps) {
+  const navigate = useNavigate();
   const [usuario, setUsuario] = useState('');
   const [clave, setClave] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +46,7 @@ export function Login({
     return <h1 className="login-title">{titulo}</h1>;
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setMensajeExito(null);
@@ -52,15 +56,24 @@ export function Login({
       return;
     }
 
-    const sesion = autenticarUsuario({ usuario, clave });
-
-    if (sesion) {
+    try {
+      const sesion = await login({ usuario, clave });
+      guardarSesion(sesion);
       setMensajeExito(`¡Bienvenido/a, ${sesion.nombres}! Rol: ${sesion.rol}`);
       if (onLoginSuccess) {
         onLoginSuccess(sesion);
+      } else {
+        const rol = (sesion.rol || '').toLowerCase().trim();
+        if (rol === 'admin') {
+          navigate('/admin');
+        } else if (rol === 'tutor') {
+          navigate('/tutor/tutorias');
+        } else {
+          navigate('/app/explorar');
+        }
       }
-    } else {
-      setError('Credenciales inválidas. Verifica tu usuario y clave.');
+    } catch (err: unknown) {
+      setError(obtenerMensajeDeError(err));
     }
   };
 

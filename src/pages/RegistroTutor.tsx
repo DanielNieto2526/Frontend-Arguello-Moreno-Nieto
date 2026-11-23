@@ -5,6 +5,7 @@ import './RegistroTutor.css';
 import { registrarNuevoTutor } from '../services/tutoresService';
 import { validarCorreoURosario } from '../utils/auth';
 import { Button } from '../components/Button';
+import type { SalonTutor } from '../types/tutor';
 
 interface TutorFormData {
   nombres: string;
@@ -30,18 +31,51 @@ export function RegistroTutor() {
   const [nombreArchivo, setNombreArchivo] = useState<string>('');
   const [soporteNotasUrl, setSoporteNotasUrl] = useState<string>('');
   const [modalRegistroExitoso, setModalRegistroExitoso] = useState(false);
+  const [salones, setSalones] = useState<SalonTutor[]>([]);
+  const [nuevaSedeSalon, setNuevaSedeSalon] = useState('Claustro');
+  const [nuevoNombreSalon, setNuevoNombreSalon] = useState('');
+
+  const agregarSalon = () => {
+    const limpio = nuevoNombreSalon.trim();
+    if (!limpio) return;
+    setSalones((prev) => [...prev, { sede: nuevaSedeSalon, salon: limpio }]);
+    setNuevoNombreSalon('');
+  };
+
+  const eliminarSalon = (index: number) => {
+    setSalones((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const [materiasAdicionales, setMateriasAdicionales] = useState<string[]>([]);
+  const [nuevaMateriaInput, setNuevaMateriaInput] = useState<string>('');
+
+  const agregarMateriaAdicional = () => {
+    const limpio = nuevaMateriaInput.trim();
+    if (!limpio) return;
+    if (
+      !materiasAdicionales.some((m) => m.toLowerCase() === limpio.toLowerCase()) &&
+      limpio.toLowerCase() !== formData.materiaPrincipal.trim().toLowerCase()
+    ) {
+      setMateriasAdicionales((prev) => [...prev, limpio]);
+    }
+    setNuevaMateriaInput('');
+  };
+
+  const eliminarMateriaAdicional = (index: number) => {
+    setMateriasAdicionales((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const [formData, setFormData] = useState<TutorFormData>({
     nombres: '',
     apellidos: '',
     correo: '',
     clave: '',
-    semestre: '6',
+    semestre: '',
     carrera: '',
     materiaPrincipal: '',
-    notaMateria: '4.5',
-    promedioAcumulado: '4.2',
-    precioHora: '20000',
+    notaMateria: '',
+    promedioAcumulado: '',
+    precioHora: '',
     modalidad: 'Híbrida',
     descripcion: '',
     aceptaTerminos: false,
@@ -140,24 +174,32 @@ export function RegistroTutor() {
 
     setGuardando(true);
 
+    const salonesFinales = [...salones];
+    if (nuevoNombreSalon.trim()) {
+      salonesFinales.push({ sede: nuevaSedeSalon, salon: nuevoNombreSalon.trim() });
+    }
+
     try {
       await registrarNuevoTutor({
         nombres: formData.nombres.trim(),
         apellidos: formData.apellidos.trim(),
         correo: formData.correo.trim().toLowerCase(),
         clave: formData.clave.trim(),
-        carrera: formData.carrera.trim() || 'Matemáticas y Computación',
+        carrera: formData.carrera.trim(),
         semestre: Number(formData.semestre) || 6,
-        sede: 'Claustro',
+        sede: nuevaSedeSalon || 'Claustro',
         modalidad: formData.modalidad,
         materiaPrincipal: formData.materiaPrincipal.trim(),
-        precioHora: Number(formData.precioHora) || 20000,
+        cursos: [formData.materiaPrincipal.trim(), ...materiasAdicionales].filter(Boolean),
+        cursosAdicionales: materiasAdicionales,
+        precioHora: Number(formData.precioHora) || 0,
         descripcion:
           formData.descripcion.trim() ||
           `Monitor de ${formData.materiaPrincipal.trim()} con promedio destacado y vocación pedagógica.`,
-        diasDisponibles: ['LU', 'MA', 'MI'],
+        diasDisponibles: [],
+        salones: salonesFinales,
         notaMateria: notaNum,
-        promedioAcumulado: parseFloat(formData.promedioAcumulado) || 4.2,
+        promedioAcumulado: parseFloat(formData.promedioAcumulado) || 0,
         soporteNotasNombre: nombreArchivo,
         soporteNotasUrl: soporteNotasUrl || undefined,
       });
@@ -344,6 +386,84 @@ export function RegistroTutor() {
                 />
               </div>
 
+              {/* Materias adicionales que puede asesorar */}
+              <div style={{ marginBottom: '16px', padding: '12px 14px', backgroundColor: '#FDFBFA', border: '1px solid #ECE0DF', borderRadius: '10px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                  Materias adicionales que puedes asesorar:
+                </span>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                  <input
+                    type="text"
+                    className="register-tutor-capsule-field"
+                    style={{ flex: 1, height: '40px', fontSize: '13px' }}
+                    placeholder="Ej. Álgebra Lineal, Física Mecánica..."
+                    value={nuevaMateriaInput}
+                    onChange={(e) => setNuevaMateriaInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        agregarMateriaAdicional();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={agregarMateriaAdicional}
+                    style={{
+                      padding: '0 14px',
+                      backgroundColor: 'var(--Vino-tinto)',
+                      color: '#FFF',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    + Agregar
+                  </button>
+                </div>
+                {materiasAdicionales.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {materiasAdicionales.map((m, idx) => (
+                      <span
+                        key={`${m}-${idx}`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '4px 10px',
+                          backgroundColor: '#FFF',
+                          border: '1px solid #E0D0D0',
+                          borderRadius: '16px',
+                          fontSize: '12px',
+                          color: 'var(--Vino-tinto)',
+                          fontWeight: 500,
+                        }}
+                      >
+                        {m}
+                        <button
+                          type="button"
+                          onClick={() => eliminarMateriaAdicional(idx)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#999',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            padding: 0,
+                            lineHeight: 1,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* NUEVOS CAMPOS: VERIFICACIÓN DE NOTAS Y CERTIFICADO */}
               <div className="register-tutor-capsule">
                 <label className="register-tutor-capsule-label" htmlFor="tutor-nota">
@@ -433,6 +553,74 @@ export function RegistroTutor() {
                   <option value="Virtual">Virtual</option>
                 </select>
               </div>
+
+              {/* Salones y Sede en caso de modalidad Presencial o Híbrida */}
+              {(formData.modalidad === 'Presencial' || formData.modalidad === 'Híbrida') && (
+                <div className="register-tutor-salones-box">
+                  <span className="register-tutor-salones-title">Salones y Sedes para atención presencial</span>
+                  <p className="register-tutor-salones-desc">
+                    Escriba los salones donde puede dar la monitoría y seleccione su sede para que los estudiantes puedan escoger:
+                  </p>
+
+                  <div className="register-tutor-salon-input-row">
+                    <select
+                      className="register-tutor-salon-sede-select"
+                      value={nuevaSedeSalon}
+                      onChange={(e) => setNuevaSedeSalon(e.target.value)}
+                      aria-label="Sede del salón"
+                    >
+                      <option value="Claustro">Sede Claustro</option>
+                      <option value="Mutis">Sede Mutis</option>
+                      <option value="Norte">Sede Norte</option>
+                      <option value="Quinta de Mutis">Sede Quinta de Mutis</option>
+                    </select>
+
+                    <input
+                      type="text"
+                      className="register-tutor-salon-nombre-input"
+                      placeholder="Ej: Casur 311 / Aula 402"
+                      value={nuevoNombreSalon}
+                      onChange={(e) => setNuevoNombreSalon(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          agregarSalon();
+                        }
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      className="register-tutor-btn-add-salon"
+                      onClick={agregarSalon}
+                    >
+                      + Agregar salón
+                    </button>
+                  </div>
+
+                  {salones.length > 0 ? (
+                    <div className="register-tutor-salones-chips">
+                      {salones.map((s, idx) => (
+                        <span key={`${s.sede}-${s.salon}-${idx}`} className="register-tutor-salon-chip">
+                          <strong>{s.salon}</strong> ({s.sede})
+                          <button
+                            type="button"
+                            className="register-tutor-chip-remove"
+                            onClick={() => eliminarSalon(idx)}
+                            aria-label={`Eliminar salón ${s.salon}`}
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="register-tutor-salones-hint">
+                      Puedes agregar varios salones donde puedas atender clases presenciales.
+                    </p>
+                  )}
+                </div>
+              )}
 
               <div className="register-tutor-capsule">
                 <label className="register-tutor-capsule-label" htmlFor="tutor-desc">

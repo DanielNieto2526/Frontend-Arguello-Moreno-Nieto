@@ -11,6 +11,11 @@ export interface DiaDisponible {
   franjas: FranjaHoraria[];
 }
 
+export interface SalonTutor {
+  sede: string;
+  salon: string;
+}
+
 export interface Tutor {
   id: string;
   nombres: string;
@@ -25,7 +30,10 @@ export interface Tutor {
   materiaPrincipal: string; // "calculo II"
   estrellas: number; // 4.9
   diasDisponibles?: DiaDisponible[];
+  salones?: SalonTutor[];
   cursos?: string[];
+  avatarUrl?: string;
+  fotoPerfil?: string;
   correo?: string;
   activo?: boolean;
   estadoAprobacion?: 'pendiente' | 'aprobado' | 'rechazado';

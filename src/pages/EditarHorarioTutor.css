@@ -95,7 +95,156 @@
 .horario-dia-row {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+}
+
+.horario-dia-nombre {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--Vino-tinto);
+}
+
+.horario-section-block {
+  margin-bottom: 28px;
+}
+
+.horario-section-subtitle {
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  margin-bottom: 8px;
+}
+
+.horario-section-desc {
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: #555555;
+  margin-bottom: 14px;
+}
+
+.horario-franjas-predefinidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.horario-franja-pill {
+  border: 1px solid #EADCDD;
+  background-color: #FAF4F3;
+  color: var(--Vino-tinto);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.horario-franja-pill:hover {
+  border-color: #7D1128;
+  background-color: #F5EAEB;
+}
+
+.horario-franja-pill.activa {
+  background-color: var(--Vino-tinto);
+  color: #FFFFFF;
+  border-color: var(--Vino-tinto);
+  font-weight: 600;
+}
+
+.horario-custom-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.horario-custom-input {
+  flex: 1;
+  max-width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #D0BFC2;
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 13px;
+}
+
+.horario-custom-input:focus {
+  outline: none;
+  border-color: var(--Vino-tinto);
+}
+
+.horario-horas-seleccionadas {
+  background-color: #FAF4F3;
+  border: 1px solid #EADCDD;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.horario-horas-label {
+  display: block;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+  margin-bottom: 8px;
+}
+
+.horario-vacio-texto {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-style: italic;
+  color: #8C787D;
+  margin: 0;
+}
+
+.horario-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.horario-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #FFFFFF;
+  border: 1px solid #D0BFC2;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--Vino-tinto);
+}
+
+.horario-chip-remove {
+  background: none;
+  border: none;
+  color: #7D1128;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.horario-chip-remove:hover {
+  color: #D32F2F;
+}
+
+.horario-error-banner {
+  background-color: #FDEDED;
+  color: #D32F2F;
+  border: 1px solid #F5C6CB;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
 }
 
 /* Caja del día */

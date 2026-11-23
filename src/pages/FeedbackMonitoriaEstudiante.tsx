@@ -115,8 +115,8 @@ export function FeedbackMonitoriaEstudiante() {
     const tutoriaIdAsociada = tutoria?.id || tutoriaId || 'tutoria-1';
 
     try {
-      // 1. Guardar la reseña en el servicio de reseñas (conecta_tutor_resenas_v1)
-      guardarNuevaResena({
+      // 1. Guardar la reseña en el servicio de reseñas y base de datos
+      await guardarNuevaResena({
         tutorId: tutorIdAsociado,
         tutorNombres: tutorNombresAsociados,
         tutoriaId: tutoriaIdAsociada,

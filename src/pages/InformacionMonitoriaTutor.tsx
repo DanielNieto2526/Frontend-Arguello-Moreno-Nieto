@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './InformacionMonitoriaTutor.css';
 import { Header } from '../components/Header';
@@ -14,29 +14,19 @@ export function InformacionMonitoriaTutor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [usuario] = useState<Usuario | null>(() => {
+  const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const sesion = obtenerSesion();
-    if (!sesion || sesion.rol !== 'tutor') {
-      return {
-        id: '2',
-        nombres: 'Daniel',
-        apellidos: 'Nieto',
-        correo: 'dnieto@urosario.edu.co',
-        rol: 'tutor',
-        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
-        semestre: 6,
-        semestreTexto: '6º semestre MACC - Claustro',
-        cursos: ['Calculo II', 'Variable Compleja', 'Analisis Real'],
-        sede: 'Claustro',
-        modalidad: 'Híbrida',
-        precioHora: 20000,
-        descripcion:
-          'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
-        diasDisponibles: ['LU', 'MA', 'MI'],
-      };
-    }
-    return sesion;
+    return sesion && (sesion.rol || '').toLowerCase() === 'tutor' ? sesion : null;
   });
+
+  useEffect(() => {
+    const sesionActual = obtenerSesion();
+    if (!sesionActual || (sesionActual.rol || '').toLowerCase() !== 'tutor') {
+      navigate('/login', { replace: true });
+    } else if (!usuario || usuario.id !== sesionActual.id) {
+      setUsuario(sesionActual);
+    }
+  }, [usuario, navigate]);
 
   const [tutoria, setTutoria] = useState<TutoriaAgendada | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -62,12 +52,30 @@ export function InformacionMonitoriaTutor() {
     };
   }, [id]);
 
-  const handleDescargar = () => {
-    const nombreArchivo =
-      tutoria?.nombresArchivos && tutoria.nombresArchivos.length > 0
-        ? tutoria.nombresArchivos[0]
-        : 'taller_integrales_calculo2.pdf';
-    alert(`Descargando archivo adjunto: ${nombreArchivo}`);
+  const listaArchivos: { nombre: string; url?: string; tipo?: string }[] = useMemo(() => {
+    if (tutoria?.archivos && Array.isArray(tutoria.archivos) && tutoria.archivos.length > 0) {
+      return tutoria.archivos;
+    }
+    if (tutoria?.archivosAdjuntos && Array.isArray(tutoria.archivosAdjuntos) && tutoria.archivosAdjuntos.length > 0) {
+      return tutoria.archivosAdjuntos;
+    }
+    if (tutoria?.nombresArchivos && Array.isArray(tutoria.nombresArchivos) && tutoria.nombresArchivos.length > 0) {
+      return tutoria.nombresArchivos.map((n) => ({ nombre: n }));
+    }
+    return [];
+  }, [tutoria]);
+
+  const handleDescargarArchivo = (archivo: { nombre: string; url?: string; tipo?: string }) => {
+    if (archivo.url) {
+      const link = document.createElement('a');
+      link.href = archivo.url;
+      link.download = archivo.nombre || 'archivo_tutoria';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert(`El archivo "${archivo.nombre}" fue registrado solo por nombre y no cuenta con contenido descargable.`);
+    }
   };
 
   if (cargando) {
@@ -84,17 +92,18 @@ export function InformacionMonitoriaTutor() {
   const estudianteNombreCompleto =
     tutoria?.estudianteNombres && tutoria?.estudianteApellidos
       ? `${tutoria.estudianteNombres} ${tutoria.estudianteApellidos}`
-      : 'Daniela Moreno';
+      : (tutoria?.estudianteNombres || 'Estudiante');
 
   const estudianteIniciales =
     tutoria?.estudianteIniciales ||
     (tutoria?.estudianteNombres && tutoria?.estudianteApellidos
       ? `${tutoria.estudianteNombres.charAt(0)}${tutoria.estudianteApellidos.charAt(0)}`
-      : 'DM');
+      : 'ES');
 
   const textoDudas =
-    tutoria?.detalles ||
-    'El ultimoTe escribo porque actualmente estoy repasando el tema de integrales impropias en Cálculo II y tengo varias dudas que no he logrado resolver por mi cuenta. Específicamente, se me está dificultando plantear formalmente los límites, identificar las discontinuidades dentro del intervalo y aplicar los criterios de comparación para determinar si convergen o divergen.\n\nTe adjunto el taller asociado al tema.';
+    tutoria?.detalles && tutoria.detalles.trim()
+      ? tutoria.detalles
+      : 'Sin detalles adicionales registrados por el estudiante para esta monitoría.';
 
   return (
     <div className="info-monitoria-page">
@@ -115,16 +124,66 @@ export function InformacionMonitoriaTutor() {
 
             <div className="info-monitoria-text-box">{textoDudas}</div>
 
-            <div className="info-monitoria-attachment-row">
-              <span className="info-monitoria-attachment-label">1 archivo adjunto</span>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleDescargar}
-              >
-                Descargar
-              </Button>
+            <div style={{ marginTop: '12px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--Vino-tinto)', backgroundColor: '#F7F3F3', padding: '6px 12px', borderRadius: '6px', border: '1px solid #EADCDD' }}>
+                Duración: {tutoria?.duracionHoras || 1} {(tutoria?.duracionHoras || 1) === 1 ? 'hora' : 'horas'}
+              </span>
+              {tutoria?.precioTotal ? (
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#047857', backgroundColor: '#ECFDF5', padding: '6px 12px', borderRadius: '6px', border: '1px solid #A7F3D0' }}>
+                  Total: ${tutoria.precioTotal.toLocaleString('es-CO')} COP
+                </span>
+              ) : null}
             </div>
+
+            {listaArchivos.length > 0 ? (
+              <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <span className="info-monitoria-attachment-label" style={{ fontWeight: 600 }}>
+                  {listaArchivos.length} {listaArchivos.length === 1 ? 'archivo adjunto' : 'archivos adjuntos'}:
+                </span>
+                {listaArchivos.map((arch, idx) => (
+                  <div
+                    key={`${arch.nombre}-${idx}`}
+                    className="info-monitoria-attachment-row"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      backgroundColor: '#FDFBFA',
+                      border: '1px solid #ECE0DF',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        color: 'var(--Vino-tinto)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '70%',
+                      }}
+                    >
+                      Archivo: {arch.nombre}
+                    </span>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleDescargarArchivo(arch)}
+                    >
+                      Descargar
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="info-monitoria-attachment-row" style={{ marginTop: '16px' }}>
+                <span className="info-monitoria-attachment-label" style={{ color: 'var(--Gris-medio)', fontStyle: 'italic' }}>
+                  No hay archivos adjuntos en esta monitoría
+                </span>
+              </div>
+            )}
           </div>
         </section>
 
@@ -140,15 +199,23 @@ export function InformacionMonitoriaTutor() {
                 </h2>
               </div>
 
-              <div className="info-monitoria-avatar-initials">
-                {estudianteIniciales}
+              <div className="info-monitoria-avatar-initials" style={{ overflow: 'hidden' }}>
+                {tutoria?.estudianteAvatar ? (
+                  <img
+                    src={tutoria.estudianteAvatar}
+                    alt={estudianteNombreCompleto}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  />
+                ) : (
+                  estudianteIniciales
+                )}
               </div>
             </div>
 
             <div className="info-contact-field">
               <label className="info-contact-label">Telefono:</label>
               <div className="info-contact-value-box">
-                {tutoria?.estudianteTelefono || '320 4051954'}
+                {tutoria?.estudianteTelefono || 'No registrado'}
               </div>
             </div>
 
@@ -156,15 +223,16 @@ export function InformacionMonitoriaTutor() {
               <div className="info-contact-field">
                 <label className="info-contact-label">Correo Institucional</label>
                 <div className="info-contact-value-box">
-                  {tutoria?.estudianteCorreo || 'dmoreno@urosario.edu.co'}
+                  {tutoria?.estudianteCorreo || 'No registrado'}
                 </div>
               </div>
 
               <div className="info-contact-field">
-                <label className="info-contact-label">Semestre</label>
+                <label className="info-contact-label">Semestre / Carrera</label>
                 <div className="info-contact-value-box">
                   {tutoria?.estudianteSemestreCompleto ||
-                    'sexto semestre Ingenieria de Sistemas'}
+                    tutoria?.estudianteCarrera ||
+                    'No registrado'}
                 </div>
               </div>
             </div>

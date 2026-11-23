@@ -1,18 +1,27 @@
 import type { Usuario, CredencialesLogin } from '../types/usuario';
-import { autenticarUsuario, cerrarSesion, obtenerSesion } from '../utils/auth';
+import { autenticarUsuario, cerrarSesion, obtenerSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
 import { solicitar } from './api';
 
 const RUTA = '/auth';
 
 export async function login(credenciales: CredencialesLogin): Promise<Usuario> {
   try {
-    return await solicitar<Usuario>(`${RUTA}/login`, {
+    const sesion = await solicitar<Usuario>(`${RUTA}/login`, {
       method: 'POST',
       body: JSON.stringify(credenciales),
     });
-  } catch {
-    // Modo demostración: valida contra el local
-    await new Promise((resolver) => setTimeout(resolver, 400));
+    if (sesion) {
+      guardarSesion(sesion);
+      registrarUsuarioLocal(sesion);
+    }
+    return sesion;
+  } catch (error: unknown) {
+    // Si el error tiene código de estado (400, 401, 403 por pendiente/rechazado), propagar el error del backend!
+    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
+      throw error;
+    }
+    // Solo si el servidor está apagado (status 0), validar contra almacenamiento local
+    await new Promise((resolver) => setTimeout(resolver, 300));
     const sesion = autenticarUsuario(credenciales);
     if (!sesion) {
       throw new Error('Credenciales inválidas. Verifica tu usuario y clave.');
@@ -27,4 +36,64 @@ export function logout(): void {
 
 export function obtenerSesionActual(): Usuario | null {
   return obtenerSesion();
+}
+
+export async function registrarEstudiante(
+  datos: Partial<Usuario> & { clave: string }
+): Promise<Usuario> {
+  try {
+    const nuevo = await solicitar<Usuario>(`${RUTA}/registro/estudiante`, {
+      method: 'POST',
+      body: JSON.stringify(datos),
+    });
+    if (nuevo) {
+      guardarSesion(nuevo);
+      registrarUsuarioLocal(nuevo);
+    }
+    return nuevo;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
+      throw error;
+    }
+    await new Promise((resolver) => setTimeout(resolver, 300));
+    const localEstudiante: Usuario = {
+      id: datos.id || `estudiante-${Date.now()}`,
+      nombres: datos.nombres?.trim() || '',
+      apellidos: datos.apellidos?.trim() || '',
+      correo: datos.correo?.trim().toLowerCase() || '',
+      clave: datos.clave,
+      rol: 'estudiante',
+      carrera: datos.carrera?.trim() || '',
+      semestre: Number(datos.semestre) || 1,
+      estadoAprobacion: 'aprobado',
+      activo: true,
+    };
+    registrarUsuarioLocal(localEstudiante);
+    guardarSesion(localEstudiante);
+    return localEstudiante;
+  }
+}
+
+export async function actualizarPerfilUsuario(
+  id: string,
+  cambios: Partial<Usuario>
+): Promise<Usuario> {
+  try {
+    const usuarioActualizado = await solicitar<Usuario>(`/usuarios/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(cambios),
+    });
+    if (usuarioActualizado) {
+      guardarSesion(usuarioActualizado);
+      registrarUsuarioLocal(usuarioActualizado);
+    }
+    return usuarioActualizado;
+  } catch (err) {
+    console.warn('Actualizando usuario localmente como contingencia:', err);
+    const sesion = obtenerSesion();
+    const actualizado = { ...sesion, ...cambios } as Usuario;
+    guardarSesion(actualizado);
+    registrarUsuarioLocal(actualizado);
+    return actualizado;
+  }
 }

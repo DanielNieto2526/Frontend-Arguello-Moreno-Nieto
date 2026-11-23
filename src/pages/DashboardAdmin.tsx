@@ -209,8 +209,16 @@ export function DashboardAdmin() {
                         <div className="admin-applicant-body">
                           {/* Cabecera del postulante */}
                           <div className="admin-applicant-header">
-                            <div className="admin-avatar-circle" aria-hidden="true">
-                              {solicitud.iniciales}
+                            <div className="admin-avatar-circle" aria-hidden="true" style={{ overflow: 'hidden' }}>
+                              {solicitud.avatarUrl || solicitud.fotoPerfil ? (
+                                <img
+                                  src={solicitud.avatarUrl || solicitud.fotoPerfil}
+                                  alt={`${solicitud.nombres} ${solicitud.apellidos}`}
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                                />
+                              ) : (
+                                solicitud.iniciales
+                              )}
                             </div>
                             <div className="admin-applicant-info">
                               <h2 className="admin-applicant-name">
@@ -326,7 +334,17 @@ export function DashboardAdmin() {
                           <tr key={tutor.id} className={estaActivo ? 'row-active' : 'row-disabled'}>
                             <td>
                               <div className="admin-table-user">
-                                <div className="admin-avatar-small">{tutor.iniciales}</div>
+                                <div className="admin-avatar-small" style={{ overflow: 'hidden' }}>
+                                  {tutor.avatarUrl || tutor.fotoPerfil ? (
+                                    <img
+                                      src={tutor.avatarUrl || tutor.fotoPerfil}
+                                      alt={nombreCompleto}
+                                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                                    />
+                                  ) : (
+                                    tutor.iniciales
+                                  )}
+                                </div>
                                 <div>
                                   <strong className="admin-user-name">{nombreCompleto}</strong>
                                   <span className="admin-user-sub">{tutor.semestreTexto}</span>

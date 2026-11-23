@@ -183,6 +183,7 @@
   justify-content: space-between;
   gap: 10px;
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 /* Badge de materia */
@@ -195,6 +196,8 @@
   color: var(--Rojo-aux);
   font-family: var(--font-family);
   font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Grupo de botones a la derecha */

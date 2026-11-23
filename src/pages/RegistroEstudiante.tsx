@@ -2,8 +2,9 @@ import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistroEstudiante.css';
-import { registrarUsuarioLocal, guardarSesion, validarCorreoURosario } from '../utils/auth';
-import type { Usuario } from '../types/usuario';
+import { validarCorreoURosario } from '../utils/auth';
+import { registrarEstudiante } from '../services/authService';
+import { obtenerMensajeDeError } from '../services/api';
 import { Button } from '../components/Button';
 
 interface StudentFormData {
@@ -11,6 +12,7 @@ interface StudentFormData {
   apellidos: string;
   correo: string;
   clave: string;
+  telefono: string;
   semestre: string;
   carrera: string;
   aceptaTerminos: boolean;
@@ -20,12 +22,14 @@ export function RegisterStudent() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'register' | 'login'>('register');
   const [error, setError] = useState<string | null>(null);
+  const [guardando, setGuardando] = useState(false);
 
   const [formData, setFormData] = useState<StudentFormData>({
     nombres: '',
     apellidos: '',
     correo: '',
     clave: '',
+    telefono: '',
     semestre: '',
     carrera: '',
     aceptaTerminos: false,
@@ -51,7 +55,7 @@ export function RegisterStudent() {
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
@@ -75,21 +79,25 @@ export function RegisterStudent() {
       return;
     }
 
-    const nuevoEstudiante: Usuario = {
-      id: `estudiante-${Date.now()}`,
-      nombres: formData.nombres.trim(),
-      apellidos: formData.apellidos.trim(),
-      correo: formData.correo.trim().toLowerCase(),
-      clave: formData.clave.trim(),
-      rol: 'estudiante',
-      carrera: formData.carrera.trim(),
-      semestre: Number(formData.semestre) || 1,
-    };
+    setGuardando(true);
+    try {
+      await registrarEstudiante({
+        nombres: formData.nombres.trim(),
+        apellidos: formData.apellidos.trim(),
+        correo: formData.correo.trim().toLowerCase(),
+        clave: formData.clave.trim(),
+        telefono: formData.telefono.trim(),
+        rol: 'estudiante',
+        carrera: formData.carrera.trim(),
+        semestre: Number(formData.semestre) || 1,
+      });
 
-    registrarUsuarioLocal(nuevoEstudiante);
-    guardarSesion(nuevoEstudiante);
-
-    navigate('/app/explorar');
+      navigate('/app/explorar');
+    } catch (err: unknown) {
+      setError(obtenerMensajeDeError(err));
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -184,6 +192,22 @@ export function RegisterStudent() {
               </div>
 
               <div className="input-capsule">
+                <label className="capsule-label" htmlFor="telefono">
+                  Teléfono / Celular ▸
+                </label>
+                <input
+                  className="capsule-field"
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  placeholder="Ej. 310 1234567"
+                  value={formData.telefono}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="input-capsule">
                 <label className="capsule-label" htmlFor="clave">
                   Contraseña ▸
                 </label>
@@ -252,8 +276,8 @@ export function RegisterStudent() {
                   />
                   Acepto términos y condiciones
                 </label>
-                <Button type="submit" variant="primary" size="lg">
-                  Registrarse ▸
+                <Button type="submit" variant="primary" size="lg" disabled={guardando}>
+                  {guardando ? "Registrando..." : "Registrarse ▸"}
                 </Button>
               </div>
             </form>

@@ -28,9 +28,10 @@ function LoginWrapper() {
   const navigate = useNavigate();
 
   const handleLoginSuccess = (user: Usuario) => {
-    if (user.rol === 'admin') {
+    const rol = (user.rol || '').toLowerCase().trim();
+    if (rol === 'admin') {
       navigate('/admin');
-    } else if (user.rol === 'tutor') {
+    } else if (rol === 'tutor') {
       navigate('/tutor/tutorias');
     } else {
       navigate('/app/explorar');
@@ -71,6 +72,7 @@ export function App() {
             <Route path="/app/tutores" element={<VerPerfilTutorDesdeEstudiante />} />
             <Route path="/app/agendar/:tutorId" element={<AgendarTutoria />} />
             <Route path="/app/agendar" element={<AgendarTutoria />} />
+            <Route path="/app/tutores/:tutorId/agendar" element={<AgendarTutoria />} />
             <Route path="/app/tutorias" element={<TutoriasPendientes />} />
             <Route path="/app/tutorias/:tutoriaId/feedback" element={<FeedbackMonitoriaEstudiante />} />
             <Route path="/app/feedback/:tutoriaId" element={<FeedbackMonitoriaEstudiante />} />

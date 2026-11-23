@@ -1,8 +1,8 @@
-import type { Tutor, DiaDisponible } from '../types/tutor';
+import type { Tutor } from '../types/tutor';
 import type { DatosRegistroTutor, Usuario } from '../types/usuario';
 import { TUTORES_INICIALES } from '../data/tutoresIniciales';
 import { solicitar } from './api';
-import { registrarUsuarioLocal } from '../utils/auth';
+import { registrarUsuarioLocal, obtenerSesion, guardarSesion } from '../utils/auth';
 
 const RUTA = '/tutores';
 const STORAGE_TUTORES_KEY = 'conecta_tutor_nuevos_tutores';
@@ -35,25 +35,7 @@ export function guardarTodosLosTutoresPersistidos(lista: Tutor[]): void {
   }
 }
 
-function generarDiasDisponibles(diasSeleccionados: string[] = ['LUN', 'MIE', 'VIE']): DiaDisponible[] {
-  const dias = ['MAR', 'MIE', 'JUE', 'VIE', 'SAB', 'LUN', 'MAR'];
-  const numeros = [2, 3, 4, 5, 6, 7, 8];
-  return dias.map((dia, idx) => {
-    const seleccionado = diasSeleccionados.includes(dia);
-    return {
-      diaSemana: dia,
-      numero: numeros[idx],
-      disponible: seleccionado,
-      franjas: seleccionado
-        ? [
-            { id: `f-${idx}-1`, texto: '9:00 - 10:30 AM', disponible: true },
-            { id: `f-${idx}-2`, texto: '2:00 - 3:00 PM', disponible: true },
-            { id: `f-${idx}-3`, texto: '3:00 - 4:00 PM', disponible: true },
-          ]
-        : [],
-    };
-  });
-}
+
 
 /**
  * Servicio de tutores de la API.
@@ -103,12 +85,22 @@ export async function registrarNuevoTutor(
   datos: DatosRegistroTutor
 ): Promise<{ usuario: Usuario; tutor: Tutor }> {
   try {
-    return await solicitar<{ usuario: Usuario; tutor: Tutor }>(`${RUTA}/registro`, {
+    const res = await solicitar<{ usuario: Usuario; tutor: Tutor }>(`${RUTA}/registro`, {
       method: 'POST',
       body: JSON.stringify(datos),
     });
-  } catch {
-    await new Promise((resolver) => setTimeout(resolver, 600));
+    if (res && res.tutor) {
+      guardarTutorPersistido(res.tutor);
+    }
+    if (res && res.usuario) {
+      registrarUsuarioLocal(res.usuario);
+    }
+    return res;
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'status' in error && (error as any).status !== 0) {
+      throw error;
+    }
+    await new Promise((resolver) => setTimeout(resolver, 400));
 
     const idTutor = `tutor-${Date.now()}`;
     const idUsuario = idTutor;
@@ -128,8 +120,9 @@ export async function registrarNuevoTutor(
       precioHora: Number(datos.precioHora),
       precioFormato,
       materiaPrincipal: datos.materiaPrincipal.trim(),
-      estrellas: 5.0,
-      diasDisponibles: generarDiasDisponibles(datos.diasDisponibles),
+      estrellas: 0,
+      diasDisponibles: [],
+      salones: datos.salones || [],
       cursos: [
         datos.materiaPrincipal.trim(),
         ...(datos.cursosAdicionales || []).map((c) => c.trim()),
@@ -137,8 +130,8 @@ export async function registrarNuevoTutor(
       correo: datos.correo.trim().toLowerCase(),
       activo: false, // Inicia inactivo hasta que el admin lo apruebe
       estadoAprobacion: 'pendiente',
-      notaMateria: Number(datos.notaMateria) || 4.5,
-      promedioAcumulado: Number(datos.promedioAcumulado) || 4.2,
+      notaMateria: Number(datos.notaMateria) || 0,
+      promedioAcumulado: Number(datos.promedioAcumulado) || 0,
       soporteNotasNombre: datos.soporteNotasNombre || 'certificado_notas.pdf',
       soporteNotasUrl: datos.soporteNotasUrl,
       fechaRegistro: new Date().toLocaleDateString('es-CO'),
@@ -159,6 +152,7 @@ export async function registrarNuevoTutor(
       precioHora: Number(datos.precioHora),
       descripcion: datos.descripcion.trim(),
       materiaPrincipal: datos.materiaPrincipal.trim(),
+      salones: datos.salones || [],
       activo: false,
       estadoAprobacion: 'pendiente',
       notaMateria: Number(datos.notaMateria) || 4.5,
@@ -193,5 +187,56 @@ export async function actualizarDisponibilidadTutor(
       tutores[index].activo = activo;
       localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(tutores));
     }
+  }
+}
+
+export async function actualizarTutor(
+  tutorId: string,
+  cambios: Partial<Tutor & Usuario>
+): Promise<Tutor> {
+  try {
+    const tutorActualizado = await solicitar<Tutor>(`${RUTA}/${tutorId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(cambios),
+    });
+
+    if (tutorActualizado) {
+      guardarTutorPersistido(tutorActualizado);
+      const sesion = obtenerSesion();
+      if (
+        sesion &&
+        (sesion.id === tutorId ||
+          sesion.id === tutorActualizado.id ||
+          sesion.correo === tutorActualizado.correo)
+      ) {
+        const sesionActualizada = { ...sesion, ...cambios, ...tutorActualizado };
+        guardarSesion(sesionActualizada);
+        registrarUsuarioLocal(sesionActualizada);
+      }
+    }
+    return tutorActualizado;
+  } catch (error) {
+    console.warn('Persistiendo tutor localmente como fallback:', error);
+    const tutores = obtenerTutoresPersistidos();
+    const index = tutores.findIndex((t) => t.id === tutorId);
+    let tutorRetorno: Tutor;
+    if (index !== -1) {
+      tutores[index] = { ...tutores[index], ...cambios } as Tutor;
+      localStorage.setItem(STORAGE_TUTORES_KEY, JSON.stringify(tutores));
+      tutorRetorno = tutores[index];
+    } else {
+      tutorRetorno = { id: tutorId, ...cambios } as Tutor;
+    }
+    const sesion = obtenerSesion();
+    if (
+      sesion &&
+      (sesion.id === tutorId ||
+        sesion.correo === (cambios as any).correo)
+    ) {
+      const sesionActualizada = { ...sesion, ...cambios };
+      guardarSesion(sesionActualizada);
+      registrarUsuarioLocal(sesionActualizada);
+    }
+    return tutorRetorno;
   }
 }

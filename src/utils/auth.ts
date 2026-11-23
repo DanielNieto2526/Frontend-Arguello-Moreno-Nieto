@@ -75,6 +75,14 @@ export function autenticarUsuario(credenciales: CredencialesLogin): Usuario | nu
   });
 
   if (usuario) {
+    if (usuario.rol === 'tutor') {
+      if (usuario.estadoAprobacion === 'pendiente') {
+        throw new Error('Tu postulación como tutor aún se encuentra en revisión por el comité académico. Podrás ingresar una vez sea aprobada por la coordinación.');
+      }
+      if (usuario.estadoAprobacion === 'rechazado') {
+        throw new Error('Tu postulación como tutor fue rechazada. No tienes acceso a la plataforma.');
+      }
+    }
     guardarSesion(usuario);
     return usuario;
   }

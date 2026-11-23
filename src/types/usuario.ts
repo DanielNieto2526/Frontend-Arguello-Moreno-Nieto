@@ -1,3 +1,8 @@
+export interface SalonTutor {
+  sede: string;
+  salon: string;
+}
+
 export const ROLES = ['estudiante', 'tutor', 'admin'] as const;
 export type Rol = (typeof ROLES)[number];
 
@@ -21,7 +26,8 @@ export interface Usuario {
   descripcion?: string;
   materiaPrincipal?: string;
   telefono?: string;
-  diasDisponibles?: string[];
+  diasDisponibles?: any[];
+  salones?: SalonTutor[];
   estadoAprobacion?: EstadoAprobacion;
   activo?: boolean;
   notaMateria?: number;
@@ -50,10 +56,12 @@ export interface DatosRegistroTutor {
   sede: string;
   modalidad: string;
   materiaPrincipal: string;
+  cursos?: string[];
   cursosAdicionales?: string[];
   precioHora: number;
   descripcion: string;
-  diasDisponibles?: string[];
+  diasDisponibles?: any[];
+  salones?: SalonTutor[];
   notaMateria: number;
   promedioAcumulado?: number;
   soporteNotasNombre?: string;

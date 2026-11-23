@@ -330,6 +330,123 @@ select.register-tutor-capsule-field option {
   color: var(--Blanco);
 }
 
+/* Salones y Sedes para atención presencial */
+.register-tutor-salones-box {
+  background-color: #FAF4F3;
+  border: 1.5px solid #EADCDD;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.register-tutor-salones-title {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--Vino-tinto);
+}
+
+.register-tutor-salones-desc {
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: #665558;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.register-tutor-salon-input-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.register-tutor-salon-sede-select {
+  padding: 8px 12px;
+  border: 1px solid #C77C8A;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.register-tutor-salon-nombre-input {
+  flex: 1;
+  min-width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #C77C8A;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  color: var(--Vino-tinto);
+  font-family: var(--font-family);
+  font-size: 13px;
+}
+
+.register-tutor-btn-add-salon {
+  background-color: var(--Vino-tinto);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.register-tutor-btn-add-salon:hover {
+  background-color: #5A0D1E;
+}
+
+.register-tutor-salones-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.register-tutor-salon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #FFFFFF;
+  border: 1px solid #C77C8A;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-family: var(--font-family);
+  font-size: 12px;
+  color: var(--Vino-tinto);
+}
+
+.register-tutor-chip-remove {
+  background: none;
+  border: none;
+  color: #7D1128;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.register-tutor-chip-remove:hover {
+  color: #D32F2F;
+}
+
+.register-tutor-salones-hint {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-style: italic;
+  color: #8C787D;
+  margin: 0;
+}
+
 /* Modal de Confirmación de Postulación Enviada */
 .register-tutor-modal-overlay {
   position: fixed;

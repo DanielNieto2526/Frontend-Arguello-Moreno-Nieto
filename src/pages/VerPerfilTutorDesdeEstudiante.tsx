@@ -1,18 +1,25 @@
-import { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import './VerPerfilTutorDesdeEstudiante.css';
 import { Header } from '../components/Header';
+import { Button } from '../components/Button';
+import { Cargando } from '../components/Cargando';
 import type { Usuario } from '../types/usuario';
+import type { Tutor } from '../types/tutor';
 import { obtenerSesion, obtenerListaUsuarios } from '../utils/auth';
-import { USUARIOS_INICIALES } from '../data/usuariosIniciales';
-import { TUTORES_INICIALES } from '../data/tutoresIniciales';
-import { obtenerResenasPorTutor, calcularPromedioTutor } from '../services/resenasService';
+import { obtenerTutorPorId } from '../services/tutoresService';
+import {
+  obtenerResenasPorTutor,
+  obtenerResenasPorTutorAsync,
+  type Resena,
+} from '../services/resenasService';
 import fomaVerPerilTutor from '../assets/fomaVerPerilTutor.svg';
 
 export function VerPerfilTutorDesdeEstudiante() {
   const { tutorId } = useParams<{ tutorId: string }>();
+  const navigate = useNavigate();
 
-  // Usuario estudiante actualmente con sesión (Juan Filip Coral por defecto si no hay sesión)
+  // Usuario estudiante actualmente con sesión
   const [usuarioEstudiante] = useState<Usuario | null>(() => {
     const sesion = obtenerSesion();
     if (sesion && sesion.rol === 'estudiante') {
@@ -24,102 +31,138 @@ export function VerPerfilTutorDesdeEstudiante() {
       apellidos: 'Coral',
       correo: 'jcoral@urosario.edu.co',
       rol: 'estudiante',
-      carrera: 'Ing. de Sistemas energeticos',
+      carrera: 'Ing. de Sistemas energéticos',
       semestre: 6,
       semestreTexto: '6º semestre ISE',
     };
   });
 
-  // Información del tutor visualizado (Daniel Nieto por defecto o el indicado en la URL)
-  const tutor = useMemo<Usuario>(() => {
-    const listaUsuarios = obtenerListaUsuarios();
-    const tutorEncontrado = listaUsuarios.find(
-      (u) =>
-        u.rol === 'tutor' &&
-        (tutorId
-          ? u.id === tutorId ||
-            (u.nombres + ' ' + u.apellidos).toLowerCase().includes(tutorId.toLowerCase())
-          : u.id === '2' ||
-            u.correo.toLowerCase() === 'dnieto@urosario.edu.co' ||
-            u.nombres.toLowerCase().includes('daniel'))
-    );
-    if (tutorEncontrado) return tutorEncontrado;
-
-    const tutorInicial = TUTORES_INICIALES.find(
-      (t) =>
-        t.id === tutorId ||
-        (tutorId &&
-          (t.nombres + ' ' + t.apellidos).toLowerCase().includes(tutorId.toLowerCase()))
-    );
-    if (tutorInicial) {
-      return {
-        id: tutorInicial.id,
-        nombres: tutorInicial.nombres,
-        apellidos: tutorInicial.apellidos,
-        correo: `${tutorInicial.nombres.toLowerCase()}.${tutorInicial.apellidos.toLowerCase()}@urosario.edu.co`,
-        rol: 'tutor',
-        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
-        semestre: 6,
-        semestreTexto: tutorInicial.semestreTexto,
-        cursos: tutorInicial.cursos,
-        sede: tutorInicial.sede,
-        modalidad: tutorInicial.modalidad,
-        precioHora: tutorInicial.precioHora,
-        descripcion: tutorInicial.descripcion,
-        diasDisponibles: ['LU', 'MA', 'MI', 'JU'],
-      };
-    }
-
-    return (
-      USUARIOS_INICIALES.find((u) => u.id === '2') || {
-        id: '2',
-        nombres: 'Daniel',
-        apellidos: 'Nieto',
-        correo: 'dnieto@urosario.edu.co',
-        rol: 'tutor',
-        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
-        semestre: 6,
-        semestreTexto: '6º semestre MACC - Claustro',
-        cursos: ['Calculo II', 'Algebra Lineal', 'Analisis Real'],
-        sede: 'Claustro',
-        modalidad: 'Híbrida',
-        precioHora: 20000,
-        descripcion:
-          'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
-        diasDisponibles: ['LU', 'MA', 'MI', 'JU'],
-      }
-    );
-  }, [tutorId]);
-
+  const [tutor, setTutor] = useState<Tutor | Usuario | null>(null);
+  const [cargando, setCargando] = useState(true);
   const [cursoAbierto, setCursoAbierto] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelado = false;
+    const idABuscar = tutorId || 'tutor-1';
+
+    obtenerTutorPorId(idABuscar)
+      .then((datos) => {
+        if (!cancelado) {
+          setTutor(datos);
+          setCargando(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelado) {
+          const lista = obtenerListaUsuarios();
+          const tutorEncontrado = lista.find(
+            (u) =>
+              u.rol === 'tutor' &&
+              (u.id === idABuscar ||
+                (u.nombres + ' ' + u.apellidos).toLowerCase().includes(idABuscar.toLowerCase()))
+          );
+          setTutor(tutorEncontrado || null);
+          setCargando(false);
+        }
+      });
+
+    return () => {
+      cancelado = true;
+    };
+  }, [tutorId]);
 
   const toggleCurso = (curso: string) => {
     setCursoAbierto((prev) => (prev === curso ? null : curso));
   };
 
-  const cursos =
-    tutor.cursos && tutor.cursos.length > 0
-      ? tutor.cursos
-      : ['Calculo II', 'Algebra Lineal', 'Analisis Real'];
+  // Extraer días disponibles y franjas configuradas
+  const { diasFormateados, franjasUnicas } = useMemo(() => {
+    if (!tutor || !tutor.diasDisponibles || !Array.isArray(tutor.diasDisponibles)) {
+      return { diasFormateados: [], franjasUnicas: [] };
+    }
 
-  const diasDisponibles =
-    tutor.diasDisponibles && tutor.diasDisponibles.length > 0
-      ? tutor.diasDisponibles
-      : ['LU', 'MA', 'MI', 'JU'];
+    const dias: string[] = [];
+    const horasSet = new Set<string>();
+
+    tutor.diasDisponibles.forEach((item: any) => {
+      if (typeof item === 'string') {
+        dias.push(item);
+      } else if (item && typeof item === 'object') {
+        if (item.disponible !== false && item.diaSemana) {
+          dias.push(item.diaSemana);
+        }
+        if (Array.isArray(item.franjas)) {
+          item.franjas.forEach((f: any) => {
+            if (f && f.texto) {
+              horasSet.add(f.texto);
+            }
+          });
+        }
+      }
+    });
+
+    return {
+      diasFormateados: Array.from(new Set(dias)),
+      franjasUnicas: Array.from(horasSet),
+    };
+  }, [tutor]);
+
+  const cursos = tutor?.cursos || [];
 
   const iniciales =
-    tutor.nombres && tutor.apellidos
+    tutor?.nombres && tutor?.apellidos
       ? `${tutor.nombres.charAt(0)}${tutor.apellidos.charAt(0)}`.toUpperCase()
-      : 'DN';
+      : 'TU';
 
-  // Reseñas y promedio dinámico según requerimiento
+  const [resenasRemotas, setResenasRemotas] = useState<Resena[] | null>(null);
+
+  useEffect(() => {
+    if (tutor) {
+      obtenerResenasPorTutorAsync(tutor.id, `${tutor.nombres} ${tutor.apellidos}`)
+        .then((res) => {
+          if (Array.isArray(res)) setResenasRemotas(res);
+        })
+        .catch(() => {});
+    }
+  }, [tutor]);
+
   const resenas = useMemo(() => {
+    if (resenasRemotas !== null) return resenasRemotas;
+    if (!tutor) return [];
     return obtenerResenasPorTutor(tutor.id, `${tutor.nombres} ${tutor.apellidos}`);
-  }, [tutor.id, tutor.nombres, tutor.apellidos]);
+  }, [resenasRemotas, tutor]);
 
   const { promedio, estrellas } = useMemo(() => {
-    return calcularPromedioTutor(tutor.id, `${tutor.nombres} ${tutor.apellidos}`);
-  }, [tutor.id, tutor.nombres, tutor.apellidos]);
+    if (resenas.length === 0) return { promedio: 5.0, total: 0, estrellas: 5 };
+    const suma = resenas.reduce((acc, r) => acc + (Number(r.calificacion) || 5), 0);
+    const prom = Math.round((suma / resenas.length) * 10) / 10;
+    return { promedio: prom, total: resenas.length, estrellas: Math.max(1, Math.min(5, Math.round(prom))) };
+  }, [resenas]);
+
+  if (cargando) {
+    return (
+      <div className="ver-tutor-page">
+        <Header usuario={usuarioEstudiante} />
+        <Cargando texto="Cargando perfil del tutor..." />
+      </div>
+    );
+  }
+
+  if (!tutor) {
+    return (
+      <div className="ver-tutor-page">
+        <Header usuario={usuarioEstudiante} />
+        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+          <h2 style={{ color: 'var(--Vino-tinto)', marginBottom: '16px' }}>
+            Tutor no encontrado
+          </h2>
+          <Button variant="primary" onClick={() => navigate('/app/explorar')}>
+            Volver a Explorar
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ver-tutor-page">
@@ -135,7 +178,15 @@ export function VerPerfilTutorDesdeEstudiante() {
               {/* Avatar e información principal */}
               <div className="ver-tutor-avatar-row">
                 <div className="ver-tutor-avatar-circle" aria-hidden="true">
-                  {iniciales}
+                  {tutor.avatarUrl ? (
+                    <img
+                      src={tutor.avatarUrl}
+                      alt={`${tutor.nombres} ${tutor.apellidos}`}
+                      className="ver-tutor-avatar-img"
+                    />
+                  ) : (
+                    iniciales
+                  )}
                 </div>
 
                 <div className="ver-tutor-name-block">
@@ -143,45 +194,64 @@ export function VerPerfilTutorDesdeEstudiante() {
                     {tutor.nombres} {tutor.apellidos}
                   </h1>
                   <span className="ver-tutor-subtitle">
-                    {tutor.semestreTexto || '6º semestre MACC - Claustro'}
+                    {tutor.semestreTexto || 'Tutor de la Universidad del Rosario'}
                   </span>
                 </div>
               </div>
 
               {/* Biografía / Descripción del tutor */}
               <p className="ver-tutor-bio">
-                {tutor.descripcion ||
-                  'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.'}
+                {tutor.descripcion || 'Este tutor aún no ha agregado una descripción de su perfil.'}
               </p>
 
               {/* Sección de cursos que asesoro */}
               <h2 className="ver-tutor-section-title">Cursos que asesoro:</h2>
 
               <div className="ver-tutor-cursos-list">
-                {cursos.map((curso) => {
-                  const estaAbierto = cursoAbierto === curso;
-                  return (
-                    <div key={curso} className="ver-tutor-curso-wrapper">
-                      <button
-                        type="button"
-                        className="ver-tutor-curso-btn"
-                        onClick={() => toggleCurso(curso)}
-                        aria-expanded={estaAbierto}
-                      >
-                        <span>{curso}</span>
-                        <span className={`ver-tutor-chevron ${estaAbierto ? 'open' : ''}`}>
-                          ▼
-                        </span>
-                      </button>
-                      {estaAbierto && (
-                        <div className="ver-tutor-curso-content">
-                          Tutoría y asesoría para preparación de parciales, talleres y resolución
-                          de dudas conceptuales sobre {curso}.
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                {cursos.length === 0 ? (
+                  <p style={{ color: '#8A7B7E', fontStyle: 'italic', padding: '8px 0', fontSize: '13px' }}>
+                    Este tutor no tiene cursos registrados todavía.
+                  </p>
+                ) : (
+                  cursos.map((curso) => {
+                    const estaAbierto = cursoAbierto === curso;
+                    return (
+                      <div key={curso} className="ver-tutor-curso-wrapper">
+                        <button
+                          type="button"
+                          className="ver-tutor-curso-btn"
+                          onClick={() => toggleCurso(curso)}
+                          aria-expanded={estaAbierto}
+                        >
+                          <span>{curso}</span>
+                          <span className={`ver-tutor-chevron ${estaAbierto ? 'open' : ''}`}>
+                            ▼
+                          </span>
+                        </button>
+                        {estaAbierto && (
+                          <div className="ver-tutor-curso-content">
+                            Tutoría y asesoría para preparación de parciales, talleres y resolución
+                            de dudas conceptuales sobre {curso}.
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Precio y botón de agendar */}
+              <div className="ver-tutor-precio-row" style={{ marginTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                <div style={{ padding: '8px 16px', backgroundColor: '#FAF4F3', border: '1px solid #EADCDD', borderRadius: '8px', fontWeight: 600, color: 'var(--Vino-tinto)', fontSize: '14px' }}>
+                  Precio hora: ${(tutor.precioHora || 0).toLocaleString('es-CO')}
+                </div>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => navigate(`/app/agendar/${tutor.id}`)}
+                >
+                  Agendar tutoría
+                </Button>
               </div>
             </div>
           </section>
@@ -194,22 +264,90 @@ export function VerPerfilTutorDesdeEstudiante() {
 
               <div className="ver-tutor-right-body">
                 <div className="ver-tutor-dias-header">
-                  <h2 className="ver-tutor-right-title">Dias disponibles</h2>
-                  <p className="ver-tutor-right-subtitle">Sujeto a cambios</p>
+                  <h2 className="ver-tutor-right-title">Días disponibles</h2>
+                  <p className="ver-tutor-right-subtitle">Horario de atención</p>
                 </div>
 
                 <div className="ver-tutor-dias-boxes">
-                  {diasDisponibles.map((dia) => (
-                    <div key={dia} className="ver-tutor-dia-box">
-                      <span className="ver-tutor-dia-text">{dia}</span>
-                      <span className="ver-tutor-dia-dot" aria-hidden="true" />
+                  {diasFormateados.length === 0 ? (
+                    <p style={{ color: '#8A7B7E', fontStyle: 'italic', padding: '12px 0', fontSize: '13px' }}>
+                      El tutor aún no ha configurado sus días de atención.
+                    </p>
+                  ) : (
+                    diasFormateados.map((dia) => (
+                      <div key={dia} className="ver-tutor-dia-box">
+                        <span className="ver-tutor-dia-text">{dia}</span>
+                        <span className="ver-tutor-dia-dot" aria-hidden="true" />
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Franjas horarias configuradas por el tutor */}
+                <div style={{ marginTop: '16px', borderTop: '1px solid #F0E6E8', paddingTop: '12px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                    Franjas horarias disponibles:
+                  </span>
+                  {franjasUnicas.length === 0 ? (
+                    <p style={{ color: '#8A7B7E', fontStyle: 'italic', fontSize: '12px', margin: 0 }}>
+                      Sin franjas horarias configuradas todavía.
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {franjasUnicas.map((franja) => (
+                        <span
+                          key={franja}
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            padding: '4px 10px',
+                            backgroundColor: '#FAF4F3',
+                            border: '1px solid #EADCDD',
+                            borderRadius: '12px',
+                            color: 'var(--Vino-tinto)',
+                          }}
+                        >
+                          {franja}
+                        </span>
+                      ))}
                     </div>
-                  ))}
+                  )}
+                </div>
+
+                {/* Salones presenciales del tutor */}
+                <div style={{ marginTop: '16px', borderTop: '1px solid #F0E6E8', paddingTop: '12px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                    Salones y Sedes de atención presencial:
+                  </span>
+                  {(!tutor.salones || tutor.salones.length === 0) ? (
+                    <p style={{ color: '#8A7B7E', fontStyle: 'italic', fontSize: '12px', margin: 0 }}>
+                      El tutor no ha registrado salones específicos de atención presencial.
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {tutor.salones.map((s: any, idx: number) => (
+                        <span
+                          key={`${s.sede}-${s.salon}-${idx}`}
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            padding: '4px 10px',
+                            backgroundColor: '#FAF4F3',
+                            border: '1px solid #EADCDD',
+                            borderRadius: '12px',
+                            color: 'var(--Vino-tinto)',
+                          }}
+                        >
+                          {s.salon} ({s.sede})
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
 
-            {/* Tarjeta Reseñas con Promedio de Estrellas y Comentarios adicionales según Figma */}
+            {/* Tarjeta Reseñas */}
             <section className="ver-tutor-card-right" aria-label="Reseñas de estudiantes">
               <div className="ver-tutor-top-bar" />
 
@@ -217,7 +355,7 @@ export function VerPerfilTutorDesdeEstudiante() {
                 <div className="ver-tutor-resenas-header">
                   <div>
                     <h2 className="ver-tutor-right-title">Reseñas</h2>
-                    <p className="ver-tutor-right-subtitle">Que piensan los demás</p>
+                    <p className="ver-tutor-right-subtitle">Qué piensan los demás</p>
                   </div>
 
                   <div
@@ -241,7 +379,6 @@ export function VerPerfilTutorDesdeEstudiante() {
                   </div>
                 </div>
 
-                {/* Lista de reseñas con comentarios adicionales enviados por los estudiantes */}
                 <div className="ver-tutor-reviews-list">
                   {resenas.length === 0 ? (
                     <div className="ver-tutor-review-box">
@@ -271,7 +408,6 @@ export function VerPerfilTutorDesdeEstudiante() {
         </div>
       </main>
 
-      {/* Forma decorativa inferior derecha según Figma (fomaVerPerilTutor.svg) */}
       <img
         src={fomaVerPerilTutor}
         alt=""

@@ -1,3 +1,5 @@
+import { solicitar } from './api';
+
 export interface Resena {
   id: string;
   tutorId: string;
@@ -97,14 +99,11 @@ export function esMismoTutor(
   const esDanielA =
     tutorAId === '2' ||
     tutorAId === 'tutor-1' ||
-    tutorAId.toLowerCase().includes('nieto') ||
-    tutorAId.toLowerCase().includes('daniel');
+    tutorAId.toLowerCase() === 'daniel nieto';
   const esDanielB =
     tutorBId === '2' ||
     tutorBId === 'tutor-1' ||
-    (tutorBNombres &&
-      (tutorBNombres.toLowerCase().includes('daniel') ||
-        tutorBNombres.toLowerCase().includes('nieto')));
+    (tutorBNombres && tutorBNombres.toLowerCase().trim() === 'daniel nieto');
   if (esDanielA && esDanielB) return true;
 
   // Aliases para Juan Cachon
@@ -140,6 +139,30 @@ export function obtenerTodasLasResenas(): Resena[] {
   return [...resenasEnMemoria];
 }
 
+export async function obtenerResenasPorTutorAsync(
+  tutorId: string,
+  tutorNombres?: string
+): Promise<Resena[]> {
+  try {
+    const params = new URLSearchParams();
+    if (tutorNombres) params.append('tutorNombres', tutorNombres);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    const res = await solicitar<Resena[]>(`/resenas/tutor/${encodeURIComponent(tutorId)}${query}`);
+    if (Array.isArray(res) && res.length > 0) {
+      const idsExistentes = new Set(res.map((r) => r.id));
+      resenasEnMemoria = [
+        ...res,
+        ...resenasEnMemoria.filter((r) => !idsExistentes.has(r.id)),
+      ];
+      guardarResenasPersistidas(resenasEnMemoria);
+      return res;
+    }
+  } catch {
+    // fallback
+  }
+  return obtenerResenasPorTutor(tutorId, tutorNombres);
+}
+
 export function obtenerResenasPorTutor(
   tutorId: string,
   tutorNombres?: string
@@ -158,7 +181,7 @@ export function calcularPromedioTutor(
     return { promedio: 5.0, total: 0, estrellas: 5 };
   }
 
-  const suma = lista.reduce((acc, r) => acc + (r.calificacion || 5), 0);
+  const suma = lista.reduce((acc, r) => acc + (Number(r.calificacion) || 5), 0);
   const promedioCrudo = suma / lista.length;
   const promedio = Math.round(promedioCrudo * 10) / 10;
   const estrellas = Math.max(1, Math.min(5, Math.round(promedio)));
@@ -166,15 +189,33 @@ export function calcularPromedioTutor(
   return { promedio, total: lista.length, estrellas };
 }
 
-export function guardarNuevaResena(
+export async function guardarNuevaResena(
   datos: Omit<Resena, 'id' | 'fecha'>
-): Resena {
-  const nuevaResena: Resena = {
+): Promise<Resena> {
+  const idTemporal = `res-${Date.now()}`;
+  const payload = {
     ...datos,
-    id: `res-${Date.now()}`,
+    id: idTemporal,
     fecha: 'Hoy',
   };
 
+  try {
+    const res = await solicitar<Resena>('/resenas', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    if (res && res.id) {
+      resenasEnMemoria = [res, ...resenasEnMemoria.filter((r) => r.id !== res.id)];
+      guardarResenasPersistidas(resenasEnMemoria);
+      return res;
+    }
+  } catch {
+    // fallback
+  }
+
+  const nuevaResena: Resena = {
+    ...payload,
+  };
   resenasEnMemoria = [nuevaResena, ...resenasEnMemoria];
   guardarResenasPersistidas(resenasEnMemoria);
   return nuevaResena;

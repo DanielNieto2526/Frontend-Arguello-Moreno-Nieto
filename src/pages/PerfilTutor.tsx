@@ -1,60 +1,194 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PerfilTutor.css';
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
 import type { Usuario } from '../types/usuario';
-import { obtenerSesion } from '../utils/auth';
-import { obtenerResenasPorTutor, calcularPromedioTutor } from '../services/resenasService';
+import { obtenerSesion, guardarSesion, registrarUsuarioLocal } from '../utils/auth';
+import { obtenerTutorPorId, actualizarTutor } from '../services/tutoresService';
+import {
+  obtenerResenasPorTutor,
+  obtenerResenasPorTutorAsync,
+  type Resena,
+} from '../services/resenasService';
 import fomaTutor from '../assets/fomaTutor.svg';
 
 export function PerfilTutor() {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [usuario] = useState<Usuario | null>(() => {
+  const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const sesion = obtenerSesion();
-    if (!sesion || sesion.rol !== 'tutor') {
-      return {
-        id: '2',
-        nombres: 'Daniel',
-        apellidos: 'Nieto',
-        correo: 'dnieto@urosario.edu.co',
-        rol: 'tutor',
-        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
-        semestre: 6,
-        semestreTexto: '6º semestre MACC - Claustro',
-        cursos: ['Calculo II', 'Algebra Lineal', 'Analisis Real'],
-        sede: 'Claustro',
-        modalidad: 'Híbrida',
-        precioHora: 20000,
-        descripcion:
-          'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
-        diasDisponibles: ['LU', 'MA', 'MI', 'JU'],
-      };
-    }
-    return sesion;
+    return sesion && (sesion.rol || '').toLowerCase() === 'tutor' ? sesion : null;
   });
 
   const [cursoAbierto, setCursoAbierto] = useState<string | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
+  const [guardandoFoto, setGuardandoFoto] = useState(false);
+  const [mensajeFoto, setMensajeFoto] = useState<string | null>(null);
+
+  // Cargar datos vivos desde MongoDB Atlas
+  useEffect(() => {
+    const sesionActual = obtenerSesion();
+    if (!sesionActual || (sesionActual.rol || '').toLowerCase() !== 'tutor') {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    setUsuario(sesionActual);
+
+    obtenerTutorPorId(sesionActual.id)
+      .then((tutor) => {
+        if (tutor) {
+          const usuarioSincronizado: Usuario = {
+            ...sesionActual,
+            nombres: tutor.nombres || sesionActual.nombres,
+            apellidos: tutor.apellidos || sesionActual.apellidos,
+            descripcion: tutor.descripcion !== undefined ? tutor.descripcion : sesionActual.descripcion,
+            cursos: tutor.cursos || sesionActual.cursos || [],
+            diasDisponibles: tutor.diasDisponibles || sesionActual.diasDisponibles || [],
+            precioHora: tutor.precioHora !== undefined ? tutor.precioHora : sesionActual.precioHora,
+            salones: tutor.salones || sesionActual.salones || [],
+            avatarUrl: tutor.avatarUrl || sesionActual.avatarUrl || '',
+          };
+          setUsuario(usuarioSincronizado);
+          guardarSesion(usuarioSincronizado);
+          registrarUsuarioLocal(usuarioSincronizado);
+        }
+      })
+      .catch((err) => {
+        console.warn('Cargando perfil desde sesión local:', err);
+      });
+  }, [navigate]);
 
   const toggleCurso = (curso: string) => {
     setCursoAbierto((prev) => (prev === curso ? null : curso));
   };
 
-  const cursos = usuario?.cursos || ['Calculo II', 'Algebra Lineal', 'Analisis Real'];
-  const diasDisponibles = usuario?.diasDisponibles || ['LU', 'MA', 'MI', 'JU'];
-  const precio = usuario?.precioHora || 20000;
+  const handleSeleccionarArchivo = (e: ChangeEvent<HTMLInputElement>) => {
+    const archivo = e.target.files?.[0];
+    if (!archivo) return;
 
-  const tutorId = usuario?.id || '2';
-  const tutorNombre = usuario ? `${usuario.nombres} ${usuario.apellidos}` : 'Daniel Nieto';
+    if (!archivo.type.startsWith('image/')) {
+      alert('Por favor selecciona un archivo de imagen válido.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const resultado = event.target?.result as string;
+      if (resultado) {
+        setFotoPreview(resultado);
+        setMensajeFoto('Foto seleccionada. Haz clic en "Guardar foto de perfil" para confirmar.');
+      }
+    };
+    reader.readAsDataURL(archivo);
+  };
+
+  const handleGuardarFoto = async () => {
+    if (!usuario) return;
+    const fotoAGuardar = fotoPreview || usuario.avatarUrl;
+    if (!fotoAGuardar) {
+      alert('Por favor primero selecciona una imagen para subir.');
+      return;
+    }
+
+    setGuardandoFoto(true);
+    setMensajeFoto(null);
+
+    try {
+      await actualizarTutor(usuario.id, {
+        avatarUrl: fotoAGuardar,
+        fotoPerfil: fotoAGuardar,
+      });
+
+      const usuarioActualizado: Usuario = {
+        ...usuario,
+        avatarUrl: fotoAGuardar,
+      };
+
+      setUsuario(usuarioActualizado);
+      guardarSesion(usuarioActualizado);
+      registrarUsuarioLocal(usuarioActualizado);
+      setFotoPreview(null);
+      setMensajeFoto('¡Foto de perfil guardada con éxito en la base de datos!');
+      setTimeout(() => setMensajeFoto(null), 4000);
+    } catch (err: any) {
+      console.error('Error al guardar foto de perfil:', err);
+      alert('Error al guardar la foto de perfil en la base de datos.');
+    } finally {
+      setGuardandoFoto(false);
+    }
+  };
+
+  // Extraer días disponibles y franjas
+  const { diasActivos, franjasUnicas } = useMemo(() => {
+    if (!usuario?.diasDisponibles || !Array.isArray(usuario.diasDisponibles)) {
+      return { diasActivos: [], franjasUnicas: [] };
+    }
+
+    const dias: string[] = [];
+    const horasSet = new Set<string>();
+
+    usuario.diasDisponibles.forEach((item: any) => {
+      if (typeof item === 'string') {
+        dias.push(item);
+      } else if (item && typeof item === 'object') {
+        if (item.disponible !== false && item.diaSemana) {
+          dias.push(item.diaSemana);
+        }
+        if (Array.isArray(item.franjas)) {
+          item.franjas.forEach((f: any) => {
+            if (f && f.texto) {
+              horasSet.add(f.texto);
+            }
+          });
+        }
+      }
+    });
+
+    return {
+      diasActivos: Array.from(new Set(dias)),
+      franjasUnicas: Array.from(horasSet),
+    };
+  }, [usuario?.diasDisponibles]);
+
+  const cursos = usuario?.cursos || [];
+  const precio = usuario?.precioHora ?? 0;
+
+  const tutorId = usuario?.id || '';
+  const tutorNombre = usuario ? `${usuario.nombres} ${usuario.apellidos}`.trim() : '';
+
+  const iniciales = usuario?.nombres && usuario?.apellidos
+    ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}`.toUpperCase()
+    : 'TU';
+
+  const [resenasRemotas, setResenasRemotas] = useState<Resena[] | null>(null);
+
+  useEffect(() => {
+    if (tutorId) {
+      obtenerResenasPorTutorAsync(tutorId, tutorNombre)
+        .then((res) => {
+          if (Array.isArray(res)) setResenasRemotas(res);
+        })
+        .catch(() => {});
+    }
+  }, [tutorId, tutorNombre]);
 
   const resenas = useMemo(() => {
+    if (resenasRemotas !== null) return resenasRemotas;
     return obtenerResenasPorTutor(tutorId, tutorNombre);
-  }, [tutorId, tutorNombre]);
+  }, [resenasRemotas, tutorId, tutorNombre]);
 
   const { promedio, estrellas } = useMemo(() => {
-    return calcularPromedioTutor(tutorId, tutorNombre);
-  }, [tutorId, tutorNombre]);
+    if (resenas.length === 0) return { promedio: 5.0, total: 0, estrellas: 5 };
+    const suma = resenas.reduce((acc, r) => acc + (Number(r.calificacion) || 5), 0);
+    const prom = Math.round((suma / resenas.length) * 10) / 10;
+    return { promedio: prom, total: resenas.length, estrellas: Math.max(1, Math.min(5, Math.round(prom))) };
+  }, [resenas]);
+
+  const fotoActual = fotoPreview || usuario?.avatarUrl;
 
   return (
     <div className="perfil-tutor-page">
@@ -67,56 +201,108 @@ export function PerfilTutor() {
             <div className="perfil-card-top-bar" />
 
             <div className="perfil-card-left-body">
+              {/* Avatar e información principal */}
               <div className="perfil-avatar-row">
-                <div className="perfil-avatar-initials">DN</div>
+                {fotoActual ? (
+                  <img
+                    src={fotoActual}
+                    alt={tutorNombre || 'Foto de perfil'}
+                    className="perfil-avatar-img"
+                  />
+                ) : (
+                  <div className="perfil-avatar-initials">{iniciales}</div>
+                )}
 
                 <div className="perfil-name-block">
                   <span className="perfil-tutor-name">
                     {usuario?.nombres} {usuario?.apellidos}
                   </span>
                   <span className="perfil-tutor-subtitle">
-                    {usuario?.semestreTexto || '6º semestre MACC - Claustro'}
+                    {usuario?.semestreTexto || 'Tutor de la Universidad del Rosario'}
                   </span>
                 </div>
               </div>
 
+              {/* Controles para cambiar y guardar foto de perfil */}
+              <div style={{ marginBottom: '18px', padding: '12px', backgroundColor: '#FAF4F3', border: '1px solid #EADCDD', borderRadius: '10px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                  Foto de perfil:
+                </span>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleSeleccionarArchivo}
+                />
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Seleccionar foto
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    type="button"
+                    onClick={handleGuardarFoto}
+                    disabled={guardandoFoto || (!fotoPreview && !usuario?.avatarUrl)}
+                  >
+                    {guardandoFoto ? 'Guardando...' : 'Guardar foto de perfil'}
+                  </Button>
+                </div>
+                {mensajeFoto && (
+                  <p style={{ fontSize: '12px', color: 'var(--Vino-tinto)', fontWeight: 600, marginTop: '8px', margin: '8px 0 0' }}>
+                    {mensajeFoto}
+                  </p>
+                )}
+              </div>
+
               <p className="perfil-bio-text">
-                {usuario?.descripcion ||
-                  'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.'}
+                {usuario?.descripcion || 'Aún no has agregado una descripción a tu perfil. Puedes editarla en cualquier momento.'}
               </p>
 
               <h2 className="perfil-section-title">Cursos que asesoro:</h2>
 
               <div className="perfil-cursos-list">
-                {cursos.map((curso) => {
-                  const estaAbierto = cursoAbierto === curso;
-                  return (
-                    <div key={curso}>
-                      <button
-                        type="button"
-                        className="perfil-curso-item"
-                        onClick={() => toggleCurso(curso)}
-                        aria-expanded={estaAbierto}
-                      >
-                        <span>{curso}</span>
-                        <span className={`perfil-curso-chevron ${estaAbierto ? 'open' : ''}`}>
-                          ▼
-                        </span>
-                      </button>
-                      {estaAbierto && (
-                        <div className="perfil-curso-content">
-                          Monitoría orientada a talleres prácticos, preparación de parciales y
-                          resolución de dudas puntuales de {curso}.
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                {cursos.length === 0 ? (
+                  <p style={{ color: '#8A7B7E', fontStyle: 'italic', fontSize: '13px' }}>
+                    Aún no has registrado cursos que asesoras.
+                  </p>
+                ) : (
+                  cursos.map((curso) => {
+                    const estaAbierto = cursoAbierto === curso;
+                    return (
+                      <div key={curso}>
+                        <button
+                          type="button"
+                          className="perfil-curso-item"
+                          onClick={() => toggleCurso(curso)}
+                          aria-expanded={estaAbierto}
+                        >
+                          <span>{curso}</span>
+                          <span className={`perfil-curso-chevron ${estaAbierto ? 'open' : ''}`}>
+                            ▼
+                          </span>
+                        </button>
+                        {estaAbierto && (
+                          <div className="perfil-curso-content">
+                            Monitoría orientada a talleres prácticos, preparación de parciales y
+                            resolución de dudas puntuales de {curso}.
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
 
               <div className="perfil-precio-row">
                 <div className="perfil-precio-box">
-                  Precio hora: {precio.toLocaleString('es-CO')}
+                  Precio hora: ${(precio || 0).toLocaleString('es-CO')}
                 </div>
 
                 <Button
@@ -124,7 +310,7 @@ export function PerfilTutor() {
                   className="perfil-btn-editar"
                   onClick={() => navigate('/tutor/perfil/editar')}
                 >
-                  Editar
+                  Editar perfil
                 </Button>
               </div>
             </div>
@@ -138,18 +324,24 @@ export function PerfilTutor() {
 
               <div className="perfil-card-right-body">
                 <div className="perfil-dias-header">
-                  <h2 className="perfil-right-title">Dias disponibles</h2>
-                  <p className="perfil-right-subtitle">Sujeto a cambios</p>
+                  <h2 className="perfil-right-title">Días disponibles</h2>
+                  <p className="perfil-right-subtitle">Horario de atención</p>
                 </div>
 
                 <div className="perfil-dias-row">
                   <div className="perfil-dias-boxes">
-                    {diasDisponibles.map((dia) => (
-                      <div key={dia} className="perfil-dia-box">
-                        <span className="perfil-dia-text">{dia}</span>
-                        <span className="perfil-dia-dot" aria-hidden="true" />
-                      </div>
-                    ))}
+                    {diasActivos.length === 0 ? (
+                      <p style={{ color: '#8A7B7E', fontSize: '13px', fontStyle: 'italic' }}>
+                        Aún no has configurado tus días disponibles.
+                      </p>
+                    ) : (
+                      diasActivos.map((dia) => (
+                        <div key={dia} className="perfil-dia-box">
+                          <span className="perfil-dia-text">{dia}</span>
+                          <span className="perfil-dia-dot" aria-hidden="true" />
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <Button
@@ -157,8 +349,70 @@ export function PerfilTutor() {
                     className="perfil-btn-editar"
                     onClick={() => navigate('/tutor/perfil/horario')}
                   >
-                    Editar
+                    Editar horario
                   </Button>
+                </div>
+
+                {/* Resumen de franjas horarias */}
+                <div style={{ marginTop: '16px', borderTop: '1px solid #F0E6E8', paddingTop: '12px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                    Franjas horarias de atención configuradas:
+                  </span>
+                  {franjasUnicas.length === 0 ? (
+                    <p style={{ color: '#8A7B7E', fontStyle: 'italic', fontSize: '12px', margin: 0 }}>
+                      No tienes franjas horarias configuradas.
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {franjasUnicas.map((franja) => (
+                        <span
+                          key={franja}
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            padding: '4px 10px',
+                            backgroundColor: '#FAF4F3',
+                            border: '1px solid #EADCDD',
+                            borderRadius: '12px',
+                            color: 'var(--Vino-tinto)',
+                          }}
+                        >
+                          {franja}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Salones presenciales configurados */}
+                <div style={{ marginTop: '16px', borderTop: '1px solid #F0E6E8', paddingTop: '12px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--Vino-tinto)', display: 'block', marginBottom: '8px' }}>
+                    Salones para atención presencial:
+                  </span>
+                  {(!usuario?.salones || usuario.salones.length === 0) ? (
+                    <p style={{ color: '#8A7B7E', fontStyle: 'italic', fontSize: '12px', margin: 0 }}>
+                      No tienes salones registrados. Puedes configurarlos al editar tu perfil.
+                    </p>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {usuario.salones.map((s: any, idx: number) => (
+                        <span
+                          key={`${s.sede}-${s.salon}-${idx}`}
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            padding: '4px 10px',
+                            backgroundColor: '#FAF4F3',
+                            border: '1px solid #EADCDD',
+                            borderRadius: '12px',
+                            color: 'var(--Vino-tinto)',
+                          }}
+                        >
+                          {s.salon} ({s.sede})
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </section>
@@ -171,7 +425,7 @@ export function PerfilTutor() {
                 <div className="perfil-resenas-header">
                   <div>
                     <h2 className="perfil-right-title">Reseñas</h2>
-                    <p className="perfil-right-subtitle">Que piensan los demás</p>
+                    <p className="perfil-right-subtitle">Qué piensan los demás</p>
                   </div>
 
                   <div className="perfil-stars-container" aria-label={`Calificación promedio: ${promedio.toFixed(1)} estrellas`}>
@@ -216,7 +470,6 @@ export function PerfilTutor() {
         </div>
       </main>
 
-      {/* Forma decorativa inferior según Figma (fomaTutor.svg) */}
       <img
         src={fomaTutor}
         alt=""

@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import {
   obtenerTutoriasPorTutor,
   actualizarLinkReunion,
+  calcularTiempoRestante,
 } from '../services/tutoriasService';
 import { obtenerMensajeDeError } from '../services/api';
 import type { TutoriaAgendada } from '../types/tutoria';
@@ -17,29 +18,19 @@ import fomaTutor from '../assets/fomaTutor.svg';
 export function VistaTutor() {
   const navigate = useNavigate();
 
-  const [usuario] = useState<Usuario | null>(() => {
+  const [usuario, setUsuario] = useState<Usuario | null>(() => {
     const sesion = obtenerSesion();
-    if (!sesion || sesion.rol !== 'tutor') {
-      return {
-        id: '2',
-        nombres: 'Daniel',
-        apellidos: 'Nieto',
-        correo: 'dnieto@urosario.edu.co',
-        rol: 'tutor',
-        carrera: 'Matematicas Aplicadas y Ciencias de la Computacion',
-        semestre: 6,
-        semestreTexto: '6º semestre MACC - Claustro',
-        cursos: ['Calculo II', 'Variable Compleja', 'Analisis Real'],
-        sede: 'Claustro',
-        modalidad: 'Híbrida',
-        precioHora: 20000,
-        descripcion:
-          'Sé lo retador que es el paso de Cálculo I a Cálculo II y Álgebra Lineal en los primeros semestres de ingeniería y ciencias. Fui monitor oficial de planta durante 4 semestres consecutivos y comprendo exactamente los errores típicos de parcial y dónde se confunden los conceptos teóricos.',
-        diasDisponibles: ['LU', 'MA', 'MI'],
-      };
-    }
-    return sesion;
+    return sesion && (sesion.rol || '').toLowerCase() === 'tutor' ? sesion : null;
   });
+
+  useEffect(() => {
+    const sesionActual = obtenerSesion();
+    if (!sesionActual || (sesionActual.rol || '').toLowerCase() !== 'tutor') {
+      navigate('/login', { replace: true });
+    } else if (!usuario || usuario.id !== sesionActual.id) {
+      setUsuario(sesionActual);
+    }
+  }, [usuario, navigate]);
 
   // Estados asíncronos
   const [tutorias, setTutorias] = useState<TutoriaAgendada[]>([]);
@@ -116,7 +107,14 @@ export function VistaTutor() {
         )}
 
         {/* Grid con las tarjetas de tutorías */}
-        {!cargando && !errorDeCarga && (
+        {!cargando && !errorDeCarga && tutorias.length === 0 && (
+          <div style={{ textAlign: 'center', margin: '40px 0', color: '#666' }}>
+            <p style={{ fontSize: '1.2rem', fontWeight: 600 }}>No tienes tutorías agendadas por el momento.</p>
+            <p>Cuando los estudiantes reserven sesiones contigo, aparecerán listadas aquí.</p>
+          </div>
+        )}
+
+        {!cargando && !errorDeCarga && tutorias.length > 0 && (
           <section className="tutor-cards-grid" aria-label="Lista de tutorías agendadas">
             {tutorias.map((tutoria) => {
               const iniciales =
@@ -134,7 +132,17 @@ export function VistaTutor() {
                   <div className="tutor-card-content">
                     {/* Header de Estudiante con Avatar de Iniciales */}
                     <div className="tutor-card-student">
-                      <div className="tutor-student-avatar-initials">{iniciales}</div>
+                      <div className="tutor-student-avatar-initials" style={{ overflow: 'hidden' }}>
+                        {tutoria.estudianteAvatar ? (
+                          <img
+                            src={tutoria.estudianteAvatar}
+                            alt={`${tutoria.estudianteNombres} ${tutoria.estudianteApellidos}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                          />
+                        ) : (
+                          iniciales
+                        )}
+                      </div>
 
                       <div className="tutor-student-text">
                         <span className="tutor-student-name">
@@ -154,7 +162,7 @@ export function VistaTutor() {
                       </div>
 
                       <span className="tutor-card-time-badge">
-                        {tutoria.tiempoRestanteTexto || 'En 2 dias'}
+                        {calcularTiempoRestante(tutoria.fechaISO, tutoria.fechaTexto, tutoria.estado, tutoria.calificacion) || tutoria.tiempoRestanteTexto || 'En 2 dias'}
                       </span>
                     </div>
 

@@ -59,18 +59,29 @@ export function ExplorarTutores() {
         return false;
       }
 
+      const termino = busqueda.toLowerCase().trim();
+      const coincideEnCursos =
+        Array.isArray(tutor.cursos) &&
+        tutor.cursos.some((c) => (c || '').toLowerCase().includes(termino));
+
       const cumpleMateria =
-        busqueda.trim() === '' ||
-        tutor.materiaPrincipal.toLowerCase().includes(busqueda.toLowerCase()) ||
-        tutor.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
-        `${tutor.nombres} ${tutor.apellidos}`.toLowerCase().includes(busqueda.toLowerCase());
+        termino === '' ||
+        (tutor.materiaPrincipal || '').toLowerCase().includes(termino) ||
+        coincideEnCursos ||
+        (tutor.descripcion || '').toLowerCase().includes(termino) ||
+        `${tutor.nombres} ${tutor.apellidos}`.toLowerCase().includes(termino);
 
       const cumpleSede =
         sede === 'Todas' || tutor.sede.toLowerCase() === sede.toLowerCase();
 
+      const modTutor = (tutor.modalidad || '').toLowerCase();
+      const esHibrido = modTutor.includes('hibrid') || modTutor.includes('híbrid');
       const cumpleModalidad =
         modalidad === 'Todas' ||
-        tutor.modalidad.toLowerCase() === modalidad.toLowerCase();
+        (modalidad === 'Híbrida' && esHibrido) ||
+        (modalidad === 'Presencial' && (modTutor === 'presencial' || esHibrido)) ||
+        (modalidad === 'Virtual' && (modTutor === 'virtual' || esHibrido)) ||
+        modTutor === modalidad.toLowerCase();
 
       return cumpleMateria && cumpleSede && cumpleModalidad;
     });
@@ -100,7 +111,6 @@ export function ExplorarTutores() {
       <main className="explorar-main">
         {/* Pill informativo superior */}
         <div className="explorar-badge-sub">
-          <span className="explorar-badge-icon" role="img" aria-label="birrete">🎓</span>
           <span>De estudiantes para estudiantes</span>
         </div>
 
@@ -175,6 +185,7 @@ export function ExplorarTutores() {
               <option value="Todas">Modalidad: Todas</option>
               <option value="Presencial">Modalidad: Presencial</option>
               <option value="Virtual">Modalidad: Virtual</option>
+              <option value="Híbrida">Modalidad: Híbrida</option>
             </select>
             <span className="filter-select-arrow" aria-hidden="true">▼</span>
           </div>
@@ -229,8 +240,16 @@ export function ExplorarTutores() {
 
                   {/* Cabecera con avatar e información */}
                   <header className="tutor-card-header">
-                    <div className="tutor-avatar-circle" aria-hidden="true">
-                      {tutor.iniciales}
+                    <div className="tutor-avatar-circle" aria-hidden="true" style={{ overflow: 'hidden' }}>
+                      {tutor.avatarUrl || tutor.fotoPerfil ? (
+                        <img
+                          src={tutor.avatarUrl || tutor.fotoPerfil}
+                          alt={`${tutor.nombres} ${tutor.apellidos}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                        />
+                      ) : (
+                        tutor.iniciales
+                      )}
                     </div>
                     <div className="tutor-header-info">
                       <h2

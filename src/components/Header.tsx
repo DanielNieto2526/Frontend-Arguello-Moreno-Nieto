@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Header.css';
 import type { Usuario } from '../types/usuario';
-import { cerrarSesion } from '../utils/auth';
+import { cerrarSesion, obtenerSesion } from '../utils/auth';
 
 export interface HeaderProps {
   usuario?: Usuario | null;
@@ -36,35 +36,36 @@ export function Header({ usuario, onLogout }: HeaderProps) {
     }
   };
 
-  const esAdmin = usuario?.rol === 'admin' || location.pathname.startsWith('/admin');
-  const esTutor = !esAdmin && (usuario?.rol === 'tutor' || location.pathname.startsWith('/tutor'));
+  const usuarioActivo = usuario || obtenerSesion();
+  const esAdmin = usuarioActivo?.rol === 'admin' || location.pathname.startsWith('/admin');
+  const esTutor = !esAdmin && (usuarioActivo?.rol === 'tutor' || location.pathname.startsWith('/tutor'));
 
   // Datos de usuario mostrados
   const nombreMostrar = esAdmin
-    ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Coordinador URosario')
+    ? (usuarioActivo?.nombres ? `${usuarioActivo.nombres} ${usuarioActivo.apellidos}` : 'Coordinador URosario')
+    : usuarioActivo?.nombres
+    ? `${usuarioActivo.nombres} ${usuarioActivo.apellidos}`
     : esTutor
-    ? (usuario?.nombres ? `${usuario.nombres} ${usuario.apellidos}` : 'Daniel Nieto')
-    : usuario?.nombres
-    ? `${usuario.nombres} ${usuario.apellidos}`
-    : 'Daniela Moreno';
+    ? 'Tutor'
+    : 'Estudiante';
 
   const badgeMostrar = esAdmin
     ? 'Administrador - Coordinación Académica'
     : esTutor
-    ? 'Tutor - Matematicas Aplicadas y Ciencias de la Computacion'
-    : usuario
-    ? `${usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}${
-        usuario.carrera ? ` - ${usuario.carrera}` : ' - Ingeniería de Sistemas'
+    ? (usuarioActivo?.carrera ? `Tutor - ${usuarioActivo.carrera}` : 'Tutor Académico')
+    : usuarioActivo
+    ? `${usuarioActivo.rol.charAt(0).toUpperCase() + usuarioActivo.rol.slice(1)}${
+        usuarioActivo.carrera ? ` - ${usuarioActivo.carrera}` : ''
       }`
-    : 'Estudiante - Ingeniería de Sistemas';
+    : 'Estudiante';
 
-  const iniciales = esAdmin
+  const iniciales = usuarioActivo?.nombres && usuarioActivo?.apellidos
+    ? `${usuarioActivo.nombres.charAt(0)}${usuarioActivo.apellidos.charAt(0)}`.toUpperCase()
+    : esAdmin
     ? 'AD'
     : esTutor
-    ? 'DN'
-    : usuario
-    ? `${usuario.nombres.charAt(0)}${usuario.apellidos.charAt(0)}`.toUpperCase()
-    : 'DM';
+    ? 'TU'
+    : 'ES';
 
   const esTutoriasActivo = location.pathname.startsWith('/tutor/tutorias') || location.pathname === '/tutor';
   const esPerfilActivo = location.pathname.startsWith('/tutor/perfil');
@@ -165,7 +166,15 @@ export function Header({ usuario, onLogout }: HeaderProps) {
             aria-expanded={menuAbierto}
             aria-label="Menú de perfil"
           >
-            <span>{iniciales}</span>
+            {usuarioActivo?.avatarUrl ? (
+              <img
+                src={usuarioActivo.avatarUrl}
+                alt={nombreMostrar}
+                className="header-avatar-img"
+              />
+            ) : (
+              <span>{iniciales}</span>
+            )}
           </button>
 
           {/* Menú desplegable */}
