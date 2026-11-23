@@ -67,6 +67,9 @@ export async function solicitar<T>(ruta: string, opciones: RequestInit = {}): Pr
     }
 
     if (!respuesta.ok) {
+      if (respuesta.status === 413) {
+        throw new ApiError(413, 'El archivo adjunto es demasiado pesado para enviarse por la red (supera el límite de Vercel). Por favor retira el adjunto o comparte el link en los detalles.');
+      }
       let mensaje = `Error ${respuesta.status}: ${respuesta.statusText}`;
       let errores: string[] = [];
 
@@ -88,8 +91,8 @@ export async function solicitar<T>(ruta: string, opciones: RequestInit = {}): Pr
       throw error;
     }
     console.error(`[API Network Error] ${url}:`, error);
-    // Error de red, CORS o servidor apagado
-    throw new ApiError(0, `No se pudo conectar con el servidor backend (${url}). Verifica tu conexión o el despliegue del backend.`);
+    // Error de red, CORS, payload cortado o servidor apagado
+    throw new ApiError(0, `No se pudo completar la conexión con el servidor (${url}). Si adjuntaste un archivo pesado (PDF/imagen), por favor intenta sin adjuntos o comparte el enlace en la descripción.`);
   }
 }
 
