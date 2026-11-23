@@ -351,8 +351,8 @@ export function AgendarTutoria() {
             }
           }
 
-          // Si es PDF u otro archivo de hasta 800KB, se convierte a Base64
-          if (file.size <= 800 * 1024) {
+          // Si es PDF u otro archivo de hasta 100KB, se convierte a Base64
+          if (file.size <= 100 * 1024) {
             return new Promise<{ nombre: string; tipo: string; url: string }>((resolve) => {
               const reader = new FileReader();
               reader.onload = () => {
@@ -373,7 +373,7 @@ export function AgendarTutoria() {
             });
           }
 
-          // Para archivos mayores a 800KB (como notebooks de Colab o talleres pesados), se registra el nombre
+          // Para archivos mayores a 100KB (talleres, informes o PDFs), se registra el nombre
           return {
             nombre: file.name,
             tipo: file.type || 'application/pdf',
@@ -389,7 +389,7 @@ export function AgendarTutoria() {
         tutorApellidos: tutor.apellidos,
         tutorIniciales: tutor.iniciales,
         tutorSemestreTexto: tutor.semestreTexto,
-        tutorAvatar: tutor.avatarUrl || tutor.fotoPerfil || '',
+        tutorAvatar: (tutor.avatarUrl && tutor.avatarUrl.length < 30000) ? (tutor.avatarUrl || tutor.fotoPerfil || '') : '',
         fechaISO: fechaSeleccionada.fechaISO,
         diaNumero: fechaSeleccionada.diaNumero,
         diaSemana: fechaSeleccionada.diaSemana,
@@ -415,7 +415,7 @@ export function AgendarTutoria() {
         estudianteTelefono: usuario?.telefono,
         estudianteCarrera: usuario?.carrera,
         estudianteSemestreCompleto: usuario?.semestreTexto,
-        estudianteAvatar: usuario?.avatarUrl,
+        estudianteAvatar: (usuario?.avatarUrl && usuario.avatarUrl.length < 30000) ? usuario.avatarUrl : '',
       });
 
       setConfirmacionExitosa(true);

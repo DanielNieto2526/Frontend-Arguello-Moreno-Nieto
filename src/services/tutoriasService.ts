@@ -382,16 +382,22 @@ export async function agendarTutoria(datos: SolicitudAgendamiento): Promise<Tuto
   try {
     // Protección contra payloads mayores al límite de Vercel Serverless (4.5MB)
     const payloadLimpio = { ...datosCompletos };
+
+    // Evitar enviar avatares pesados en Base64 en el cuerpo de la tutoría (el backend los vincula directamente en MongoDB)
+    if (payloadLimpio.estudianteAvatar && payloadLimpio.estudianteAvatar.length > 30000) {
+      payloadLimpio.estudianteAvatar = '';
+    }
+    if (payloadLimpio.tutorAvatar && payloadLimpio.tutorAvatar.length > 30000) {
+      payloadLimpio.tutorAvatar = '';
+    }
+
     if (payloadLimpio.archivos && Array.isArray(payloadLimpio.archivos)) {
-      const tamanoAprox = JSON.stringify(payloadLimpio).length;
-      if (tamanoAprox > 1.2 * 1024 * 1024) {
-        payloadLimpio.archivos = payloadLimpio.archivos.map((a) => ({
-          nombre: a.nombre,
-          tipo: a.tipo,
-          url: (a.url && a.url.length > 200000) ? '' : a.url,
-        }));
-        payloadLimpio.archivosAdjuntos = payloadLimpio.archivos;
-      }
+      payloadLimpio.archivos = payloadLimpio.archivos.map((a) => ({
+        nombre: a.nombre,
+        tipo: a.tipo || 'application/pdf',
+        url: (a.url && a.url.length < 150000) ? a.url : '',
+      }));
+      payloadLimpio.archivosAdjuntos = payloadLimpio.archivos;
     }
 
     const res = await solicitar<TutoriaAgendada>(RUTA, {

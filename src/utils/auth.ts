@@ -100,7 +100,16 @@ export function guardarSesion(usuario: Usuario): void {
 export function obtenerSesion(): Usuario | null {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? (JSON.parse(data) as Usuario) : null;
+    if (!data) return null;
+    const usr = JSON.parse(data) as Usuario;
+    // Si la sesión contiene un avatar previo gigantesco en Base64 (>100KB), se limpia para no saturar la red
+    if (usr && usr.avatarUrl && usr.avatarUrl.length > 100000) {
+      usr.avatarUrl = '';
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(usr));
+      } catch {}
+    }
+    return usr;
   } catch {
     return null;
   }
